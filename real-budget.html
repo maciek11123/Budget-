@@ -191,28 +191,28 @@
 }
 [data-theme="blob"] .app{position:relative;overflow:hidden;}
 [data-theme="blob"] .dec-layer{display:block;}
-[data-theme="blob"] .hero{background:#ccff00!important;border-radius:36px;box-shadow:0 12px 32px rgba(0,0,0,.15)!important;color:#111;z-index:1;}
+[data-theme="blob"] .hero{background:var(--blob-hero,#ccff00)!important;border-radius:36px;box-shadow:0 12px 32px rgba(0,0,0,.15)!important;color:#111;z-index:1;}
 [data-theme="blob"] .hero-num.safe,[data-theme="blob"] .hero-num.warn,[data-theme="blob"] .hero-num.low{color:#111!important;}
 [data-theme="blob"] .hero-eye,[data-theme="blob"] .hero-break,[data-theme="blob"] .hero-break b,[data-theme="blob"] .slabel,[data-theme="blob"] .sval,[data-theme="blob"] .snote{color:#111!important;}
 [data-theme="blob"] .hero-eye::after{background:rgba(0,0,0,.1);}
 [data-theme="blob"] .stat+.stat{border-left-color:rgba(0,0,0,.1);}
 [data-theme="blob"] .status{border-radius:30px;box-shadow:0 8px 24px rgba(0,0,0,.1);background:#fff!important;z-index:1;}
-[data-theme="blob"] .bpill{border-radius:28px;background:#c0a9ff!important;color:#111;z-index:1;}
+[data-theme="blob"] .bpill{border-radius:28px;background:var(--blob-pill,#c0a9ff)!important;color:#111;z-index:1;}
 [data-theme="blob"] .bpill .bname,[data-theme="blob"] .bpill .bmeta,[data-theme="blob"] .bpill .bamt{color:#111!important;}
 [data-theme="blob"] .bpill:nth-child(even){background:#fff!important;}
 [data-theme="blob"] .bpill.paid{opacity:.4;}
-[data-theme="blob"] .btn-main{background:#ff7eb3!important;color:#fff;border-radius:24px;box-shadow:0 8px 20px rgba(255,126,179,.4)!important;z-index:1;}
+[data-theme="blob"] .btn-main{background:var(--blob-btn,#ff7eb3)!important;color:#fff;border-radius:24px;box-shadow:0 8px 20px rgba(255,126,179,.4)!important;z-index:1;}
 [data-theme="blob"] .btn-sec{background:#00e6cc!important;color:#fff;border-radius:24px;box-shadow:0 8px 20px rgba(0,230,204,.4)!important;z-index:1;}
 [data-theme="blob"] .sec-title,[data-theme="blob"] .sec-link{color:#fff!important;}
-[data-theme="blob"] .nav{background:#152e8a!important;box-shadow:0 -2px 20px rgba(0,0,0,.3);}
+[data-theme="blob"] .nav{background:var(--blob-nav,#152e8a)!important;box-shadow:0 -2px 20px rgba(0,0,0,.3);}
 [data-theme="blob"] .nbtn .nicon,[data-theme="blob"] .nbtn .nlabel{color:rgba(255,255,255,.4);}
-[data-theme="blob"] .nbtn.active .nicon,[data-theme="blob"] .nbtn.active .nlabel{color:#ccff00;}
+[data-theme="blob"] .nbtn.active .nicon,[data-theme="blob"] .nbtn.active .nlabel{color:var(--blob-nav-active,#ccff00);}
 [data-theme="blob"] .header .logo,[data-theme="blob"] .header .hdate{color:#fff!important;}
 [data-theme="blob"] .ctab{color:rgba(255,255,255,.5);}
 [data-theme="blob"] .ctab.active{background:#ff7eb3!important;color:#fff;}
 [data-theme="blob"] .addbtn{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.6);}
 [data-theme="blob"] .sheet{background:#fff!important;}
-[data-theme="blob"] .bconfirm{background:#ff7eb3!important;box-shadow:0 8px 20px rgba(255,126,179,.4)!important;}
+[data-theme="blob"] .bconfirm{background:var(--blob-btn,#ff7eb3)!important;box-shadow:0 8px 20px rgba(255,126,179,.4)!important;}
 
 /* STACK — dark mode overlap cards */
 [data-theme="stack"]{
@@ -232,11 +232,11 @@
 [data-theme="stack"] .stat+.stat{border-left:none;}
 [data-theme="stack"] .bstack{gap:0;padding-bottom:20px;}
 [data-theme="stack"] .bpill{margin-bottom:-16px;border:2px solid #000;border-radius:40px;padding:16px 20px;}
-[data-theme="stack"] .bpill:nth-child(7n+1){background:#fae100!important;color:#000;z-index:100;}
-[data-theme="stack"] .bpill:nth-child(7n+2){background:#00d970!important;color:#000;z-index:99;}
-[data-theme="stack"] .bpill:nth-child(7n+3){background:#ff8c00!important;color:#000;z-index:98;}
-[data-theme="stack"] .bpill:nth-child(7n+4){background:#7a63ff!important;color:#000;z-index:97;}
-[data-theme="stack"] .bpill:nth-child(7n+5){background:#ff6b9e!important;color:#000;z-index:96;}
+[data-theme="stack"] .bpill:nth-child(7n+1){background:var(--stk-pill-1,#fae100)!important;color:#000;z-index:100;}
+[data-theme="stack"] .bpill:nth-child(7n+2){background:var(--stk-pill-2,#00d970)!important;color:#000;z-index:99;}
+[data-theme="stack"] .bpill:nth-child(7n+3){background:var(--stk-pill-3,#ff8c00)!important;color:#000;z-index:98;}
+[data-theme="stack"] .bpill:nth-child(7n+4){background:var(--stk-pill-4,#7a63ff)!important;color:#000;z-index:97;}
+[data-theme="stack"] .bpill:nth-child(7n+5){background:var(--stk-pill-5,#ff6b9e)!important;color:#000;z-index:96;}
 [data-theme="stack"] .bpill .bname,[data-theme="stack"] .bpill .bmeta,[data-theme="stack"] .bpill .bamt{color:inherit!important;}
 [data-theme="stack"] .bpill.paid{background:#111!important;color:#555!important;border-color:#000;z-index:1;margin-bottom:4px;opacity:1;}
 [data-theme="stack"] .bpill.paid .bname,[data-theme="stack"] .bpill.paid .bmeta,[data-theme="stack"] .bpill.paid .bamt{color:#555!important;}
@@ -262,7 +262,7 @@
 [data-theme="geo"] .hero::after{display:none;}
 [data-theme="geo"] .hero-rule{display:none;}
 [data-theme="geo"] .hero-stats{display:flex;gap:12px;}
-[data-theme="geo"] .stat{background:#ff7b00!important;color:#fff;border-radius:28px;padding:20px;flex:1;}
+[data-theme="geo"] .stat{background:var(--geo-stat1,#ff7b00)!important;color:#fff;border-radius:28px;padding:20px;flex:1;}
 [data-theme="geo"] .stat .slabel,[data-theme="geo"] .stat .sval,[data-theme="geo"] .stat .snote{color:#fff!important;}
 [data-theme="geo"] .stat+.stat{border-left:none;background:#fff!important;color:#111;}
 [data-theme="geo"] .stat+.stat .slabel,[data-theme="geo"] .stat+.stat .sval,[data-theme="geo"] .stat+.stat .snote{color:#111!important;}
@@ -994,7 +994,7 @@ body{
   <button class="nbtn" id="n-hist" onclick="showPage('pg-hist');setNav('n-hist');renderHist()">
     <span class="nicon">◴</span><span class="nlabel">History</span>
   </button>
-  <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme')">
+  <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
     <span class="nicon">◐</span><span class="nlabel">Theme</span>
   </button>
 </div>
@@ -1130,8 +1130,22 @@ let S=load();
 
 // ── THEME ENGINE ─────────────────────────────────────────────────────────
 const THEMES={
-  cloud: {name:'Cloud',dots:['#5090d8','#2e6ab0','#edf1f7'],hasMode:true},
-  mono:  {name:'Mono', dots:['#888','#333','#f0f0f0'],hasMode:true},
+  cloud: {name:'Cloud',dots:['#5090d8','#2e6ab0','#edf1f7'],hasMode:true,
+    subs:[
+      {name:'Sky',    accent:'#5a90d8',accent2:'#7ab0f0',onAccent:'#0c1520'},
+      {name:'Rose',   accent:'#d05080',accent2:'#e878a0',onAccent:'#fff'},
+      {name:'Forest', accent:'#2e8b57',accent2:'#50b878',onAccent:'#fff'},
+      {name:'Amber',  accent:'#d08820',accent2:'#e8a840',onAccent:'#1a1000'},
+      {name:'Violet', accent:'#7c4dff',accent2:'#a07cff',onAccent:'#fff'},
+    ]},
+  mono:  {name:'Mono', dots:['#888','#333','#f0f0f0'],hasMode:true,
+    subs:[
+      {name:'Grey',   accent:'#e8e8e8',accent2:'#ffffff',onAccent:'#111'},
+      {name:'Warm',   accent:'#c8b8a0',accent2:'#e0d0b8',onAccent:'#111'},
+      {name:'Cool',   accent:'#a0b8c8',accent2:'#c0d8e8',onAccent:'#111'},
+      {name:'Blush',  accent:'#d4a0a0',accent2:'#e8c0c0',onAccent:'#111'},
+      {name:'Sage',   accent:'#a0c0a0',accent2:'#c0d8c0',onAccent:'#111'},
+    ]},
   vibrant:{name:'Vibrant',dots:['#00e5ff','#3f22ec','#fa58a7'],hasMode:false,
     subs:[
       {name:'Neon',   hero:'#3f22ec',pills:['#00e5ff','#ff7b00','#f4b5de','#dff700','#fa58a7'],btn:'#fa58a7',nav:'#1a1a1a'},
@@ -1148,9 +1162,30 @@ const THEMES={
       {name:'Ocean',  bg:'#0077b6',accent:'#fff',stat1:'#caf0f8',stat2:'#90e0ef',nav:'#0077b6',textHi:'#fff',text:'#caf0f8',dim:'#90e0ef'},
       {name:'Peach',  bg:'#fec89a',accent:'#6d4c41',stat1:'#f9dcc4',stat2:'#ffccd5',nav:'#fec89a'},
     ]},
-  blob:  {name:'Blob', dots:['#ff7eb3','#1c3fab','#ccff00'],hasMode:false},
-  stack: {name:'Stack',dots:['#00d970','#fae100','#ff8c00'],hasMode:false},
-  geo:   {name:'Geo',  dots:['#ff7b00','#3f22ec','#f0f0f5'],hasMode:false},
+  blob:  {name:'Blob', dots:['#ff7eb3','#1c3fab','#ccff00'],hasMode:false,
+    subs:[
+      {name:'Cotton', bg:'#1c3fab',hero:'#ccff00',pill:'#c0a9ff',btn:'#ff7eb3',nav:'#152e8a',navActive:'#ccff00'},
+      {name:'Coral',  bg:'#e63946',hero:'#ffd166',pill:'#f8c3cd',btn:'#ffd166',nav:'#b71c30',navActive:'#ffd166'},
+      {name:'Lagoon', bg:'#005f73',hero:'#94d2bd',pill:'#e9d8a6',btn:'#ee9b00',nav:'#003d4d',navActive:'#94d2bd'},
+      {name:'Berry',  bg:'#5a189a',hero:'#ff6d00',pill:'#e0aaff',btn:'#ff6d00',nav:'#3c096c',navActive:'#ff6d00'},
+      {name:'Matcha', bg:'#2d6a4f',hero:'#d8f3dc',pill:'#b7e4c7',btn:'#ffd166',nav:'#1b4332',navActive:'#d8f3dc'},
+    ]},
+  stack: {name:'Stack',dots:['#00d970','#fae100','#ff8c00'],hasMode:false,
+    subs:[
+      {name:'Neon',   pills:['#fae100','#00d970','#ff8c00','#7a63ff','#ff6b9e'],accent:'#00d970'},
+      {name:'Pastel', pills:['#ffd6a5','#caffbf','#bdb2ff','#ffc6ff','#a0c4ff'],accent:'#caffbf'},
+      {name:'Fire',   pills:['#ff0000','#ff4500','#ff6347','#ff7f50','#ffa07a'],accent:'#ff4500'},
+      {name:'Ocean',  pills:['#0077b6','#00b4d8','#90e0ef','#caf0f8','#023e8a'],accent:'#00b4d8'},
+      {name:'Candy',  pills:['#f72585','#7209b7','#3a0ca3','#4361ee','#4cc9f0'],accent:'#f72585'},
+    ]},
+  geo:   {name:'Geo',  dots:['#ff7b00','#3f22ec','#f0f0f5'],hasMode:false,
+    subs:[
+      {name:'Default',accent:'#3f22ec',stat1:'#ff7b00'},
+      {name:'Ember',  accent:'#e63946',stat1:'#f4a261'},
+      {name:'Teal',   accent:'#2a9d8f',stat1:'#264653'},
+      {name:'Royal',  accent:'#6a0dad',stat1:'#e040fb'},
+      {name:'Slate',  accent:'#37474f',stat1:'#78909c'},
+    ]},
 };
 
 function applyTheme(){
@@ -1172,9 +1207,13 @@ function applyTheme(){
 function applySubTheme(){
   const root=document.documentElement;
   // clear any previous sub-theme inline overrides
-  ['--bg','--surface','--surface2','--accent','--accent2','--text-hi','--text','--dim','--hr',
+  ['--bg','--surface','--surface2','--accent','--accent2','--on-accent','--text-hi','--text','--dim','--hr',
+   '--safe','--safe2','--safe-bg',
    '--vib-hero','--vib-btn','--vib-nav','--vib-pill-1','--vib-pill-2','--vib-pill-3','--vib-pill-4','--vib-pill-5',
-   '--pix-bg','--pix-accent','--pix-stat1','--pix-stat2','--pix-nav','--pix-text-hi','--pix-text','--pix-dim'
+   '--pix-bg','--pix-accent','--pix-stat1','--pix-stat2','--pix-nav','--pix-text-hi','--pix-text','--pix-dim',
+   '--blob-bg','--blob-hero','--blob-pill','--blob-btn','--blob-nav','--blob-nav-active',
+   '--stk-pill-1','--stk-pill-2','--stk-pill-3','--stk-pill-4','--stk-pill-5','--stk-accent',
+   '--geo-accent','--geo-stat1'
   ].forEach(v=>root.style.removeProperty(v));
 
   const info=THEMES[S.theme];
@@ -1182,7 +1221,14 @@ function applySubTheme(){
   const sub=info.subs[S.subTheme||0];
   if(!sub)return;
 
-  if(S.theme==='vibrant'){
+  if(S.theme==='cloud'||S.theme==='mono'){
+    root.style.setProperty('--accent',sub.accent);
+    root.style.setProperty('--accent2',sub.accent2);
+    root.style.setProperty('--on-accent',sub.onAccent);
+    root.style.setProperty('--safe',sub.accent);
+    root.style.setProperty('--safe2',sub.accent2);
+    root.style.setProperty('--safe-bg','color-mix(in srgb,'+sub.accent+' 10%,transparent)');
+  } else if(S.theme==='vibrant'){
     root.style.setProperty('--vib-hero',sub.hero);
     root.style.setProperty('--vib-btn',sub.btn);
     root.style.setProperty('--vib-nav',sub.nav);
@@ -1197,7 +1243,6 @@ function applySubTheme(){
       root.style.setProperty('--pix-text-hi',sub.textHi);
       root.style.setProperty('--pix-text',sub.text);
       root.style.setProperty('--pix-dim',sub.dim);
-      // dark pixel sub-themes need surface override
       root.style.setProperty('--surface',sub.bg);
       root.style.setProperty('--surface2',sub.bg);
       root.style.setProperty('--text-hi',sub.textHi);
@@ -1205,6 +1250,24 @@ function applySubTheme(){
       root.style.setProperty('--dim',sub.dim);
       root.style.setProperty('--hr',sub.dim);
     }
+  } else if(S.theme==='blob'){
+    root.style.setProperty('--bg',sub.bg);
+    root.style.setProperty('--blob-hero',sub.hero);
+    root.style.setProperty('--blob-pill',sub.pill);
+    root.style.setProperty('--blob-btn',sub.btn);
+    root.style.setProperty('--blob-nav',sub.nav);
+    root.style.setProperty('--blob-nav-active',sub.navActive);
+    root.style.setProperty('--accent',sub.btn);
+  } else if(S.theme==='stack'){
+    sub.pills.forEach((c,i)=>root.style.setProperty('--stk-pill-'+(i+1),c));
+    root.style.setProperty('--accent',sub.accent);
+    root.style.setProperty('--accent2',sub.accent);
+    root.style.setProperty('--safe',sub.accent);
+    root.style.setProperty('--safe2',sub.accent);
+  } else if(S.theme==='geo'){
+    root.style.setProperty('--accent',sub.accent);
+    root.style.setProperty('--accent2',sub.accent);
+    root.style.setProperty('--geo-stat1',sub.stat1);
   }
 }
 
@@ -1233,7 +1296,12 @@ function renderThemeGrid(){
   if(info?.subs){
     subSec.style.display='block';
     subGrid.innerHTML=info.subs.map((s,i)=>{
-      const bg=S.theme==='vibrant'?s.hero:s.bg;
+      let bg;
+      if(S.theme==='vibrant') bg=s.hero;
+      else if(S.theme==='pixel') bg=s.bg;
+      else if(S.theme==='blob') bg=s.bg;
+      else if(S.theme==='stack') bg=s.pills?s.pills[0]:s.accent;
+      else bg=s.accent;
       return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
         <button class="sub-swatch${(S.subTheme||0)===i?' active':''}" style="background:${bg}" onclick="setSubTheme(${i})" title="${s.name}"></button>
         <span style="font-size:8px;font-weight:700;color:var(--dim);letter-spacing:.04em;text-transform:uppercase">${s.name}</span>
