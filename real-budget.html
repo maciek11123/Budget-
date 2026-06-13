@@ -149,8 +149,14 @@
   --low:#fa58a7;--low-bg:rgba(250,88,167,.12);
 }
 [data-theme="pixel"] *{font-family:'Space Mono',monospace!important;}
-[data-theme="pixel"] .hero{border:4px solid #000;box-shadow:6px 6px 0 #000!important;border-radius:0;}
+[data-theme="pixel"] .hero{border:4px solid #000;box-shadow:6px 6px 0 #000!important;border-radius:0;background:var(--surface)!important;}
+[data-theme="pixel"] .hero-num{color:var(--pix-accent,#3f22ec)!important;}
+[data-theme="pixel"] .hero-num.low{color:var(--low)!important;}
+[data-theme="pixel"] .hero-num.warn{color:var(--warn)!important;}
 [data-theme="pixel"] .hero-rule{height:4px;background:#000;}
+[data-theme="pixel"] .hero-eye span{color:var(--pix-text-hi,#000);}
+[data-theme="pixel"] .hero-break{color:var(--pix-dim,#555);}
+[data-theme="pixel"] .hero-break b{color:var(--pix-text-hi,#000)!important;}
 [data-theme="pixel"] .hero-stats{gap:8px;}
 [data-theme="pixel"] .stat{border:2px solid #000;border-radius:0;background:var(--pix-stat1,#00e5ff)!important;}
 [data-theme="pixel"] .stat+.stat{border-left:2px solid #000;background:var(--pix-stat2,#fa58a7)!important;color:#fff;}
@@ -1165,15 +1171,21 @@ function applyTheme(){
 
 function applySubTheme(){
   const root=document.documentElement;
+  // clear any previous sub-theme inline overrides
+  ['--bg','--surface','--surface2','--accent','--accent2','--text-hi','--text','--dim','--hr',
+   '--vib-hero','--vib-btn','--vib-nav','--vib-pill-1','--vib-pill-2','--vib-pill-3','--vib-pill-4','--vib-pill-5',
+   '--pix-bg','--pix-accent','--pix-stat1','--pix-stat2','--pix-nav','--pix-text-hi','--pix-text','--pix-dim'
+  ].forEach(v=>root.style.removeProperty(v));
+
   const info=THEMES[S.theme];
-  if(!info?.subs){root.removeAttribute('style');return;}
+  if(!info?.subs)return;
   const sub=info.subs[S.subTheme||0];
   if(!sub)return;
+
   if(S.theme==='vibrant'){
     root.style.setProperty('--vib-hero',sub.hero);
     root.style.setProperty('--vib-btn',sub.btn);
     root.style.setProperty('--vib-nav',sub.nav);
-    // pill colors via CSS
     sub.pills.forEach((c,i)=>root.style.setProperty('--vib-pill-'+(i+1),c));
   } else if(S.theme==='pixel'){
     root.style.setProperty('--pix-bg',sub.bg);
@@ -1185,10 +1197,13 @@ function applySubTheme(){
       root.style.setProperty('--pix-text-hi',sub.textHi);
       root.style.setProperty('--pix-text',sub.text);
       root.style.setProperty('--pix-dim',sub.dim);
-    } else {
-      root.style.removeProperty('--pix-text-hi');
-      root.style.removeProperty('--pix-text');
-      root.style.removeProperty('--pix-dim');
+      // dark pixel sub-themes need surface override
+      root.style.setProperty('--surface',sub.bg);
+      root.style.setProperty('--surface2',sub.bg);
+      root.style.setProperty('--text-hi',sub.textHi);
+      root.style.setProperty('--text',sub.text);
+      root.style.setProperty('--dim',sub.dim);
+      root.style.setProperty('--hr',sub.dim);
     }
   }
 }
@@ -1219,7 +1234,10 @@ function renderThemeGrid(){
     subSec.style.display='block';
     subGrid.innerHTML=info.subs.map((s,i)=>{
       const bg=S.theme==='vibrant'?s.hero:s.bg;
-      return `<button class="sub-swatch${(S.subTheme||0)===i?' active':''}" style="background:${bg}" onclick="setSubTheme(${i})" title="${s.name}"></button>`;
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+        <button class="sub-swatch${(S.subTheme||0)===i?' active':''}" style="background:${bg}" onclick="setSubTheme(${i})" title="${s.name}"></button>
+        <span style="font-size:8px;font-weight:700;color:var(--dim);letter-spacing:.04em;text-transform:uppercase">${s.name}</span>
+      </div>`;
     }).join('');
   } else {
     subSec.style.display='none';
