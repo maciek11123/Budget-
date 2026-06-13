@@ -652,11 +652,11 @@ body{
 }
 
 /* ══ BILL PILLS — individual raised pills ══ */
-.bstack{display:flex;flex-direction:column;gap:8px;}
+.bstack{display:flex;flex-direction:column;gap:5px;}
 
 .bpill{
-  border-radius:16px;padding:13px 15px;
-  display:flex;align-items:center;gap:12px;
+  border-radius:13px;padding:9px 13px;
+  display:flex;align-items:center;gap:10px;
   position:relative;overflow:hidden;
   transition:box-shadow .2s;
 }
@@ -675,10 +675,10 @@ body{
 
 /* Check — raised circle, pressed+gradient when ON */
 .chk{
-  width:22px;height:22px;border-radius:50%;
+  width:20px;height:20px;border-radius:50%;
   border:none;cursor:pointer;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;
+  font-size:10px;font-weight:800;
   transition:all .22s;color:transparent;
   position:relative;z-index:1;
 }
@@ -693,15 +693,15 @@ body{
 
 .binfo{flex:1;min-width:0;}
 .bname{
-  font-size:13px;font-weight:700;color:var(--text-hi);
+  font-size:12px;font-weight:700;color:var(--text-hi);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   letter-spacing:-.01em;
   position:relative;z-index:1;
 }
 .bmeta{
   font-family:'JetBrains Mono',monospace;
-  font-size:10px;color:var(--dim);
-  margin-top:2px;letter-spacing:.05em;text-transform:uppercase;
+  font-size:9px;color:var(--dim);
+  margin-top:1px;letter-spacing:.05em;text-transform:uppercase;
   position:relative;z-index:1;
 }
 
@@ -729,10 +729,10 @@ body{
 /* Inline editable amount */
 .bamt{
   font-family:'JetBrains Mono',monospace;
-  font-size:14px;font-weight:500;color:var(--text);
-  padding:6px 10px;border-radius:10px;
+  font-size:13px;font-weight:500;color:var(--text);
+  padding:4px 8px;border-radius:8px;
   border:none;outline:none;cursor:text;
-  min-width:68px;text-align:right;
+  min-width:60px;text-align:right;
   transition:all .18s;background:transparent;
   -webkit-tap-highlight-color:transparent;
   position:relative;z-index:1;
@@ -753,26 +753,33 @@ body{
 .ebtn:hover{color:var(--accent);}
 
 /* ══ SPENT ══ */
-.spstack{display:flex;flex-direction:column;gap:8px;}
+.spstack{display:flex;flex-direction:column;gap:5px;}
 .sppill{
-  border-radius:14px;padding:12px 15px;
+  border-radius:12px;padding:9px 13px;
   display:flex;align-items:center;justify-content:space-between;
 }
-.spname{font-size:13px;font-weight:700;color:var(--text-hi);letter-spacing:-.01em;}
+.spname{font-size:12px;font-weight:700;color:var(--text-hi);letter-spacing:-.01em;}
 .sptime{
   font-family:'JetBrains Mono',monospace;
-  font-size:10px;color:var(--dim);
-  margin-top:2px;letter-spacing:.05em;text-transform:uppercase;
+  font-size:9px;color:var(--dim);
+  margin-top:1px;letter-spacing:.05em;text-transform:uppercase;
 }
 .spamt{
   font-family:'JetBrains Mono',monospace;
-  font-size:13px;color:var(--low);font-weight:600;
+  font-size:12px;color:var(--low);font-weight:600;
 }
 
 .empty{
   text-align:center;padding:32px 20px;
   color:var(--dim);font-size:13px;font-weight:600;
   border-radius:18px;
+}
+.paid-summary{
+  text-align:center;padding:10px 16px;
+  color:var(--dim);font-size:11px;font-weight:600;
+  border-radius:10px;margin-top:4px;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.04em;
 }
 
 /* ══ NAV ══ */
@@ -1334,8 +1341,13 @@ function pillHTML(b,edit){
 
 function renderDashBills(){
   const el=document.getElementById('dash-bills');
-  const bills=S.bills.filter(b=>b.cycle==='current'||b.cycle==='both');
-  el.innerHTML=bills.length?bills.map(b=>pillHTML(b,false)).join(''):'<div class="empty nm-pressed">No bills this cycle</div>';
+  const all=S.bills.filter(b=>b.cycle==='current'||b.cycle==='both');
+  const unpaid=all.filter(b=>!b.paid);
+  const paidCount=all.filter(b=>b.paid).length;
+  const paidTotal=all.filter(b=>b.paid).reduce((t,b)=>t+b.amt,0);
+  let html=unpaid.length?unpaid.map(b=>pillHTML(b,false)).join(''):'<div class="empty nm-pressed">All bills paid 🎉</div>';
+  if(paidCount>0) html+=`<div class="paid-summary nm-pressed">${paidCount} paid · ${$(paidTotal)} cleared</div>`;
+  el.innerHTML=html;
 }
 function renderEdBills(){
   const el=document.getElementById('ed-bills');
