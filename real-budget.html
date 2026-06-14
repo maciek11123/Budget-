@@ -865,6 +865,9 @@ body{
   <button class="nbtn" id="n-bills" onclick="showPage('pg-bills');setNav('n-bills')">
     <span class="nicon">▤</span><span class="nlabel">Bills</span>
   </button>
+  <button class="nbtn" id="n-hist" onclick="showPage('pg-hist');setNav('n-hist');renderHist()">
+    <span class="nicon">◴</span><span class="nlabel">History</span>
+  </button>
   <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
     <span class="nicon">◐</span><span class="nlabel">Theme</span>
   </button>
@@ -978,13 +981,13 @@ const DEF={
   carryover:0,cycleView:'current',spentLog:[],
   theme:'pixel',mode:'light',subTheme:0,
   bills:[
-    {id:1, name:'Janelle Birthday',       amt:250,date:'Jun 13',paid:false,cycle:'current'},
-    {id:2, name:'Buffer (misc)',           amt:100,date:'',      paid:false,cycle:'current'},
-    {id:3, name:'NA Beer',                amt:65, date:'',      paid:false,cycle:'both'},
+    {id:1, name:'Janelle Birthday',       amt:200,date:'Jun 13',paid:false,cycle:'current'},
+    {id:2, name:'Buffer (misc)',           amt:50, date:'',      paid:false,cycle:'current'},
+    {id:3, name:'NA Beer',                amt:35, date:'',      paid:false,cycle:'both'},
     {id:4, name:'Fizz Internet',          amt:56, date:'Jun 14',paid:false,cycle:'both'},
-    {id:5, name:'Baby Food',              amt:35, date:'',      paid:false,cycle:'both'},
-    {id:6, name:'Medication',             amt:30, date:'',      paid:false,cycle:'both'},
-    {id:7, name:'Spotify',                amt:26, date:'Jun 15',paid:false,cycle:'both'},
+    {id:5, name:'Baby Food',              amt:35, date:'',      paid:true, cycle:'both'},
+    {id:6, name:'Medication',             amt:30, date:'',      paid:true, cycle:'both'},
+    {id:7, name:'Spotify',                amt:26, date:'Jun 15',paid:true, cycle:'both'},
     {id:8, name:'PlayStation',            amt:14, date:'',      paid:false,cycle:'both'},
     {id:9, name:'Toilet Paper & Towels',  amt:10, date:'',      paid:false,cycle:'both'},
     {id:10,name:'Rent Allocation Jul 1',  amt:82, date:'Jul 1', paid:false,cycle:'current'},
