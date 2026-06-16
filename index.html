@@ -735,8 +735,9 @@ function render(){
 
 function pillHTML(b, edit, isNextView = false){
   const amt = (isNextView && b.cycle === 'both' && b.amtNext !== undefined) ? b.amtNext : b.amt;
-  return `<div class="bpill nm-raised-sm${b.paid?' paid':''}">
-    <button class="chk nm-raised-xs${b.paid?' on':''}" onclick="togglePaid(${b.id})">${b.paid?'✓':''}</button>
+  const paid = isNextView && b.cycle === 'both' ? false : b.paid;
+  return `<div class="bpill nm-raised-sm${paid?' paid':''}">
+    <button class="chk nm-raised-xs${paid?' on':''}" onclick="togglePaid(${b.id})">${paid?'✓':''}</button>
     <div class="binfo">
       <div class="bname">${b.name}</div>
       <div class="bmeta">${b.date||'This cycle'}</div>
