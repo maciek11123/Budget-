@@ -1202,12 +1202,10 @@ renderThemeGrid();
 render();
 </script>
 <script>
-// PWA Install
 let _deferredPrompt = null;
 
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/Budget-/sw.js', {scope: '/Budget-/'})
-    .then(r => console.log('SW registered', r.scope))
+  navigator.serviceWorker.register('/Budget-/notes/sw.js', {scope: '/Budget-/notes/'})
     .catch(e => console.log('SW error', e));
 }
 
@@ -1216,60 +1214,13 @@ window.addEventListener('beforeinstallprompt', e => {
   _deferredPrompt = e;
 });
 
-window.addEventListener('appinstalled', () => {
-  const btn = document.getElementById('pwa-install-btn');
-  if(btn) btn.style.display = 'none';
-  _deferredPrompt = null;
-  localStorage.setItem('pwa-installed','1');
-});
-
-// install btn always visible
-
-function showInstallIfNeeded() {
-  const btn = document.getElementById('pwa-install-btn');
-  if (!btn) return;
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-  const alreadyInstalled = localStorage.getItem('pwa-installed');
-  if (!isStandalone && !alreadyInstalled) {
-    btn.style.display = 'flex';
-  } else {
-    btn.style.display = 'none';
-  }
-}
-
 async function installPWA() {
   if(_deferredPrompt) {
     _deferredPrompt.prompt();
-    const { outcome } = await _deferredPrompt.userChoice;
+    await _deferredPrompt.userChoice;
     _deferredPrompt = null;
-    if(outcome === 'accepted'){
-      document.getElementById('pwa-install-btn').style.display = 'none';
-    }
-  } else {
-    // Fallback: show instructions modal
-    showInstallGuide();
   }
 }
-
-function showInstallGuide() {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const msg = isIOS
-    ? 'Tap the Share button (box with arrow) at the bottom of Safari, then tap "Add to Home Screen"'
-    : 'Tap the 3-dot menu (⋮) in Chrome → tap "Add to Home Screen" or "Install App"';
-  let modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:24px;';
-  modal.innerHTML = `<div style="background:#fff;border:4px solid #000;box-shadow:8px 8px 0 #000;padding:24px;max-width:320px;font-family:'Space Mono',monospace;">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px;text-transform:uppercase;">📲 Install Note$</div>
-    <div style="font-size:11px;line-height:1.7;color:#333;">${msg}</div>
-    <button onclick="this.closest('div[style*=fixed]').remove()" style="margin-top:16px;width:100%;padding:10px;background:#3f22ec;color:#fff;border:3px solid #000;box-shadow:3px 3px 0 #000;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;">GOT IT</button>
-  </div>`;
-  document.body.appendChild(modal);
-}
-
-// Update label based on whether native prompt is available
-window.addEventListener('beforeinstallprompt', e => {
-  document.getElementById('pwa-install-label').textContent = 'Install App';
-});
 </script>
 </body>
 </html>
