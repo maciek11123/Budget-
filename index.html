@@ -2,6 +2,9 @@
 <html lang="en" data-theme="pixel">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffcc00">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>REAL + KEEP</title>
 <style>
@@ -802,6 +805,11 @@ function playAudio(audioKey) {
 applyTheme();
 renderThemeGrid();
 render();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js');
+}
 </script>
 </body>
 </html>
