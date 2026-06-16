@@ -292,10 +292,6 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 .audio-label {font-size: 10px; font-weight: 700;}
 .del-btn {background: none; border: none; color: var(--low); font-family: 'Space Mono', monospace !important; font-weight: 700; font-size: 11px; cursor: pointer;}
 
-/* Hide install btn when running as installed PWA */
-@media (display-mode: standalone) {
-  #pwa-install-btn { display: none !important; }
-}
 </style>
 </head>
 <body>
@@ -453,7 +449,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   <button class="nbtn" id="n-hist" onclick="showPage('pg-hist');setNav('n-hist');renderHist()">
     <span class="nicon">◴</span><span class="nlabel">History</span>
   </button>
-  <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid();showInstallIfNeeded()">
+  <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
     <span class="nicon">◐</span><span class="nlabel">Theme</span>
   </button>
 </div>
@@ -524,7 +520,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
     </div>
     <div class="flabel" style="margin-top:16px">Custom colors</div>
     <div id="custom-colors"></div>
-    <div id="pwa-install-btn" onclick="installPWA()" style="display:none;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 16px;background:#3f22ec;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
+    <div id="pwa-install-btn" onclick="installPWA()" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 16px;background:#3f22ec;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
       <span style="font-size:16px;">⬇</span> <span id="pwa-install-label">Install App</span>
     </div>
     <button class="bghost" onclick="closeSheet('sh-theme')" style="margin-top:8px">Done</button>
