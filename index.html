@@ -301,9 +301,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   <div class="header">
     <div class="logo">Pixel Keep</div>
   </div>
-<div id="pwa-install-btn" onclick="installPWA()" style="display:flex;align-items:center;gap:8px;margin:8px 14px 0;padding:10px 16px;background:#3f22ec;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
-  <span style="font-size:16px;">⬇</span> <span id="pwa-install-label">Install App</span>
-</div>
+
 
   <div class="notes-creator">
     <div style="display: flex; gap: 8px; margin-bottom: 10px;">
@@ -521,6 +519,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
     </div>
     <div class="flabel" style="margin-top:16px">Custom colors</div>
     <div id="custom-colors"></div>
+    <div id="pwa-install-btn" onclick="installPWA()" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 16px;background:#3f22ec;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
+      <span style="font-size:16px;">⬇</span> <span id="pwa-install-label">Install App</span>
+    </div>
     <button class="bghost" onclick="closeSheet('sh-theme')" style="margin-top:8px">Done</button>
   </div>
 </div>
@@ -1217,6 +1218,15 @@ window.addEventListener('appinstalled', () => {
   const btn = document.getElementById('pwa-install-btn');
   if(btn) btn.style.display = 'none';
   _deferredPrompt = null;
+  localStorage.setItem('pwa-installed','1');
+});
+
+// Hide on load if already installed
+window.addEventListener('DOMContentLoaded', () => {
+  if(localStorage.getItem('pwa-installed') || window.matchMedia('(display-mode: standalone)').matches) {
+    const btn = document.getElementById('pwa-install-btn');
+    if(btn) btn.style.display = 'none';
+  }
 });
 
 async function installPWA() {
