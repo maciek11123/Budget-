@@ -1223,13 +1223,7 @@ window.addEventListener('appinstalled', () => {
   localStorage.setItem('pwa-installed','1');
 });
 
-// Hide on load if already installed
-window.addEventListener('DOMContentLoaded', () => {
-  if(localStorage.getItem('pwa-installed') || window.matchMedia('(display-mode: standalone)').matches) {
-    const btn = document.getElementById('pwa-install-btn');
-    if(btn) btn.style.display = 'none';
-  }
-});
+// install btn always visible
 
 function showInstallIfNeeded() {
   const btn = document.getElementById('pwa-install-btn');
