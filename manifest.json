@@ -1,6 +1,6 @@
 {
-  "name": "REAL + KEEP",
-  "short_name": "REAL+KEEP",
+  "name": "Note$",
+  "short_name": "Note$",
   "description": "Budget tracker and notes app",
   "start_url": "/Budget-/",
   "scope": "/Budget-/",
