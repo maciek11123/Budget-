@@ -1,0 +1,37 @@
+{
+  "name": "Note$",
+  "short_name": "Note$",
+  "description": "Budget tracker and notes app",
+  "start_url": "/Budget-/notes/",
+  "scope": "/Budget-/notes/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffcc00",
+  "theme_color": "#ffcc00",
+  "icons": [
+    {
+      "src": "../icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "../icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
