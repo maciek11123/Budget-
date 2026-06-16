@@ -300,6 +300,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 <div class="page active" id="pg-notes">
   <div class="header">
     <div class="logo">Pixel Keep</div>
+<div id="pwa-install-btn" onclick="installPWA()" style="display:none;align-items:center;gap:8px;margin:8px 14px 0;padding:10px 16px;background:#3f22ec;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
+  <span style="font-size:16px;">⬇</span> Install App
+</div>
   </div>
 
   <div class="notes-creator">
@@ -1196,8 +1199,34 @@ renderThemeGrid();
 render();
 </script>
 <script>
+// PWA Install
+let _deferredPrompt = null;
+
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js');
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredPrompt = e;
+  const btn = document.getElementById('pwa-install-btn');
+  if(btn) btn.style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('pwa-install-btn');
+  if(btn) btn.style.display = 'none';
+  _deferredPrompt = null;
+});
+
+async function installPWA() {
+  if(!_deferredPrompt) return;
+  _deferredPrompt.prompt();
+  const { outcome } = await _deferredPrompt.userChoice;
+  _deferredPrompt = null;
+  if(outcome === 'accepted'){
+    document.getElementById('pwa-install-btn').style.display = 'none';
+  }
 }
 </script>
 </body>
