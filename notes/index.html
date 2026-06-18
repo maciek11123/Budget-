@@ -288,9 +288,30 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 .check-item {display: flex; align-items: center; gap: 8px; margin-bottom: 4px;}
 .note-chk {width: 18px; height: 18px; border: 2px solid #000; cursor: pointer; appearance: none; background: #fff;}
 .note-chk:checked {background: var(--accent);}
-.audio-container {margin-top: 8px; background: #f4f4f4; border: 2px dashed #000; padding: 6px; display: flex; align-items: center; justify-content: space-between;}
+.audio-container {margin-top: 8px; background: #f4f4f4; border: 2px dashed #000; padding: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px;}
 .audio-label {font-size: 10px; font-weight: 700;}
+.audio-btns {display: flex; gap: 4px; flex-shrink: 0;}
 .del-btn {background: none; border: none; color: var(--low); font-family: 'Space Mono', monospace !important; font-weight: 700; font-size: 11px; cursor: pointer;}
+
+/* ── GEMINI THINKING ── */
+.gemini-thinking {display: none; align-items: center; gap: 10px; padding: 10px 0;}
+.gemini-thinking.visible {display: flex;}
+.thinking-dot {width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: tdot 1.2s ease-in-out infinite;}
+.thinking-dot:nth-child(2) {animation-delay: .2s;}
+.thinking-dot:nth-child(3) {animation-delay: .4s;}
+@keyframes tdot {0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.thinking-label {font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--dim);}
+
+/* ── TRANSCRIPTION OVERLAY ── */
+.tp-overlay {display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: flex-end;}
+.tp-overlay.open {display: flex;}
+.tp-panel {background: var(--surface); border: 4px solid #000; box-shadow: 0 -4px 0 #000; border-radius: 0; padding: 16px 18px 36px; width: 100%; max-width: 420px; margin: 0 auto; animation: slideup .28s cubic-bezier(.32,1.15,.62,1); font-family: 'Space Mono', monospace;}
+.tp-handle {width: 36px; height: 4px; background: #000; margin: 0 auto 14px; border-radius: 2px;}
+.tp-title {font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px;}
+.tp-text {font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; background: var(--bg); border: 2px solid #000; padding: 10px 12px; margin-bottom: 14px; min-height: 60px; max-height: 200px; overflow-y: auto;}
+.tp-actions {display: flex; gap: 8px;}
+.tp-btn-save {flex: 2; border: none; border-radius: 0; padding: 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: var(--accent); color: #fff; border: 3px solid #000; box-shadow: 3px 3px 0 #000; text-transform: uppercase;}
+.tp-btn-discard {flex: 1; border: none; border-radius: 0; padding: 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: var(--surface); color: var(--text); border: 3px solid #000; box-shadow: 3px 3px 0 #000; text-transform: uppercase;}
 
 </style>
 </head>
@@ -527,8 +548,26 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   </div>
 </div>
 
+<!-- TRANSCRIPTION OVERLAY -->
+<div class="tp-overlay" id="tpOverlay">
+  <div class="tp-panel">
+    <div class="tp-handle"></div>
+    <div class="tp-title">🎙 Transcription</div>
+    <div id="geminiThinkingInline" class="gemini-thinking">
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <span class="thinking-label" id="thinkingLabel">SENDING TO GEMINI...</span>
+    </div>
+    <div class="tp-text" id="tpText">(no transcription)</div>
+    <div class="tp-actions">
+      <button class="tp-btn-save" id="tpSaveBtn" onclick="saveTranscriptionAsNote()">Save as Note</button>
+      <button class="tp-btn-discard" onclick="dismissTranscription()">Discard</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ── BUDGET LOGIC & STATE ──────────────────────────────────────────────────
 const DEF={
   bank:400, income:1780, nextPay:'2026-06-19', carryover:0, cycleView:'current', spentLog:[],
   theme:'pixel', customColors:null, bills:[
@@ -1157,7 +1196,10 @@ function renderNotes() {
         <div class="audio-container">
           <span class="audio-label">⚙ AUDIO_DUMP.WAV</span>
           <audio id="player-${note.audioKey}" controls style="display:none"></audio>
-          <button class="btn-main" style="padding: 4px 8px; font-size:11px; width:auto; box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">Play</button>
+          <div class="audio-btns">
+            <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">▶ Play</button>
+            <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;background:var(--accent);" onclick="transcribeAudio('${note.audioKey}')">✦ Transcribe</button>
+          </div>
         </div>`;
     } 
     
@@ -1181,6 +1223,122 @@ function renderNotes() {
     container.appendChild(card);
   });
 }
+
+// ── GEMINI TRANSCRIPTION ───────────────────────────────────────────────────
+const GEMINI_KEY = ['AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join('');
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+
+let currentTranscription = null;
+
+async function transcribeAudio(audioKey) {
+  // Open overlay, show thinking state
+  document.getElementById('tpOverlay').classList.add('open');
+  document.getElementById('tpText').style.display = 'none';
+  document.getElementById('tpSaveBtn').style.display = 'none';
+  document.getElementById('geminiThinkingInline').classList.add('visible');
+  document.getElementById('thinkingLabel').textContent = 'LOADING AUDIO...';
+  currentTranscription = null;
+
+  try {
+    // Load blob from IndexedDB
+    const blob = await new Promise((resolve, reject) => {
+      const tx = db.transaction(['audioBlobs'], 'readonly');
+      const req = tx.objectStore('audioBlobs').get(audioKey);
+      req.onsuccess = e => e.target.result ? resolve(e.target.result) : reject(new Error('Audio not found'));
+      req.onerror = reject;
+    });
+
+    document.getElementById('thinkingLabel').textContent = 'SENDING TO GEMINI...';
+
+    // Convert blob to base64
+    const base64Audio = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    const mimeType = blob.type || 'audio/webm';
+    const geminiMime = mimeType.includes('mp4') ? 'audio/mp4'
+                     : mimeType.includes('ogg')  ? 'audio/ogg'
+                     : mimeType.includes('aac')  ? 'audio/aac'
+                     : 'audio/webm';
+
+    const systemPrompt = `You are a transcription assistant. Transcribe the audio verbatim — word for word.
+RULES:
+- NEVER invent or add words not clearly spoken.
+- Use [unclear] for inaudible parts.
+- If there is only silence or noise, return an empty string.
+- Return ONLY a JSON object, no preamble, no markdown, no backticks.
+
+{ "transcription": "verbatim text here" }`;
+
+    const response = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ parts: [
+          { inline_data: { mime_type: geminiMime, data: base64Audio } },
+          { text: 'Transcribe exactly what is spoken.' }
+        ]}],
+        generationConfig: { temperature: 0, maxOutputTokens: 800 }
+      })
+    });
+
+    if (!response.ok) throw new Error(`Gemini ${response.status}`);
+
+    const data = await response.json();
+    const rawText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+    const clean = rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    currentTranscription = parsed.transcription || '';
+
+    // Show result
+    document.getElementById('geminiThinkingInline').classList.remove('visible');
+    document.getElementById('tpText').textContent = currentTranscription || '(no speech detected)';
+    document.getElementById('tpText').style.display = 'block';
+    document.getElementById('tpSaveBtn').style.display = 'block';
+
+  } catch (err) {
+    console.error('Transcription error:', err);
+    document.getElementById('geminiThinkingInline').classList.remove('visible');
+    document.getElementById('tpText').textContent = '❌ Error: ' + (err.message || 'Transcription failed');
+    document.getElementById('tpText').style.display = 'block';
+    document.getElementById('tpSaveBtn').style.display = 'none';
+  }
+}
+
+function saveTranscriptionAsNote() {
+  if (!currentTranscription) return;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
+  notes.unshift({
+    id: Date.now(),
+    title: `🎙 TRANSCRIPTION — ${timeStr}`,
+    body: currentTranscription,
+    isList: false,
+    audioKey: null,
+    date: dateStr
+  });
+  saveNotesState();
+  dismissTranscription();
+  showToast('Transcription saved ✓');
+}
+
+function dismissTranscription() {
+  document.getElementById('tpOverlay').classList.remove('open');
+  document.getElementById('geminiThinkingInline').classList.remove('visible');
+  document.getElementById('tpText').style.display = 'none';
+  document.getElementById('tpSaveBtn').style.display = 'none';
+  currentTranscription = null;
+}
+
+// Close overlay on backdrop tap
+document.getElementById('tpOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('tpOverlay')) dismissTranscription();
+});
 
 function playAudio(audioKey) {
   const transaction = db.transaction(["audioBlobs"], "readonly");
