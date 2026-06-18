@@ -292,6 +292,89 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 .audio-label {font-size: 10px; font-weight: 700;}
 .del-btn {background: none; border: none; color: var(--low); font-family: 'Space Mono', monospace !important; font-weight: 700; font-size: 11px; cursor: pointer;}
 
+
+  /* ── LEDGER (Firebase sync) ── */
+  .ledger-fb-bar {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--dim);
+    display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
+  }
+  .ledger-fb-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #aaa; flex-shrink: 0; display: inline-block;
+  }
+  .ledger-fb-dot.live    { background: #00c853; }
+  .ledger-fb-dot.offline { background: #e53935; }
+  .ledger-summary {
+    background: var(--text); color: var(--bg);
+    border: 2px solid var(--text);
+    padding: 16px 18px;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.08em;
+    text-align: center; margin-bottom: 14px;
+  }
+  .ledger-summary.settled { background: #00c853; border-color: #00c853; color: #fff; }
+  .ledger-item {
+    background: var(--surface);
+    border: 2px solid var(--text);
+    box-shadow: 3px 3px 0 var(--text);
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .ledger-item.settled { opacity: 0.5; border-style: dashed; box-shadow: none; }
+  .ledger-item-info { flex: 1; min-width: 0; }
+  .ledger-item-desc {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--text); display: block;
+  }
+  .ledger-item-meta {
+    font-size: 10px; color: var(--dim); letter-spacing: 0.06em;
+    margin-top: 3px; display: block;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ledger-item-amount {
+    font-size: 16px; font-weight: 700; color: var(--text); flex-shrink: 0;
+  }
+  .ledger-settle-btn {
+    padding: 7px 10px;
+    border: 2px solid var(--text);
+    background: var(--accent); color: #fff;
+    font-family: inherit; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; cursor: pointer;
+    box-shadow: 2px 2px 0 var(--text); flex-shrink: 0;
+  }
+  .ledger-settle-btn:active { transform: translate(2px,2px); box-shadow: none; }
+  .ledger-settle-btn.del { background: #e53935; border-color: #e53935; box-shadow: 2px 2px 0 #000; }
+  .ledger-add-card {
+    background: var(--surface); border: 2px solid var(--text);
+    box-shadow: 3px 3px 0 var(--text); padding: 14px; margin-bottom: 14px;
+  }
+  .ledger-add-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--dim);
+    background: var(--bg); border: 2px solid var(--text);
+    padding: 6px 10px; margin-bottom: 10px; display: block;
+  }
+  .ledger-input {
+    width: 100%; box-sizing: border-box;
+    background: var(--bg); border: 2px solid var(--text);
+    color: var(--text); font-family: inherit;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.05em;
+    padding: 10px 12px; margin-bottom: 10px; outline: none;
+  }
+  .ledger-add-btn {
+    width: 100%; padding: 12px;
+    background: var(--accent); color: #fff; border: 2px solid var(--text);
+    box-shadow: 3px 3px 0 var(--text);
+    font-family: inherit; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+  }
+  .ledger-add-btn:active { transform: translate(2px,2px); box-shadow: none; }
+  .ledger-divider {
+    display: flex; align-items: center; gap: 8px;
+    margin: 18px 0 12px; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.1em; color: var(--dim);
+  }
+  .ledger-divider-line { flex: 1; height: 1px; background: var(--dim); }
 </style>
 </head>
 <body>
@@ -432,6 +515,23 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   </div>
 </div>
 
+
+<!-- ── LEDGER PAGE (Firebase synced) ── -->
+<div class="page" id="pg-ledger">
+  <div class="ledger-fb-bar">
+    <span class="ledger-fb-dot" id="ledgerFbDot"></span>
+    <span id="ledgerFbStatus">CONNECTING…</span>
+  </div>
+  <div class="ledger-add-card">
+    <span class="ledger-add-label">DAD BOUGHT THIS — MACIEK OWES DAD</span>
+    <input class="ledger-input" id="ledgerDesc" type="text" maxlength="60" placeholder="DESCRIPTION…">
+    <input class="ledger-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01">
+    <button class="ledger-add-btn" onclick="ledgerAdd()">+ ADD EXPENSE</button>
+  </div>
+  <div class="ledger-summary" id="ledgerSummary">CONNECTING…</div>
+  <div id="ledgerList"></div>
+</div>
+
 <!-- NAV REORDERED TO MATCH -->
 <div class="nav nm-raised">
   <button class="nbtn active" id="n-notes" onclick="showPage('pg-notes');setNav('n-notes')">
@@ -451,6 +551,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   </button>
   <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
     <span class="nicon">◐</span><span class="nlabel">Theme</span>
+  </button>
+  <button class="nbtn" id="n-ledger" onclick="showPage('pg-ledger');setNav('n-ledger')">
+    <span class="nicon">💳</span><span class="nlabel">Ledger</span>
   </button>
 </div>
 </div>
@@ -1270,6 +1373,152 @@ function showInstallGuide() {
 window.addEventListener('beforeinstallprompt', e => {
   document.getElementById('pwa-install-label').textContent = 'Install App';
 });
+</script>
+
+<!-- ── LEDGER: Firebase Sync ── -->
+<script>
+window.DAD_FIREBASE = {
+  apiKey:            ['AIzaSyASbcr_P6BC', '-HFUGyv7QXXoKwOSx4yDGPk'].join(''),
+  authDomain:        'dad-app-c3920.firebaseapp.com',
+  projectId:         'dad-app-c3920',
+  storageBucket:     'dad-app-c3920.firebasestorage.app',
+  messagingSenderId: '64907277674',
+  appId:             '1:64907277674:web:6f4629695384cf78c1e113'
+};
+</script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const fbApp = initializeApp(window.DAD_FIREBASE);
+  const db    = getFirestore(fbApp);
+
+  window._fb = { db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp };
+  window._ledgerDocs = [];
+
+  // ── Ledger live listener ──
+  const ledgerQ = query(collection(db, 'ledger'), orderBy('createdAt', 'desc'));
+  onSnapshot(ledgerQ, (snap) => {
+    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
+    window.renderLedger && window.renderLedger();
+    setFbStatus('live');
+  }, (err) => { console.error(err); setFbStatus('offline'); });
+
+  function setFbStatus(state) {
+    const dot    = document.getElementById('ledgerFbDot');
+    const status = document.getElementById('ledgerFbStatus');
+    if (!dot || !status) return;
+    dot.className = 'ledger-fb-dot ' + state;
+    status.textContent = state === 'live' ? 'LIVE ●' : 'OFFLINE';
+  }
+
+  // ── renderLedger ──────────────────────────────────────────────
+  window.renderLedger = function() {
+    const el        = document.getElementById('ledgerList');
+    const summaryEl = document.getElementById('ledgerSummary');
+    if (!el) return;
+
+    const docs     = window._ledgerDocs.filter(x => !x.deleted);
+    const active   = docs.filter(x => !x.settled);
+    const archived = docs.filter(x =>  x.settled);
+    const balance  = active.reduce((s, x) => s + (x.amount || 0), 0);
+
+    if (summaryEl) {
+      if (balance > 0.01) {
+        summaryEl.textContent = 'MACIEK OWES DAD $' + balance.toFixed(2);
+        summaryEl.className = 'ledger-summary';
+      } else {
+        summaryEl.textContent = 'ALL SETTLED ✓';
+        summaryEl.className = 'ledger-summary settled';
+      }
+    }
+
+    if (!docs.length) {
+      el.innerHTML = '<div style="text-align:center;padding:40px 20px;font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--dim)">NO EXPENSES YET.<br>ADD ONE ABOVE.</div>';
+      return;
+    }
+
+    function itemHTML(item, isArchive) {
+      const added = item.createdAt?.toDate
+        ? item.createdAt.toDate().toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
+        : '';
+      const settledDate = item.settledAt
+        ? new Date(item.settledAt).toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
+        : '';
+      const meta = isArchive
+        ? 'Dad paid · ' + added + '  ·  ✓ SETTLED ' + settledDate
+        : 'Dad paid · ' + added;
+      const delBtn = '<button class="ledger-settle-btn del" onclick="ledgerDelete(\'' + item.id + '\')">🗑️</button>';
+      const btns = isArchive
+        ? delBtn
+        : '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">'
+          + '<button class="ledger-settle-btn" onclick="ledgerSettle(\'' + item.id + '\')">SETTLE</button>'
+          + delBtn
+          + '</div>';
+      return '<div class="ledger-item' + (isArchive ? ' settled' : '') + '">'
+        + '<div class="ledger-item-info">'
+        + '<span class="ledger-item-desc">' + item.desc.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>'
+        + '<span class="ledger-item-meta">' + meta + '</span>'
+        + '</div>'
+        + '<div class="ledger-item-amount">$' + Number(item.amount).toFixed(2) + '</div>'
+        + btns
+        + '</div>';
+    }
+
+    let html = active.map(i => itemHTML(i, false)).join('');
+    if (archived.length) {
+      html += '<div class="ledger-divider">'
+        + '<div class="ledger-divider-line"></div>'
+        + '<span>SETTLED ARCHIVE (' + archived.length + ')</span>'
+        + '<div class="ledger-divider-line"></div>'
+        + '</div>';
+      html += archived.map(i => itemHTML(i, true)).join('');
+    }
+    el.innerHTML = html;
+  };
+
+  // ── Add ───────────────────────────────────────────────────────
+  window.ledgerAdd = async function() {
+    const desc   = document.getElementById('ledgerDesc')?.value.trim();
+    const amount = parseFloat(document.getElementById('ledgerAmount')?.value);
+    if (!desc)                        { showToast('ADD A DESCRIPTION'); return; }
+    if (isNaN(amount) || amount <= 0) { showToast('ADD AN AMOUNT');     return; }
+    const fb = window._fb;
+    if (!fb) { showToast('FIREBASE NOT READY'); return; }
+    try {
+      await fb.addDoc(fb.collection(fb.db, 'ledger'), {
+        desc, amount, paidBy: 'him',
+        settled: false, deleted: false,
+        createdAt: fb.serverTimestamp()
+      });
+      document.getElementById('ledgerDesc').value   = '';
+      document.getElementById('ledgerAmount').value = '';
+      showToast('✓ SAVED');
+    } catch(e) { showToast('ERROR: ' + e.message); }
+  };
+
+  // ── Settle ────────────────────────────────────────────────────
+  window.ledgerSettle = async function(id) {
+    const fb = window._fb;
+    if (!fb) { showToast('NOT CONNECTED'); return; }
+    try {
+      await fb.updateDoc(fb.doc(fb.db, 'ledger', id), {
+        settled: true, settledAt: new Date().toISOString()
+      });
+      showToast('✓ SETTLED');
+    } catch(e) { showToast('ERROR: ' + e.message); }
+  };
+
+  // ── Delete ────────────────────────────────────────────────────
+  window.ledgerDelete = async function(id) {
+    const fb = window._fb;
+    if (!fb) { showToast('NOT CONNECTED'); return; }
+    try {
+      await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { deleted: true });
+      showToast('🗑️ DELETED');
+    } catch(e) { showToast('ERROR: ' + e.message); }
+  };
 </script>
 </body>
 </html>
