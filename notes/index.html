@@ -1414,8 +1414,9 @@ function renderLedgerTab() {
   const sumEl = document.getElementById('ledger-summary');
   if (!el) return;
 
-  const unsettled = _ledgerDocs.filter(x => !x.settled);
-  const total = unsettled.reduce((s, x) => s + (x.amount || 0), 0);
+  const active   = _ledgerDocs.filter(x => !x.settled);
+  const archived = _ledgerDocs.filter(x =>  x.settled);
+  const total    = active.reduce((s, x) => s + (x.amount || 0), 0);
 
   if (sumEl) {
     sumEl.textContent = total > 0.01
@@ -1429,25 +1430,55 @@ function renderLedgerTab() {
     return;
   }
 
-  el.innerHTML = _ledgerDocs.map(item => {
-    const date = item.createdAt?.toDate
+  function itemHTML(item, isArchive) {
+    const added = item.createdAt?.toDate
       ? item.createdAt.toDate().toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
       : '';
-    const settled = item.settled;
-    return `<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff;border:3px solid #000;box-shadow:3px 3px 0 #000;margin-bottom:8px;opacity:${settled ? 0.5 : 1};${settled ? 'border-style:dashed;' : ''}">
+    const settledDate = item.settledAt
+      ? new Date(item.settledAt).toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
+      : '';
+    const meta = isArchive
+      ? \`Da paid · \${added} · ✓ SETTLED \${settledDate}\`
+      : \`Da paid · \${added}\`;
+    const btn = isArchive
+      ? \`<button onclick="window._ledgerDelete('\${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #e53935;background:#e53935;color:#fff;cursor:pointer;box-shadow:2px 2px 0 #000;flex-shrink:0;">🗑️</button>\`
+      : \`<button onclick="window._ledgerSettle('\${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #000;background:#FFD600;color:#000;cursor:pointer;box-shadow:2px 2px 0 #000;flex-shrink:0;">SETTLE</button>\`;
+    return \`<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff;border:3px solid #000;box-shadow:\${isArchive ? 'none' : '3px 3px 0 #000'};margin-bottom:8px;opacity:\${isArchive ? 0.55 : 1};\${isArchive ? 'border-style:dashed;' : ''}">
       <div style="flex:1;min-width:0;">
-        <div style="font-size:14px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">${item.desc || ''}</div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:#888;margin-top:3px;">Da paid · ${date}${settled ? ' · ✓ SETTLED' : ''}</div>
+        <div style="font-size:14px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">\${item.desc || ''}</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:#888;margin-top:3px;">\${meta}</div>
       </div>
-      <div style="font-size:18px;font-weight:900;letter-spacing:0.02em;flex-shrink:0;">$${Number(item.amount || 0).toFixed(2)}</div>
-      ${!settled ? `<button onclick="window._ledgerSettle('${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #000;background:#FFD600;color:#000;cursor:pointer;box-shadow:2px 2px 0 #000;flex-shrink:0;">SETTLE</button>` : ''}
-    </div>`;
-  }).join('');
+      <div style="font-size:18px;font-weight:900;flex-shrink:0;">$\${Number(item.amount||0).toFixed(2)}</div>
+      \${btn}
+    </div>\`;
+  }
+
+  let html = active.map(i => itemHTML(i, false)).join('');
+
+  if (archived.length) {
+    html += \`<div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px;">
+      <div style="flex:1;height:2px;background:rgba(0,0,0,0.15);"></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.4);white-space:nowrap;">SETTLED ARCHIVE (\${archived.length})</div>
+      <div style="flex:1;height:2px;background:rgba(0,0,0,0.15);"></div>
+    </div>\`;
+    html += archived.map(i => itemHTML(i, true)).join('');
+  }
+
+  el.innerHTML = html;
 }
 
 window._ledgerSettle = async function(id) {
   try {
-    await updateDoc(doc(db, 'ledger', id), { settled: true });
+    await updateDoc(doc(db, 'ledger', id), {
+      settled: true,
+      settledAt: new Date().toISOString()
+    });
+  } catch(e) { alert('Error: ' + e.message); }
+};
+
+window._ledgerDelete = async function(id) {
+  try {
+    await updateDoc(doc(db, 'ledger', id), { deleted: true });
   } catch(e) { alert('Error: ' + e.message); }
 };
 
