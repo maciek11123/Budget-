@@ -459,10 +459,12 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
     <div class="logo">Ledger</div>
   </div>
   <div class="section">
-    <div id="ledger-summary" style="font-size:16px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;text-align:center;padding:18px;background:#000;color:#FFD600;border:3px solid #000;box-shadow:3px 3px 0 #000;margin-bottom:16px;"></div>
-    <div id="ledger-list" style="margin-bottom:16px;"></div>
-    <div style="background:#fff;border:3px solid #000;box-shadow:3px 3px 0 #000;padding:14px;display:flex;flex-direction:column;gap:10px;">
-      <input id="l-desc" type="text" placeholder="WHAT DID DA BUY?" maxlength="60"
+    <!-- ADD FORM AT TOP -->
+    <div style="background:#fff;border:3px solid #000;box-shadow:3px 3px 0 #000;padding:14px;display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;padding:6px 8px;background:#FFD600;border:2px solid #000;">
+        DAD BOUGHT THIS FOR ME — I OWE DAD
+      </div>
+      <input id="l-desc" type="text" placeholder="WHAT DID DAD BUY?" maxlength="60"
         style="width:100%;border:3px solid #000;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:#fff;box-sizing:border-box;">
       <input id="l-amount" type="number" placeholder="$0.00" step="0.01"
         style="width:100%;border:3px solid #000;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:700;letter-spacing:0.06em;background:#fff;box-sizing:border-box;">
@@ -471,6 +473,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
         + ADD ENTRY
       </button>
     </div>
+    <div id="ledger-summary" style="font-size:16px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;text-align:center;padding:18px;background:#000;color:#FFD600;border:3px solid #000;box-shadow:3px 3px 0 #000;margin-bottom:16px;"></div>
+    <div id="ledger-list" style="margin-bottom:16px;"></div>
   </div>
 </div>
 
@@ -1420,7 +1424,7 @@ function renderLedgerTab() {
 
   if (sumEl) {
     sumEl.textContent = total > 0.01
-      ? `MACIEK OWES DA $${total.toFixed(2)}`
+      ? `MACIEK OWES DAD $${total.toFixed(2)}`
       : 'ALL SETTLED ✓';
     sumEl.style.color = total > 0.01 ? '#e53935' : '#00C853';
   }
@@ -1438,11 +1442,12 @@ function renderLedgerTab() {
       ? new Date(item.settledAt).toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
       : '';
     const meta = isArchive
-      ? \`Da paid · \${added} · ✓ SETTLED \${settledDate}\`
-      : \`Da paid · \${added}\`;
+      ? \`Dad paid · \${added} · ✓ SETTLED \${settledDate}\`
+      : \`Dad paid · \${added}\`;
+    const delBtn = \`<button onclick="window._ledgerDelete('\${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #e53935;background:#e53935;color:#fff;cursor:pointer;box-shadow:2px 2px 0 #000;flex-shrink:0;">🗑️</button>\`;
     const btn = isArchive
-      ? \`<button onclick="window._ledgerDelete('\${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #e53935;background:#e53935;color:#fff;cursor:pointer;box-shadow:2px 2px 0 #000;flex-shrink:0;">🗑️</button>\`
-      : \`<button onclick="window._ledgerSettle('\${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #000;background:#FFD600;color:#000;cursor:pointer;box-shadow:2px 2px 0 #000;flex-shrink:0;">SETTLE</button>\`;
+      ? delBtn
+      : \`<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;"><button onclick="window._ledgerSettle('\${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #000;background:#FFD600;color:#000;cursor:pointer;box-shadow:2px 2px 0 #000;">SETTLE</button>\` + delBtn + \`</div>\`;
     return \`<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff;border:3px solid #000;box-shadow:\${isArchive ? 'none' : '3px 3px 0 #000'};margin-bottom:8px;opacity:\${isArchive ? 0.55 : 1};\${isArchive ? 'border-style:dashed;' : ''}">
       <div style="flex:1;min-width:0;">
         <div style="font-size:14px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">\${item.desc || ''}</div>
