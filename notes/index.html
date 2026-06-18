@@ -453,6 +453,27 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   </div>
 </div>
 
+<!-- LEDGER PAGE -->
+<div class="page" id="pg-ledger">
+  <div class="header">
+    <div class="logo">Ledger</div>
+  </div>
+  <div class="section">
+    <div id="ledger-summary" style="font-size:16px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;text-align:center;padding:18px;background:#000;color:#FFD600;border:3px solid #000;box-shadow:3px 3px 0 #000;margin-bottom:16px;"></div>
+    <div id="ledger-list" style="margin-bottom:16px;"></div>
+    <div style="background:#fff;border:3px solid #000;box-shadow:3px 3px 0 #000;padding:14px;display:flex;flex-direction:column;gap:10px;">
+      <input id="l-desc" type="text" placeholder="WHAT DID DA BUY?" maxlength="60"
+        style="width:100%;border:3px solid #000;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:#fff;box-sizing:border-box;">
+      <input id="l-amount" type="number" placeholder="$0.00" step="0.01"
+        style="width:100%;border:3px solid #000;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:700;letter-spacing:0.06em;background:#fff;box-sizing:border-box;">
+      <button onclick="window._ledgerAdd()"
+        style="width:100%;border:3px solid #000;box-shadow:3px 3px 0 #000;background:#000;color:#FFD600;font-family:inherit;font-size:12px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;padding:14px;cursor:pointer;">
+        + ADD ENTRY
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- NAV REORDERED TO MATCH -->
 <div class="nav nm-raised">
   <button class="nbtn active" id="n-notes" onclick="showPage('pg-notes');setNav('n-notes')">
@@ -472,6 +493,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   </button>
   <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
     <span class="nicon">◐</span><span class="nlabel">Theme</span>
+  </button>
+  <button class="nbtn" id="n-ledger" onclick="showPage('pg-ledger');setNav('n-ledger')">
+    <span class="nicon">💰</span><span class="nlabel">Ledger</span>
   </button>
 </div>
 </div>
@@ -1358,6 +1382,92 @@ function playAudio(audioKey) {
 applyTheme();
 renderThemeGrid();
 render();
+</script>
+
+<!-- Firebase + Ledger -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const fbApp = initializeApp({
+  apiKey:            ['AIzaSyASbcr_P6BC', '-HFUGyv7QXXoKwOSx4yDGPk'].join(''),
+  authDomain:        'dad-app-c3920.firebaseapp.com',
+  projectId:         'dad-app-c3920',
+  storageBucket:     'dad-app-c3920.firebasestorage.app',
+  messagingSenderId: '64907277674',
+  appId:             '1:64907277674:web:6f4629695384cf78c1e113'
+});
+const db = getFirestore(fbApp);
+
+let _ledgerDocs = [];
+
+// Live listener
+const q = query(collection(db, 'ledger'), orderBy('createdAt', 'desc'));
+onSnapshot(q, snap => {
+  _ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
+  renderLedgerTab();
+}, err => console.error('Ledger:', err));
+
+function renderLedgerTab() {
+  const el = document.getElementById('ledger-list');
+  const sumEl = document.getElementById('ledger-summary');
+  if (!el) return;
+
+  const unsettled = _ledgerDocs.filter(x => !x.settled);
+  const total = unsettled.reduce((s, x) => s + (x.amount || 0), 0);
+
+  if (sumEl) {
+    sumEl.textContent = total > 0.01
+      ? `MACIEK OWES DA $${total.toFixed(2)}`
+      : 'ALL SETTLED ✓';
+    sumEl.style.color = total > 0.01 ? '#e53935' : '#00C853';
+  }
+
+  if (!_ledgerDocs.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;opacity:0.5;font-size:13px;font-weight:700;letter-spacing:0.1em;">NO ENTRIES YET</div>';
+    return;
+  }
+
+  el.innerHTML = _ledgerDocs.map(item => {
+    const date = item.createdAt?.toDate
+      ? item.createdAt.toDate().toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
+      : '';
+    const settled = item.settled;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff;border:3px solid #000;box-shadow:3px 3px 0 #000;margin-bottom:8px;opacity:${settled ? 0.5 : 1};${settled ? 'border-style:dashed;' : ''}">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">${item.desc || ''}</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;color:#888;margin-top:3px;">Da paid · ${date}${settled ? ' · ✓ SETTLED' : ''}</div>
+      </div>
+      <div style="font-size:18px;font-weight:900;letter-spacing:0.02em;flex-shrink:0;">$${Number(item.amount || 0).toFixed(2)}</div>
+      ${!settled ? `<button onclick="window._ledgerSettle('${item.id}')" style="font-family:inherit;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 10px;border:2px solid #000;background:#FFD600;color:#000;cursor:pointer;box-shadow:2px 2px 0 #000;flex-shrink:0;">SETTLE</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+window._ledgerSettle = async function(id) {
+  try {
+    await updateDoc(doc(db, 'ledger', id), { settled: true });
+  } catch(e) { alert('Error: ' + e.message); }
+};
+
+window._ledgerAdd = async function() {
+  const desc   = document.getElementById('l-desc')?.value.trim();
+  const amount = parseFloat(document.getElementById('l-amount')?.value);
+  if (!desc)                        { alert('Add a description'); return; }
+  if (isNaN(amount) || amount <= 0) { alert('Add an amount'); return; }
+  try {
+    await addDoc(collection(db, 'ledger'), {
+      desc, amount,
+      paidBy: 'him',
+      settled: false,
+      deleted: false,
+      createdAt: serverTimestamp()
+    });
+    document.getElementById('l-desc').value   = '';
+    document.getElementById('l-amount').value = '';
+  } catch(e) { alert('Error: ' + e.message); }
+};
 </script>
 <script>
 let _deferredPrompt = null;
