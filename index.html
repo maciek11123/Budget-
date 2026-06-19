@@ -122,7 +122,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 
 .bstack{display:flex;flex-direction:column;gap:5px;}
 .bpill{border-radius:13px;padding:9px 13px;display:flex;align-items:center;gap:10px;position:relative;overflow:hidden;transition:box-shadow .2s;}
-.bpill.paid{opacity:.3;}
+.bpill.paid{opacity:.45;} .paid .chk{opacity:1!important;}
 .chk{width:20px;height:20px;border-radius:50%;border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:all .22s;color:transparent;position:relative;z-index:1;}
 .chk.on{background:linear-gradient(135deg,var(--accent2),var(--accent))!important;color:var(--on-accent);}
 .binfo{flex:1;min-width:0;}
@@ -994,7 +994,7 @@ function renderDashBills(){
   if(paid.length>0) {
     html+=`<div class="paid-summary nm-pressed" onclick="const n=this.nextElementSibling; n.style.display=n.style.display==='none'?'flex':'none';">
       ${paid.length} paid · ${$(paidTotal)} cleared <br>
-      <span style="opacity:0.6; font-size:9px; margin-top:2px; display:inline-block;">Tap to show / undo</span>
+      <span style="opacity:0.6; font-size:9px; margin-top:2px; display:inline-block;">Tap to expand · tap ✓ to uncheck</span>
     </div>`;
     html+=`<div style="display:none; flex-direction:column; gap:5px; margin-top:5px;">${paid.map(b=>pillHTML(b,false,false)).join('')}</div>`;
   }
