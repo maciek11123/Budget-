@@ -240,14 +240,40 @@ html,body{font-family:'Space Mono',monospace;background:#FFD600;color:#111;min-h
 
 <!-- AI PROJECTION TAB -->
 <div class="pane" id="pane-aiproj">
+
+  <!-- ENGINE TOGGLE -->
+  <div style="background:#fff;border:2.5px solid #111;padding:12px;margin-bottom:8px">
+    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">AI ENGINE</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+      <button id="btn-gemini" onclick="setEngine('gemini')" style="border:2.5px solid #111;background:#111;color:#FFD600;font-family:Space Mono,monospace;font-size:12px;font-weight:700;padding:10px;cursor:pointer">
+        ✦ GEMINI<br><span style="font-size:9px;font-weight:400;opacity:.7">cloud · fast</span>
+      </button>
+      <button id="btn-webllm" onclick="setEngine('webllm')" style="border:2.5px solid #111;background:#fff;color:#111;font-family:Space Mono,monospace;font-size:12px;font-weight:700;padding:10px;cursor:pointer">
+        ◈ ON-DEVICE<br><span style="font-size:9px;font-weight:400;opacity:.6">offline · private</span>
+      </button>
+    </div>
+    <div id="engine-status" style="font-size:11px;color:#888;min-height:16px"></div>
+    <div id="webllm-load-wrap" style="display:none;margin-top:8px">
+      <button class="ask-btn" style="width:100%" onclick="loadWebLLM()">DOWNLOAD MODEL (~1.4GB) ↗</button>
+      <div style="font-size:10px;color:#888;margin-top:4px">One-time. Cached forever. Fully offline after.</div>
+      <div id="webllm-progress" style="margin-top:8px;display:none">
+        <div style="background:#f0f0f0;border:2px solid #111;height:8px;margin-bottom:4px">
+          <div id="webllm-bar" style="height:100%;background:#111;width:0%;transition:width .3s"></div>
+        </div>
+        <div id="webllm-pct" style="font-size:11px;font-weight:700">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSE BUTTON -->
   <div style="background:#fff;border:2.5px solid #111;padding:14px;margin-bottom:8px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:4px">GEMINI CASHFLOW ANALYSIS</div>
-    <div style="font-size:12px;color:#888;margin-bottom:12px">Full picture of your next 6 pay periods — risks, tight spots, suggestions.</div>
+    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">FULL CASHFLOW ANALYSIS</div>
     <button class="ask-btn" style="width:100%;text-align:center" onclick="runAiProjection()">ANALYSE MY CASHFLOW ↗</button>
   </div>
   <div id="aiproj-out"></div>
 
-  <div style="margin-top:14px;background:#fff;border:2.5px solid #111;padding:14px">
+  <!-- SPECIFIC QUESTIONS -->
+  <div style="margin-top:8px;background:#fff;border:2.5px solid #111;padding:14px">
     <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">ASK SOMETHING SPECIFIC</div>
     <div class="qchips" style="margin-bottom:8px">
       <span class="qchip" onclick="runAiQ('What are my 3 biggest cashflow risks in the next 8 weeks?')">biggest risks</span>
@@ -256,7 +282,7 @@ html,body{font-family:'Space Mono',monospace;background:#FFD600;color:#111;min-h
       <span class="qchip" onclick="runAiQ('Give me a strict week-by-week spending plan for the staycation.')">staycation plan</span>
     </div>
     <div class="input-row">
-      <input type="text" id="aiproj-q" placeholder="Ask Gemini anything..." />
+      <input type="text" id="aiproj-q" placeholder="Ask your AI advisor..." />
       <button class="ask-btn" onclick="runAiQ(document.getElementById('aiproj-q').value)">ASK ↗</button>
     </div>
   </div>
@@ -271,6 +297,10 @@ html,body{font-family:'Space Mono',monospace;background:#FFD600;color:#111;min-h
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script type="module">
+  import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+  window.WebLLM = webllm;
+</script>
 <script>
 const GEMINI_KEY = 'AIzaSyAnAaV0OBrMSKX8Ie_Kl-IpIQh-6Th45nI';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
@@ -708,8 +738,96 @@ function simUpdate(){
   });
 }
 
-/* ── AI PROJECTION ── */
+/* ── AI ENGINE ── */
 let lastAiAnswer="", lastAiQuestion="";
+let currentEngine = 'gemini'; // 'gemini' | 'webllm'
+let webllmEngine = null;
+let webllmReady = false;
+
+function setEngine(e){
+  currentEngine = e;
+  const bg = '#111', fg = '#FFD600', bg2 = '#fff', fg2 = '#111';
+  document.getElementById('btn-gemini').style.background = e==='gemini'?bg:bg2;
+  document.getElementById('btn-gemini').style.color = e==='gemini'?fg:fg2;
+  document.getElementById('btn-webllm').style.background = e==='webllm'?bg:bg2;
+  document.getElementById('btn-webllm').style.color = e==='webllm'?fg:fg2;
+  const statusEl = document.getElementById('engine-status');
+  const loadWrap = document.getElementById('webllm-load-wrap');
+  if(e==='gemini'){
+    statusEl.textContent = '✦ Gemini Flash — cloud, needs internet';
+    loadWrap.style.display='none';
+  } else {
+    if(webllmReady){
+      statusEl.textContent = '◈ On-device model ready — fully offline';
+      loadWrap.style.display='none';
+    } else {
+      statusEl.textContent = '◈ Model not downloaded yet';
+      loadWrap.style.display='block';
+    }
+  }
+}
+
+async function loadWebLLM(){
+  const statusEl = document.getElementById('engine-status');
+  const progressWrap = document.getElementById('webllm-progress');
+  const bar = document.getElementById('webllm-bar');
+  const pct = document.getElementById('webllm-pct');
+  const loadBtn = document.getElementById('webllm-load-wrap').querySelector('button');
+
+  if(!window.WebLLM){ 
+    statusEl.textContent = 'WebLLM not loaded yet, try again in a moment.';
+    return; 
+  }
+
+  loadBtn.disabled = true;
+  loadBtn.textContent = 'DOWNLOADING...';
+  progressWrap.style.display='block';
+  statusEl.textContent = 'Starting download...';
+
+  try{
+    webllmEngine = await window.WebLLM.CreateMLCEngine('gemma-2-2b-it-q4f32_1-MLC', {
+      initProgressCallback: (p) => {
+        const prog = Math.round((p.progress||0)*100);
+        bar.style.width = prog+'%';
+        pct.textContent = prog+'% — '+( p.text||'loading...' );
+        statusEl.textContent = 'Downloading: '+prog+'%';
+      }
+    });
+    webllmReady = true;
+    statusEl.textContent = '◈ On-device model ready — fully offline';
+    progressWrap.style.display='none';
+    document.getElementById('webllm-load-wrap').style.display='none';
+  } catch(err){
+    statusEl.textContent = 'Download failed: '+err.message;
+    loadBtn.disabled=false;
+    loadBtn.textContent='RETRY DOWNLOAD ↗';
+  }
+}
+
+async function queryAI(prompt){
+  if(currentEngine==='gemini'){
+    const res = await fetch(GEMINI_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        contents:[{role:'user',parts:[{text:prompt}]}],
+        generationConfig:{maxOutputTokens:500,temperature:0.7}
+      })
+    });
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
+  } else {
+    if(!webllmReady || !webllmEngine) throw new Error('On-device model not loaded. Download it first.');
+    const reply = await webllmEngine.chat.completions.create({
+      messages:[{role:'user',content:prompt}],
+      max_tokens:500,
+      temperature:0.7
+    });
+    return reply.choices[0]?.message?.content || 'No response.';
+  }
+}
+
+
 function buildAiPrompt(specific){
   const nets = calcProjectionNets();
   const periodDetails = periods.map((p,i)=>{
@@ -743,23 +861,14 @@ ${specific ? 'USER QUESTION: '+specific : 'Give a full cashflow analysis: identi
 
 async function runAiProjection(){
   const out = document.getElementById('aiproj-out');
-  out.innerHTML='<div class="thinking">Gemini is analysing your cashflow...</div>';
+  const engine = currentEngine==='gemini'?'GEMINI':'ON-DEVICE';
+  out.innerHTML='<div class="thinking">'+engine+' is analysing your cashflow...</div>';
   try{
-    const res=await fetch(GEMINI_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[{role:'user',parts:[{text:buildAiPrompt(null)}]}],
-        generationConfig:{maxOutputTokens:600,temperature:0.7}
-      })
-    });
-    const data=await res.json();
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'No response.';
-    const lastAiQ='Full cashflow analysis';
+    const text = await queryAI(buildAiPrompt(null));
     lastAiAnswer=text; lastAiQuestion='Full cashflow analysis';
-    out.innerHTML='<div class="ai-bubble"><div class="al">GEMINI ANALYSIS</div>'+text.replace(/\n/g,'<br>')+'<br><button class="save-btn" onclick="saveAiProjection(lastAiQuestion,lastAiAnswer)">SAVE ↓</button></div>';
+    out.innerHTML='<div class="ai-bubble"><div class="al">'+engine+' ANALYSIS</div>'+text.replace(/\n/g,'<br>')+'<br><button class="save-btn" onclick="saveAiProjection(lastAiQuestion,lastAiAnswer)">SAVE ↓</button></div>';
   }catch(e){
-    out.innerHTML=`<div class="ai-bubble"><div class="al" style="color:#E8157A">ERROR</div>${e.message}<br><small style="color:#888">Push to GitHub Pages to fix CORS from file://</small></div>`;
+    out.innerHTML='<div class="ai-bubble"><div class="al" style="color:#E8157A">ERROR</div>'+e.message+'</div>';
   }
 }
 
@@ -767,22 +876,14 @@ async function runAiQ(q){
   if(!q||!q.trim()) return;
   document.getElementById('aiproj-q').value='';
   const out = document.getElementById('aiproj-out');
-  out.innerHTML='<div class="thinking">thinking...</div>';
+  const engine = currentEngine==='gemini'?'GEMINI':'ON-DEVICE';
+  out.innerHTML='<div class="thinking">'+engine+' thinking...</div>';
   try{
-    const res=await fetch(GEMINI_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[{role:'user',parts:[{text:buildAiPrompt(q)}]}],
-        generationConfig:{maxOutputTokens:500,temperature:0.7}
-      })
-    });
-    const data=await res.json();
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'No response.';
+    const text = await queryAI(buildAiPrompt(q));
     lastAiAnswer=text; lastAiQuestion=q;
-    out.innerHTML='<div class="ai-bubble"><div class="al">GEMINI</div>'+text.replace(/\n/g,'<br>')+'<br><button class="save-btn" onclick="saveAiProjection(lastAiQuestion,lastAiAnswer)">SAVE ↓</button></div>';
+    out.innerHTML='<div class="ai-bubble"><div class="al">'+engine+'</div>'+text.replace(/\n/g,'<br>')+'<br><button class="save-btn" onclick="saveAiProjection(lastAiQuestion,lastAiAnswer)">SAVE ↓</button></div>';
   }catch(e){
-    out.innerHTML=`<div class="ai-bubble"><div class="al" style="color:#E8157A">ERROR</div>${e.message}<br><small style="color:#888">Push to GitHub Pages to fix CORS from file://</small></div>`;
+    out.innerHTML='<div class="ai-bubble"><div class="al" style="color:#E8157A">ERROR</div>'+e.message+'</div>';
   }
 }
 
