@@ -144,8 +144,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 .empty{text-align:center;padding:32px 20px;color:var(--dim);font-size:13px;font-weight:600;border-radius:18px;}
 .paid-summary{text-align:center;padding:10px 16px;color:var(--dim);font-size:11px;font-weight:600;border-radius:10px;margin-top:4px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em; cursor:pointer;}
 
-.nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);display:flex;justify-content:space-around;padding:5px 0 11px;z-index:50;transition:background .4s,box-shadow .4s;}
-.nbtn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:4px 12px;border-radius:10px;}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);display:flex;justify-content:space-around;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:5px 0 11px;z-index:50;transition:background .4s,box-shadow .4s;}
+.nbtn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:4px 12px;border-radius:10px;flex-shrink:0;}.nav::-webkit-scrollbar{display:none;}
 .nicon{font-size:14px;color:var(--muted);line-height:1;}
 .nlabel{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
 .nbtn.active .nicon,.nbtn.active .nlabel{color:var(--accent);}
