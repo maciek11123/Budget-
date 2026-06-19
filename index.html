@@ -1723,7 +1723,7 @@ async function callGemini(blob) {
     const mimeType = blob.type.includes('mp4') ? 'audio/mp4' : 'audio/webm';
     const b64 = await blobToBase64(blob);
 
-    const KEY = ['AIzaSyDt_BF1ekj', 'AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join('');
+    const KEY = 'AIzaSyAnAaV0OBrMSKX8Ie_Kl-IpIQh-6Th45nI';
     const URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + KEY;
 
     const body = {
