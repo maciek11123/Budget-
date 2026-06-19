@@ -440,7 +440,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 <!-- NOTES PAGE IS NOW FIRST AND DEFAULT ACTIVE -->
 <div class="page active" id="pg-notes">
   <div class="header">
-    <div class="logo">Pixel Keep</div>
+    <div class="logo">Note$</div>
   </div>
 
 
@@ -576,8 +576,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 <!-- ── LEDGER PAGE (Firebase — synced with DadApp) ── -->
 <div class="page" id="pg-ledger">
   <div class="firebase-status-bar">
-    <span class="fb-dot" id="ledgerFbDot"></span>
-    <span id="ledgerFbStatus">CONNECTING...</span>
+    <span class="fb-dot" id="ledgerFbDot" style="background:#ffaa00;"></span>
+    <span id="ledgerFbStatus" style="color:#333;">⏳ CONNECTING...</span>
   </div>
   <div class="ledger-note-card">
     <div class="ledger-card-label">DAD BOUGHT THIS FOR ME — I OWE DAD</div>
@@ -1449,7 +1449,7 @@ window._LEDGER_FB = {
   import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-  const fbApp = initializeApp(window._LEDGER_FB);
+  const fbApp = initializeApp(window._LEDGER_FB, 'ledger-app');
   const db    = getFirestore(fbApp);
 
   window._fb = { db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp };
