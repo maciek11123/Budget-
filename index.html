@@ -432,6 +432,79 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
     font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: #555;
   }
   .ledger-done-divider-line { flex: 1; height: 2px; background: #000; }
+
+  /* ── TRANSCRIBE OVERLAY ── */
+  .transcribe-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55); z-index: 200;
+  }
+  .transcribe-backdrop.open { display: block; }
+  .transcribe-panel {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    max-width: 420px; margin: 0 auto;
+    background: #fff; border-top: 3px solid #000;
+    border-left: 3px solid #000; border-right: 3px solid #000;
+    box-shadow: 0 -4px 0 #000;
+    padding: 0 0 32px; z-index: 201;
+    animation: slideup .28s ease-out;
+    max-height: 75vh; display: flex; flex-direction: column;
+  }
+  @keyframes slideup {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  .transcribe-handle {
+    width: 36px; height: 4px; background: #000; border-radius: 2px;
+    margin: 12px auto 14px;
+  }
+  .transcribe-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #555;
+    padding: 0 16px 10px; border-bottom: 2px solid #000; margin: 0 0 14px;
+  }
+  .transcribe-body { flex: 1; overflow-y: auto; padding: 0 16px; }
+  .thinking-dots {
+    display: flex; gap: 8px; align-items: center; justify-content: center;
+    padding: 28px 0;
+  }
+  .thinking-dots span {
+    width: 10px; height: 10px; border-radius: 50%; background: #000;
+    animation: dotpulse 0.8s ease-in-out infinite;
+  }
+  .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotpulse {
+    0%, 100% { transform: scale(0.6); opacity: 0.3; }
+    50%       { transform: scale(1.2); opacity: 1; }
+  }
+  .transcribe-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; line-height: 1.6; color: #000;
+    white-space: pre-wrap; word-break: break-word;
+    border: 3px solid #000; box-shadow: 3px 3px 0 #000;
+    padding: 12px; margin-bottom: 14px; display: none;
+    background: #fff;
+  }
+  .transcribe-actions {
+    display: none; gap: 10px; padding: 0 16px;
+  }
+  .transcribe-actions.show { display: flex; }
+  .transcribe-save-btn {
+    flex: 1; padding: 12px;
+    background: #000; color: #fff;
+    border: 3px solid #000; box-shadow: 3px 3px 0 #555;
+    font-family: inherit; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+  }
+  .transcribe-save-btn:active { transform: translate(2px,2px); box-shadow: none; }
+  .transcribe-discard-btn {
+    flex: 1; padding: 12px;
+    background: #fff; color: #000;
+    border: 3px solid #000; box-shadow: 3px 3px 0 #000;
+    font-family: inherit; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+  }
+  .transcribe-discard-btn:active { transform: translate(2px,2px); box-shadow: none; }
 </style>
 </head>
 <body>
@@ -1318,6 +1391,7 @@ function renderNotes() {
           <span class="audio-label">⚙ AUDIO_DUMP.WAV</span>
           <audio id="player-${note.audioKey}" controls style="display:none"></audio>
           <button class="btn-main" style="padding: 4px 8px; font-size:11px; width:auto; box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">Play</button>
+          <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;background:#000;color:#fff;" onclick="openTranscribe('${note.audioKey}', '${note.title}')">✦ Transcribe</button>
         </div>`;
     } 
     
@@ -1591,6 +1665,158 @@ window._LEDGER_FB = {
       showToast('🗑️ DELETED');
     } catch(e) { showToast('ERROR: ' + e.message); }
   };
+</script>
+
+<!-- ── TRANSCRIBE OVERLAY ── -->
+<div class="transcribe-backdrop" id="transcribeBackdrop" onclick="dismissTranscribe()"></div>
+<div class="transcribe-panel" id="transcribePanel" style="display:none;">
+  <div class="transcribe-handle"></div>
+  <div class="transcribe-title">✦ TRANSCRIPTION</div>
+  <div class="transcribe-body">
+    <div class="thinking-dots" id="transcribeThinking">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="transcribe-text" id="transcribeText"></div>
+  </div>
+  <div class="transcribe-actions" id="transcribeActions">
+    <button class="transcribe-save-btn" onclick="saveTranscriptionAsNote()">Save as Note</button>
+    <button class="transcribe-discard-btn" onclick="dismissTranscribe()">Discard</button>
+  </div>
+</div>
+
+<script>
+// ── GEMINI TRANSCRIPTION ──────────────────────────────────────────────────
+let currentTranscription = '';
+
+function openTranscribe(audioKey, noteTitle) {
+  // reset state
+  currentTranscription = '';
+  document.getElementById('transcribeThinking').style.display = 'flex';
+  document.getElementById('transcribeText').style.display    = 'none';
+  document.getElementById('transcribeText').textContent      = '';
+  document.getElementById('transcribeActions').classList.remove('show');
+  document.getElementById('transcribePanel').dataset.noteTitle = noteTitle || 'AUDIO NOTE';
+
+  // show overlay
+  document.getElementById('transcribeBackdrop').classList.add('open');
+  document.getElementById('transcribePanel').style.display = 'flex';
+
+  // load blob from IndexedDB then call Gemini
+  loadAudioBlob(audioKey).then(blob => {
+    if (!blob) { showTranscribeError('Audio not found in storage.'); return; }
+    callGemini(blob);
+  }).catch(e => showTranscribeError(e.message));
+}
+
+function loadAudioBlob(key) {
+  return new Promise((resolve, reject) => {
+    if (!db) { reject(new Error('DB not ready')); return; }
+    const tx  = db.transaction('audioBlobs', 'readonly');
+    const req = tx.objectStore('audioBlobs').get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror   = () => reject(req.error);
+  });
+}
+
+async function callGemini(blob) {
+  try {
+    const mimeType = blob.type.includes('mp4') ? 'audio/mp4' : 'audio/webm';
+    const b64 = await blobToBase64(blob);
+
+    const KEY = ['AIzaSyDt_BF1ekj', 'AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join('');
+    const URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + KEY;
+
+    const body = {
+      system_instruction: { parts: [{ text:
+        'You are a transcription assistant. Transcribe the audio verbatim — word for word.\n' +
+        'RULES:\n' +
+        '- NEVER invent or add words not clearly spoken.\n' +
+        '- Use [unclear] for inaudible parts.\n' +
+        '- If there is only silence or noise, return an empty string.\n' +
+        '- Return ONLY a JSON object, no preamble, no markdown, no backticks.\n' +
+        '{ "transcription": "verbatim text here" }'
+      }] },
+      contents: [{ parts: [
+        { inline_data: { mime_type: mimeType, data: b64 } },
+        { text: 'Transcribe this audio.' }
+      ]}],
+      generationConfig: { temperature: 0, maxOutputTokens: 800 }
+    };
+
+    const res  = await fetch(URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json();
+
+    if (!res.ok) { showTranscribeError(data?.error?.message || 'API error ' + res.status); return; }
+
+    // parse response
+    let raw = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+    raw = raw.replace(/```json|```/g, '').trim();
+
+    let transcription = '';
+    try {
+      const parsed = JSON.parse(raw);
+      transcription = parsed.transcription || '';
+    } catch {
+      // fallback: use raw text
+      transcription = raw;
+    }
+
+    currentTranscription = transcription;
+    showTranscribeResult(transcription || '[No speech detected]');
+  } catch(e) {
+    showTranscribeError(e.message);
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+function showTranscribeResult(text) {
+  document.getElementById('transcribeThinking').style.display = 'none';
+  const el = document.getElementById('transcribeText');
+  el.textContent = text;
+  el.style.display = 'block';
+  document.getElementById('transcribeActions').classList.add('show');
+}
+
+function showTranscribeError(msg) {
+  document.getElementById('transcribeThinking').style.display = 'none';
+  const el = document.getElementById('transcribeText');
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+  // hide save btn on error
+  const actions = document.getElementById('transcribeActions');
+  actions.classList.add('show');
+  actions.querySelector('.transcribe-save-btn').style.display = 'none';
+}
+
+function dismissTranscribe() {
+  document.getElementById('transcribeBackdrop').classList.remove('open');
+  document.getElementById('transcribePanel').style.display = 'none';
+  currentTranscription = '';
+}
+
+function saveTranscriptionAsNote() {
+  const title = (document.getElementById('transcribePanel').dataset.noteTitle || 'AUDIO NOTE') + ' — TRANSCRIPT';
+  notes.unshift({
+    id: Date.now(),
+    title: title.toUpperCase(),
+    body: currentTranscription,
+    isList: false,
+    audioKey: null
+  });
+  saveNotesState();
+  dismissTranscribe();
+  showPage('pg-notes');
+  setNav('n-notes');
+  showToast('✓ SAVED AS NOTE');
+}
 </script>
 </body>
 </html>
