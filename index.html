@@ -508,6 +508,169 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
     letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
   }
   .transcribe-discard-btn:active { transform: translate(2px,2px); box-shadow: none; }
+
+  /* ══ PAY TAB ══════════════════════════════════════════════════════════════ */
+  .pay-page { padding: 0 14px 80px; }
+  .pay-section-head {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--dim);
+    margin: 22px 0 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .pay-section-head::after { content:''; flex:1; height:1px; background:var(--dim); opacity:.3; }
+
+  /* Payday windows */
+  .pay-window {
+    border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+    background: #fff; margin-bottom: 16px; overflow: hidden;
+  }
+  .pay-window-header {
+    background: #000; color: #fff;
+    padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+  }
+  .pay-window-header.current { background: var(--accent2, #3a0ca3); }
+  .pay-window-header.over    { background: #c0392b; }
+  .pay-window-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; }
+  .pay-window-sublabel { font-size: 9px; opacity: .7; margin-top: 2px; }
+  .pay-window-amount { font-size: 18px; font-weight: 800; text-align: right; }
+  .pay-window-amount.over { color: #ff6b6b; }
+  .pay-window-body { padding: 12px 14px; display: none; }
+  .pay-window-body.open { display: block; }
+
+  /* Free-to-spend hero */
+  .pay-free-hero {
+    text-align: center; padding: 12px 0 16px;
+    border-bottom: 2px dashed #000; margin-bottom: 12px;
+  }
+  .pay-free-label { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; color: #555; }
+  .pay-free-num { font-size: 32px; font-weight: 800; color: #000; line-height: 1.1; }
+  .pay-free-num.over { color: #c0392b; }
+  .pay-free-num.tight { color: #e67e22; }
+  .pay-free-num.ok    { color: #27ae60; }
+
+  /* Bill rows inside window */
+  .pay-bill-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid #eee; font-size: 12px;
+  }
+  .pay-bill-row:last-child { border-bottom: none; }
+  .pay-bill-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .pay-bill-dot.fixed { background: #c0392b; }
+  .pay-bill-dot.flex  { background: #e67e22; }
+  .pay-bill-name { flex: 1; font-weight: 600; }
+  .pay-bill-date { font-size: 9px; color: #888; }
+  .pay-bill-amt  { font-weight: 800; font-size: 13px; }
+  .pay-bill-section-label {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.1em;
+    color: #888; margin: 8px 0 4px; text-transform: uppercase;
+  }
+
+  /* Totals bar */
+  .pay-totals {
+    display: flex; gap: 8px; margin-top: 12px; padding-top: 10px;
+    border-top: 2px solid #000;
+  }
+  .pay-total-box {
+    flex: 1; text-align: center; padding: 8px 4px;
+    border: 2px solid #000; background: #f5f5f5;
+  }
+  .pay-total-box .lbl { font-size: 8px; font-weight: 800; letter-spacing: 0.1em; color: #555; }
+  .pay-total-box .val { font-size: 14px; font-weight: 800; margin-top: 2px; }
+
+  /* Setup / add forms */
+  .pay-card {
+    border: 3px solid #000; box-shadow: 3px 3px 0 #000;
+    background: #fff; padding: 14px; margin-bottom: 12px;
+  }
+  .pay-card-label {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #555;
+    border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 12px;
+  }
+  .pay-input {
+    width: 100%; box-sizing: border-box;
+    border: 2px solid #000; background: #fff;
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    padding: 9px 11px; margin-bottom: 8px; outline: none; color: #000;
+  }
+  .pay-input:focus { border-color: var(--accent2, #3a0ca3); }
+  .pay-row { display: flex; gap: 8px; }
+  .pay-row .pay-input { margin-bottom: 0; }
+  .pay-btn {
+    width: 100%; padding: 11px; margin-top: 8px;
+    background: #000; color: #fff;
+    border: 2px solid #000; box-shadow: 3px 3px 0 #555;
+    font-family: inherit; font-size: 11px; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+  }
+  .pay-btn:active { transform: translate(2px,2px); box-shadow: none; }
+  .pay-btn.sec {
+    background: #fff; color: #000; border-color: #000;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .pay-pill-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .pay-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border: 2px solid #000;
+    font-size: 12px; font-weight: 600; background: #fff;
+  }
+  .pay-pill .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .pay-pill .dot.fixed { background:#c0392b; }
+  .pay-pill .dot.flex  { background:#e67e22; }
+  .pay-pill .name { flex:1; }
+  .pay-pill .meta { font-size:9px; color:#888; }
+  .pay-pill .amt  { font-weight:800; }
+  .pay-pill .del  {
+    background:none; border:none; font-size:14px;
+    cursor:pointer; padding:0 2px; color:#999;
+  }
+  .pay-pill .del:hover { color:#c0392b; }
+  .pay-type-toggle {
+    display: flex; gap: 0; margin-bottom: 8px;
+  }
+  .pay-type-btn {
+    flex: 1; padding: 8px; border: 2px solid #000;
+    background: #fff; font-family: inherit; font-size: 10px;
+    font-weight: 800; letter-spacing: 0.08em; cursor: pointer;
+    text-transform: uppercase;
+  }
+  .pay-type-btn.active.fixed { background: #c0392b; color: #fff; border-color: #c0392b; }
+  .pay-type-btn.active.flex  { background: #e67e22; color: #fff; border-color: #e67e22; }
+  .pay-type-btn:first-child { border-right: none; }
+  .pay-empty {
+    text-align: center; padding: 30px; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.08em; color: #aaa;
+  }
+  .pay-payday-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 10px; border: 2px solid #000; margin-bottom: 6px;
+    font-size: 12px; font-weight: 600; background: #fff;
+  }
+  .pay-payday-row .icon { font-size: 14px; }
+  .pay-payday-row .info { flex:1; }
+  .pay-payday-row .date { font-size:9px; color:#888; }
+  .pay-payday-row .del { background:none;border:none;font-size:14px;cursor:pointer;color:#999; }
+  .pay-tabs {
+    display: flex; margin-bottom: 14px; border: 2px solid #000;
+  }
+  .pay-tab {
+    flex:1; padding:9px; background:#fff; border:none;
+    font-family:inherit; font-size:10px; font-weight:800;
+    letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;
+    border-right: 2px solid #000;
+  }
+  .pay-tab:last-child { border-right:none; }
+  .pay-tab.active { background:#000; color:#fff; }
+  .pay-balance-hero {
+    border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+    background: #000; color: #fff;
+    text-align: center; padding: 18px 14px; margin-bottom: 14px;
+  }
+  .pay-balance-label { font-size:9px; font-weight:800; letter-spacing:0.14em; opacity:.6; }
+  .pay-balance-num { font-size:36px; font-weight:800; line-height:1.1; margin:4px 0; }
+  .pay-balance-sub { font-size:10px; opacity:.6; }
 </style>
 </head>
 <body>
@@ -665,6 +828,66 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   <div id="ledgerList"></div>
 </div>
 
+
+<!-- ══ PAY TAB ══════════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-pay">
+  <div class="pay-page">
+    <div class="pay-tabs">
+      <button class="pay-tab active" id="pay-tab-timeline" onclick="payShowTab('timeline')">📅 Timeline</button>
+      <button class="pay-tab" id="pay-tab-setup" onclick="payShowTab('setup')">⚙ Setup</button>
+    </div>
+
+    <!-- TIMELINE VIEW -->
+    <div id="pay-timeline-view">
+      <div id="pay-balance-bar"></div>
+      <div id="pay-windows-list"></div>
+    </div>
+
+    <!-- SETUP VIEW -->
+    <div id="pay-setup-view" style="display:none;">
+
+      <!-- Bank balance -->
+      <div class="pay-card">
+        <div class="pay-card-label">💰 Current bank balance</div>
+        <div class="pay-row">
+          <input class="pay-input" id="pay-bank-input" type="number" placeholder="$0.00" step="0.01">
+          <button class="pay-btn" style="width:auto;padding:9px 16px;margin-top:0;" onclick="paySetBank()">SET</button>
+        </div>
+      </div>
+
+      <!-- Paydays -->
+      <div class="pay-card">
+        <div class="pay-card-label">📅 Upcoming paydays</div>
+        <div class="pay-row" style="margin-bottom:8px;">
+          <input class="pay-input" id="pay-pd-amt" type="number" placeholder="Amount $" step="0.01" style="margin:0;">
+          <input class="pay-input" id="pay-pd-date" type="date" style="margin:0;">
+        </div>
+        <button class="pay-btn" onclick="payAddPayday()">+ ADD PAYDAY</button>
+        <div class="pay-pill-list" id="pay-payday-list"></div>
+      </div>
+
+      <!-- Bills -->
+      <div class="pay-card">
+        <div class="pay-card-label">📋 Bills &amp; expenses</div>
+        <div class="pay-type-toggle">
+          <button class="pay-type-btn active fixed" id="pay-type-fixed" onclick="paySetType('fixed')">🔴 Fixed — no play</button>
+          <button class="pay-type-btn flex"  id="pay-type-flex"  onclick="paySetType('flex')">🟠 Flex — has play</button>
+        </div>
+        <input class="pay-input" id="pay-bill-name" type="text" placeholder="Bill name...">
+        <div class="pay-row">
+          <input class="pay-input" id="pay-bill-amt"  type="number" placeholder="Amount $" step="0.01" style="margin:0;">
+          <input class="pay-input" id="pay-bill-date" type="date" style="margin:0;">
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;font-weight:700;">
+          <input type="checkbox" id="pay-bill-recurring"> Repeats monthly
+        </label>
+        <button class="pay-btn" style="margin-top:10px;" onclick="payAddBill()">+ ADD BILL</button>
+        <div class="pay-pill-list" id="pay-bills-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
 <!-- NAV REORDERED TO MATCH -->
 <div class="nav nm-raised">
   <button class="nbtn active" id="n-notes" onclick="showPage('pg-notes');setNav('n-notes')">
@@ -684,6 +907,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   </button>
   <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
     <span class="nicon">◐</span><span class="nlabel">Theme</span>
+  </button>
+  <button class="nbtn" id="n-pay" onclick="showPage('pg-pay');setNav('n-pay');payRender()">
+    <span class="nicon">📅</span><span class="nlabel">Pay</span>
   </button>
   <button class="nbtn" id="n-ledger" onclick="showPage('pg-ledger');setNav('n-ledger')">
     <span class="nicon">💳</span><span class="nlabel">Ledger</span>
@@ -1821,6 +2047,347 @@ function saveTranscriptionAsNote() {
   showPage('pg-notes');
   setNav('n-notes');
   showToast('✓ SAVED AS NOTE');
+}
+</script>
+
+<script>
+// ══ PAY TAB — Independent state ══════════════════════════════════════════════
+const PAY_KEY = 'note$-pay-v1';
+
+function payLoad() {
+  try { return JSON.parse(localStorage.getItem(PAY_KEY)) || payDefault(); }
+  catch { return payDefault(); }
+}
+function payDefault() {
+  return { bank: 0, paydays: [], bills: [] };
+}
+function paySave(s) {
+  localStorage.setItem(PAY_KEY, JSON.stringify(s));
+}
+
+let payState = payLoad();
+let payBillType = 'fixed'; // current form selection
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function payShowTab(tab) {
+  document.getElementById('pay-timeline-view').style.display = tab === 'timeline' ? '' : 'none';
+  document.getElementById('pay-setup-view').style.display    = tab === 'setup'    ? '' : 'none';
+  document.getElementById('pay-tab-timeline').classList.toggle('active', tab === 'timeline');
+  document.getElementById('pay-tab-setup').classList.toggle('active', tab === 'setup');
+  if (tab === 'timeline') payRenderTimeline();
+  else payRenderSetup();
+}
+
+// ── Setup helpers ─────────────────────────────────────────────────────────────
+function paySetBank() {
+  const v = parseFloat(document.getElementById('pay-bank-input').value);
+  if (isNaN(v)) { showToast('Enter a number'); return; }
+  payState.bank = v;
+  paySave(payState);
+  document.getElementById('pay-bank-input').value = '';
+  showToast('✓ Balance set to $' + v.toFixed(2));
+  payRenderSetup();
+}
+
+function paySetType(t) {
+  payBillType = t;
+  document.getElementById('pay-type-fixed').classList.toggle('active', t === 'fixed');
+  document.getElementById('pay-type-fixed').classList.toggle('fixed',  t === 'fixed');
+  document.getElementById('pay-type-flex').classList.toggle('active',  t === 'flex');
+  document.getElementById('pay-type-flex').classList.toggle('flex',    t === 'flex');
+}
+
+function payAddPayday() {
+  const amt  = parseFloat(document.getElementById('pay-pd-amt').value);
+  const date = document.getElementById('pay-pd-date').value;
+  if (isNaN(amt) || amt <= 0) { showToast('Enter amount'); return; }
+  if (!date) { showToast('Pick a date'); return; }
+  payState.paydays.push({ id: Date.now(), amt, date });
+  payState.paydays.sort((a,b) => a.date.localeCompare(b.date));
+  paySave(payState);
+  document.getElementById('pay-pd-amt').value  = '';
+  document.getElementById('pay-pd-date').value = '';
+  payRenderSetup();
+}
+
+function payDeletePayday(id) {
+  payState.paydays = payState.paydays.filter(p => p.id !== id);
+  paySave(payState);
+  payRenderSetup();
+}
+
+function payAddBill() {
+  const name = document.getElementById('pay-bill-name').value.trim();
+  const amt  = parseFloat(document.getElementById('pay-bill-amt').value);
+  const date = document.getElementById('pay-bill-date').value;
+  const recurring = document.getElementById('pay-bill-recurring').checked;
+  if (!name) { showToast('Enter a name'); return; }
+  if (isNaN(amt) || amt <= 0) { showToast('Enter amount'); return; }
+  payState.bills.push({
+    id: Date.now(), name, amt,
+    date: date || null,
+    type: payBillType,   // 'fixed' or 'flex'
+    recurring            // repeats monthly
+  });
+  paySave(payState);
+  document.getElementById('pay-bill-name').value = '';
+  document.getElementById('pay-bill-amt').value  = '';
+  document.getElementById('pay-bill-date').value = '';
+  document.getElementById('pay-bill-recurring').checked = false;
+  payRenderSetup();
+}
+
+function payDeleteBill(id) {
+  payState.bills = payState.bills.filter(b => b.id !== id);
+  paySave(payState);
+  payRenderSetup();
+}
+
+// ── Setup render ──────────────────────────────────────────────────────────────
+function payRenderSetup() {
+  // paydays
+  const pdEl = document.getElementById('pay-payday-list');
+  if (payState.paydays.length) {
+    pdEl.innerHTML = payState.paydays.map(p =>
+      `<div class="pay-payday-row">
+        <span class="icon">💰</span>
+        <div class="info">
+          <div>$${p.amt.toFixed(2)}</div>
+          <div class="date">${payFmtDate(p.date)}</div>
+        </div>
+        <button class="del" onclick="payDeletePayday(${p.id})">✕</button>
+      </div>`
+    ).join('');
+  } else {
+    pdEl.innerHTML = '<div class="pay-empty">No paydays yet</div>';
+  }
+
+  // bills — fixed first, then flex
+  const bEl = document.getElementById('pay-bills-list');
+  if (payState.bills.length) {
+    const fixed = payState.bills.filter(b => b.type === 'fixed');
+    const flex  = payState.bills.filter(b => b.type === 'flex');
+    let html = '';
+    if (fixed.length) {
+      html += '<div class="pay-bill-section-label" style="margin-top:10px;">🔴 Fixed</div>';
+      html += fixed.map(b => payBillPill(b)).join('');
+    }
+    if (flex.length) {
+      html += '<div class="pay-bill-section-label" style="margin-top:10px;">🟠 Flex</div>';
+      html += flex.map(b => payBillPill(b)).join('');
+    }
+    bEl.innerHTML = html;
+  } else {
+    bEl.innerHTML = '<div class="pay-empty">No bills yet</div>';
+  }
+}
+
+function payBillPill(b) {
+  const dateStr = b.date ? payFmtDate(b.date) : 'This cycle';
+  const rec = b.recurring ? ' · repeats' : '';
+  return `<div class="pay-pill">
+    <span class="dot ${b.type}"></span>
+    <span class="name">${b.name}</span>
+    <span class="meta">${dateStr}${rec}</span>
+    <span class="amt">$${b.amt.toFixed(2)}</span>
+    <button class="del" onclick="payDeleteBill(${b.id})">✕</button>
+  </div>`;
+}
+
+// ── Timeline render ───────────────────────────────────────────────────────────
+function payRender() {
+  payState = payLoad();
+  payRenderTimeline();
+  payRenderSetup();
+}
+
+function payRenderTimeline() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().slice(0,10);
+
+  const winEl = document.getElementById('pay-windows-list');
+  const balEl = document.getElementById('pay-balance-bar');
+
+  if (!payState.paydays.length) {
+    balEl.innerHTML = '';
+    winEl.innerHTML = '<div class="pay-empty" style="padding:40px 20px;">Add paydays + bills in ⚙ Setup to see your timeline.</div>';
+    return;
+  }
+
+  // Build windows: [now→pd1], [pd1→pd2], [pd2→pd3], ...
+  const paydays = [...payState.paydays].sort((a,b) => a.date.localeCompare(b.date));
+
+  // Build list of window boundaries: today + all future paydays
+  const boundaries = [todayStr, ...paydays.map(p => p.date)];
+
+  // For each window, figure out which bills fall in it
+  // A bill falls in a window if its date >= window start and < window end
+  // Recurring bills: expand to next month's date if needed
+  function getBillsForWindow(winStart, winEnd) {
+    const results = [];
+    for (const b of payState.bills) {
+      const dates = payGetBillDates(b, winStart, winEnd);
+      for (const d of dates) {
+        results.push({ ...b, resolvedDate: d });
+      }
+    }
+    return results.sort((a,b) => a.resolvedDate.localeCompare(b.resolvedDate));
+  }
+
+  // Get all dates a bill applies within a window
+  function payGetBillDates(b, winStart, winEnd) {
+    const dates = [];
+    if (!b.date) {
+      // no date — falls in first window (current)
+      if (winStart === todayStr) dates.push(winStart);
+      return dates;
+    }
+    // Check base date
+    if (b.date >= winStart && b.date < winEnd) dates.push(b.date);
+    // If recurring, check +1 month, +2 month etc within window
+    if (b.recurring) {
+      const base = new Date(b.date + 'T00:00:00');
+      for (let m = 1; m <= 12; m++) {
+        const next = new Date(base);
+        next.setMonth(next.getMonth() + m);
+        const nextStr = next.toISOString().slice(0,10);
+        if (nextStr >= winEnd) break;
+        if (nextStr >= winStart) dates.push(nextStr);
+      }
+    }
+    return dates;
+  }
+
+  // Rolling balance tracker
+  let runningBalance = payState.bank;
+
+  // Balance bar
+  const balClass = runningBalance >= 0 ? (runningBalance > 200 ? 'ok' : 'tight') : 'over';
+  balEl.innerHTML = `<div class="pay-balance-hero">
+    <div class="pay-balance-label">BANK RIGHT NOW</div>
+    <div class="pay-balance-num ${balClass}">$${runningBalance.toFixed(2)}</div>
+    <div class="pay-balance-sub">As of ${payFmtDate(todayStr)}</div>
+  </div>`;
+
+  let windowsHTML = '';
+
+  for (let i = 0; i < boundaries.length; i++) {
+    const winStart = boundaries[i];
+    const winEnd   = boundaries[i+1] || null; // null = open-ended last window
+    const isCurrent = i === 0;
+
+    // Payday that lands AT winStart (not the first boundary which is today)
+    const landingPay = i > 0 ? paydays.find(p => p.date === winStart) : null;
+
+    // Bills in this window
+    const bills = getBillsForWindow(winStart, winEnd || '2099-12-31');
+
+    const fixedBills = bills.filter(b => b.type === 'fixed');
+    const flexBills  = bills.filter(b => b.type === 'flex');
+
+    const fixedTotal = fixedBills.reduce((s,b) => s+b.amt, 0);
+    const flexTotal  = flexBills.reduce((s,b) => s+b.amt, 0);
+    const totalOut   = fixedTotal + flexTotal;
+
+    // Balance at start of window (after receiving pay if applicable)
+    const balanceIn = runningBalance + (landingPay ? landingPay.amt : 0);
+    const freeToSpend = balanceIn - totalOut;
+    const isOver = freeToSpend < 0;
+
+    // Window label
+    const winLabel = isCurrent
+      ? 'NOW → ' + (winEnd ? payFmtDate(winEnd) : 'onward')
+      : payFmtDate(winStart) + (winEnd ? ' → ' + payFmtDate(winEnd) : ' →');
+
+    const winSubLabel = isCurrent ? 'Current window' :
+      (landingPay ? `+$${landingPay.amt.toFixed(2)} payday` : '');
+
+    const headerClass = isCurrent ? 'current' : (isOver ? 'over' : '');
+    const amtClass = isOver ? 'over' : '';
+
+    const freeClass = isOver ? 'over' : (freeToSpend < 100 ? 'tight' : 'ok');
+    const freeLabel = isOver
+      ? `OVER BY $${Math.abs(freeToSpend).toFixed(2)}`
+      : `$${freeToSpend.toFixed(2)} FREE TO SPEND`;
+
+    // Bill rows HTML
+    function billRowHTML(b) {
+      const d = b.resolvedDate && b.resolvedDate !== todayStr ? payFmtDate(b.resolvedDate) : 'this cycle';
+      return `<div class="pay-bill-row">
+        <span class="pay-bill-dot ${b.type}"></span>
+        <span class="pay-bill-name">${b.name}</span>
+        <span class="pay-bill-date">${d}</span>
+        <span class="pay-bill-amt">$${b.amt.toFixed(2)}</span>
+      </div>`;
+    }
+
+    let billsHTML = '';
+    if (fixedBills.length) {
+      billsHTML += `<div class="pay-bill-section-label">🔴 Fixed</div>`;
+      billsHTML += fixedBills.map(billRowHTML).join('');
+    }
+    if (flexBills.length) {
+      billsHTML += `<div class="pay-bill-section-label">🟠 Flex</div>`;
+      billsHTML += flexBills.map(billRowHTML).join('');
+    }
+    if (!bills.length) {
+      billsHTML = '<div style="font-size:11px;color:#aaa;padding:8px 0;">No bills in this window</div>';
+    }
+
+    // Totals
+    const totalsHTML = `<div class="pay-totals">
+      <div class="pay-total-box">
+        <div class="lbl">COMING IN</div>
+        <div class="val" style="color:#27ae60;">+$${(balanceIn).toFixed(2)}</div>
+      </div>
+      <div class="pay-total-box">
+        <div class="lbl">GOING OUT</div>
+        <div class="val" style="color:#c0392b;">-$${totalOut.toFixed(2)}</div>
+      </div>
+    </div>`;
+
+    // Open current window by default
+    const bodyOpen = isCurrent ? 'open' : '';
+
+    windowsHTML += `
+    <div class="pay-window">
+      <div class="pay-window-header ${headerClass}" onclick="payToggleWindow(this)">
+        <div>
+          <div class="pay-window-label">${winLabel}</div>
+          <div class="pay-window-sublabel">${winSubLabel}</div>
+        </div>
+        <div>
+          <div class="pay-window-amount ${amtClass}">${isOver ? '−' : '+'}$${Math.abs(freeToSpend).toFixed(2)}</div>
+          <div style="font-size:8px;opacity:.6;text-align:right;">${isOver ? 'OVER' : 'FREE'}</div>
+        </div>
+      </div>
+      <div class="pay-window-body ${bodyOpen}">
+        <div class="pay-free-hero">
+          <div class="pay-free-label">${isOver ? '⚠ OVER BUDGET' : '✓ FREE TO SPEND'}</div>
+          <div class="pay-free-num ${freeClass}">${isOver ? '-' : ''}$${Math.abs(freeToSpend).toFixed(2)}</div>
+        </div>
+        ${billsHTML}
+        ${totalsHTML}
+      </div>
+    </div>`;
+
+    // Update running balance for next window
+    runningBalance = freeToSpend;
+  }
+
+  winEl.innerHTML = windowsHTML;
+}
+
+function payToggleWindow(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function payFmtDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
 }
 </script>
 </body>
