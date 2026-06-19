@@ -1390,8 +1390,10 @@ function renderNotes() {
         <div class="audio-container">
           <span class="audio-label">⚙ AUDIO_DUMP.WAV</span>
           <audio id="player-${note.audioKey}" controls style="display:none"></audio>
-          <button class="btn-main" style="padding: 4px 8px; font-size:11px; width:auto; box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">Play</button>
-          <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;background:#000;color:#fff;" onclick="openTranscribe('${note.audioKey}', '${note.title}')">✦ Transcribe</button>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button class="btn-main" style="flex:1;padding:6px 0;font-size:11px;box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">Play</button>
+            <button class="btn-main" style="flex:1;padding:6px 0;font-size:11px;box-shadow:2px 2px 0 #000;background:#000;color:#fff;" onclick="openTranscribe('${note.audioKey}', '${note.title}')">✦ Transcribe</button>
+          </div>
         </div>`;
     } 
     
