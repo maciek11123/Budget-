@@ -82,6 +82,10 @@ html,body{font-family:'Space Mono',monospace;background:#FFD600;color:#111;min-h
 .bamt{font-weight:700;font-size:13px;white-space:nowrap}
 .bamt.flex-c{color:#7a3f00}
 .bamt.dim{color:#aaa}
+.amt-input{border:none;border-bottom:2px solid #111;background:transparent;font-family:Space Mono,monospace;font-size:13px;font-weight:700;width:64px;text-align:right;outline:none;padding:1px 2px}
+.amt-input:focus{border-bottom:2px solid #E8157A;background:#FFF9C4}
+.amt-input.flex-c{color:#7a3f00}
+.amt-input.dim{color:#aaa}
 
 /* projections */
 .proj-item{background:#fff;border:2.5px solid #111;padding:12px;margin-bottom:6px}
@@ -504,13 +508,16 @@ function buildBillsToday(){
     const isPaid=S.paidMap[S.selected][j];
     const d=document.createElement('div');
     d.className='bill-item'+(isPaid?' is-paid':'');
+    const amtCls='amt-input'+(b.type==='flex'?' flex-c':'')+(isPaid?' dim':'');
     d.innerHTML=`
       <div class="bcheck${isPaid?' on':''}" onclick="togglePaid(${S.selected},${j})">${isPaid?'✓':''}</div>
       <div class="binfo">
         <div class="bname${isPaid?' dim':''}">${b.name}</div>
         <div class="bmeta">${b.due}${b.type==='flex'?' · FLEXIBLE':''}</div>
       </div>
-      <div class="bamt${b.type==='flex'?' flex-c':''}${isPaid?' dim':''}">$${b.amt}</div>`;
+      <input class="${amtCls}" type="number" value="${b.amt}" min="0" step="1"
+        onchange="updateAmt(${S.selected},${j},this.value)"
+        onclick="this.select()" />`;
     el.appendChild(d);
   });
 }
@@ -577,6 +584,18 @@ window.togglePaid=function(pi,bi){
   buildBillsToday();
   buildBillsPaid();
   buildChart();
+};
+
+window.updateAmt=function(pi,bi,val){
+  const v=parseFloat(val);
+  if(isNaN(v)||v<0) return;
+  periods[pi].bills[bi].amt=Math.round(v);
+  saveState();
+  buildHero();
+  buildChart();
+  buildSim && buildSim();
+  document.getElementById('remaining-count').textContent=
+    S.paidMap[pi].filter(v=>!v).length+' REMAINING';
 };
 
 /* ── TABS ── */
