@@ -1661,9 +1661,60 @@ function playAudio(audioKey) {
   };
 }
 
+
+// ── CYCLE ADVANCE ──────────────────────────────────────────────────────────
+// Called on startup. If today >= nextPay, advance the cycle:
+//   - unpaid 'current' bills → become 'next' (they weren't paid this cycle)
+//   - 'both' bills → reset paid=false (recur every cycle)
+//   - paid 'current' bills → drop (they're done for this cycle)
+//   - nextPay → advance by 14 days (biweekly)
+//   - bank → add income
+//   - cycleView → reset to 'current'
+function checkCycleAdvance() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const pay   = new Date(S.nextPay + 'T00:00:00'); pay.setHours(0,0,0,0);
+  if (today < pay) return; // not payday yet
+
+  // Advance nextPay by 14 days
+  const newPay = new Date(pay);
+  newPay.setDate(newPay.getDate() + 14);
+  S.nextPay = newPay.toISOString().slice(0,10);
+
+  // Process bills
+  const kept = [];
+  for (const b of S.bills) {
+    if (b.cycle === 'both') {
+      // Recurring: reset paid, keep as-is
+      kept.push({...b, paid: false});
+    } else if (b.cycle === 'current') {
+      if (!b.paid) {
+        // Unpaid current → roll to next cycle
+        kept.push({...b, cycle: 'next', paid: false});
+        showToast('⚠️ Rolled over: ' + b.name);
+      }
+      // Paid current → drop (done)
+    } else if (b.cycle === 'next') {
+      // Next-cycle bills become current
+      kept.push({...b, cycle: 'current', paid: false});
+    }
+  }
+  S.bills = kept;
+
+  // Add income, reset carryover & view
+  S.bank = Math.round((S.bank + S.income) * 100) / 100;
+  S.carryover = 0;
+  S.cycleView = 'current';
+  // Reset spent log for new cycle
+  S.spentLog = [];
+
+  save();
+  showToast('✅ New cycle started — payday!');
+}
+
 // ── INIT ───────────────────────────────────────────────────────────────────
 applyTheme();
 renderThemeGrid();
+checkCycleAdvance();
 render();
 </script>
 <script>
