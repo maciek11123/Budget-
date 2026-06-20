@@ -1,4 +1,4 @@
-const CACHE = 'real-keep-v9';
+const CACHE = 'real-keep-v10';
 const SKIP = ['index.html', './'];
 
 self.addEventListener('install', e => {
