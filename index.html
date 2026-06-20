@@ -1155,7 +1155,7 @@ function renderThemeGrid(){
 
 const com=()=>S.bills.filter(b=>!b.paid&&(b.cycle==='current'||b.cycle==='both')).reduce((t,b)=>t+b.amt,0);
 const real=()=>Math.round((S.bank-com())*100)/100;
-const days=()=>{const n=new Date();n.setHours(0,0,0,0);const p=new Date(S.nextPay);p.setHours(0,0,0,0);return Math.max(Math.round((p-n)/86400000),1);};
+const days=()=>{const n=new Date();n.setHours(0,0,0,0);const p=new Date(S.nextPay);p.setHours(0,0,0,0);return Math.max(Math.round((p-n)/86400000),0);};
 const safe=()=>{const r=real();if(r<=0)return 0;return Math.max((r+S.carryover)/days(),0);};
 const $=(n)=>(n<0?'-':'')+'$'+Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const fd=d=>new Date(d+'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric'});
@@ -1173,9 +1173,9 @@ function render(){
   if(!bankEl.classList.contains('editing')) bankEl.textContent=$(S.bank);
   document.getElementById('hb-bills').textContent=$(c);
   document.getElementById('s-safe').textContent=$(sf);
-  document.getElementById('s-days').textContent=d===1?'Payday tomorrow':`${d} days left`;
+  document.getElementById('s-days').textContent=d===0?'Payday today! 🎉':d===1?'Payday tomorrow':`${d} days left`;
   document.getElementById('s-payday').textContent=fd(S.nextPay);
-  document.getElementById('s-paydays').textContent=`${d} day${d===1?'':'s'} away`;
+  document.getElementById('s-paydays').textContent=d===0?'Today! 🎉':`${d} day${d===1?'':'s'} away`;
 
   const pill=document.getElementById('status-pill'),msg=document.getElementById('status-msg');
   if(r<0){pill.className='status low nm-pressed';msg.textContent=`${$(-r)} short — bills exceed balance`;}
