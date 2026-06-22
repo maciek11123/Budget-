@@ -1672,13 +1672,17 @@ function playAudio(audioKey) {
 //   - cycleView → reset to 'current'
 function checkCycleAdvance() {
   const today = new Date(); today.setHours(0,0,0,0);
-  const pay   = new Date(S.nextPay + 'T00:00:00'); pay.setHours(0,0,0,0);
+  let pay = new Date(S.nextPay + 'T00:00:00'); pay.setHours(0,0,0,0);
   if (today < pay) return; // not payday yet
 
-  // Advance nextPay by 14 days
-  const newPay = new Date(pay);
-  newPay.setDate(newPay.getDate() + 14);
-  S.nextPay = newPay.toISOString().slice(0,10);
+  // Loop in case multiple pay dates were missed
+  while (today >= pay) {
+    // Advance nextPay by 14 days
+    const newPay = new Date(pay);
+    newPay.setDate(newPay.getDate() + 14);
+    pay = newPay;
+  }
+  S.nextPay = pay.toISOString().slice(0,10);
 
   // Process bills
   const kept = [];
