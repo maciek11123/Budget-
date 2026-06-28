@@ -1015,6 +1015,18 @@ function load(){try{const s=localStorage.getItem('real-v6');if(s)return JSON.par
 function save(){localStorage.setItem('real-v6',JSON.stringify(S));}
 let S=load();
 if(!S.subTheme)S.subTheme=0;
+// Safety: if nextPay is somehow still in the past after a previous session's advance,
+// snap it forward without re-processing bills (they were already handled).
+(function snapNextPayIfStale(){
+  const today=new Date();today.setHours(0,0,0,0);
+  let pay=new Date(S.nextPay+'T00:00:00');pay.setHours(0,0,0,0);
+  if(today>=pay){
+    // Advance date only — bills were presumably already rolled last session
+    while(today>=pay){const n=new Date(pay);n.setDate(n.getDate()+14);pay=n;}
+    S.nextPay=pay.toISOString().slice(0,10);
+    save();
+  }
+})();
 
 const THEMES={
   pixel:{name:'Pixel',dots:['#ffcc00','#3f22ec','#fa58a7'],
@@ -1675,12 +1687,16 @@ function checkCycleAdvance() {
   let pay = new Date(S.nextPay + 'T00:00:00'); pay.setHours(0,0,0,0);
   if (today < pay) return; // not payday yet
 
+  // Track whether we actually crossed a pay boundary
+  let cyclesCrossed = 0;
+
   // Loop in case multiple pay dates were missed
   while (today >= pay) {
     // Advance nextPay by 14 days
     const newPay = new Date(pay);
     newPay.setDate(newPay.getDate() + 14);
     pay = newPay;
+    cyclesCrossed++;
   }
   S.nextPay = pay.toISOString().slice(0,10);
 
