@@ -1890,7 +1890,7 @@ function showPermissionBanner() {
 
 function showToast(msg) {
   let t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-family:Space Mono,monospace;font-size:11px;padding:8px 16px;border-radius:0;z-index:9999;white-space:nowrap;border:2px solid #FFD600;';
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-family:Space Mono,monospace;font-size:11px;padding:8px 16px;border-radius:0;z-index:9999;white-space:nowrap;border:2px solid var(--accent);';
   t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3000);

@@ -1,26 +1,36 @@
-const CACHE = 'real-keep-v10';
-const SKIP = ['index.html', './'];
+const CACHE = 'dot-memo-v5';
 
 self.addEventListener('install', e => {
-  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll([
+      './',
+      './index.html',
+      './manifest.json',
+      './icon-192.png',
+      './icon-512.png'
+    ])).then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
+    caches.keys().then(keys => Promise.all(
+      keys.map(k => {
+        if (k !== CACHE) return caches.delete(k);
+      })
+    )).then(() => self.clients.claim())
   );
 });
 
+// Network-First Strategy to allow instant live updates
 self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
-  // Always fetch index.html fresh from network
-  if (url.pathname.endsWith('index.html') || url.pathname.endsWith('/')) {
-    e.respondWith(fetch(e.request));
-    return;
-  }
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    fetch(e.request).then(response => {
+      if (response.status === 200) {
+        const responseClone = response.clone();
+        caches.open(CACHE).then(cache => cache.put(e.request, responseClone));
+      }
+      return response;
+    }).catch(() => caches.match(e.request))
   );
 });
