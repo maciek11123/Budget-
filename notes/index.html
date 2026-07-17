@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffcc00">
+<meta name="theme-color" content="#FFD600">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Note$</title>
@@ -15,17 +15,17 @@
    THEMES (From Budget App)
 ══════════════════════════════════════ */
 [data-theme="pixel"]{
-  --bg:var(--pix-bg,#ffcc00);--surface:#fff;--surface2:#fff;
+  --bg:var(--pix-bg,#FFD600);--surface:#fff;--surface2:#fff;
   --sd:transparent;--sl:transparent;
   --text-hi:var(--pix-text-hi,#000);--text:var(--pix-text,#000);--dim:var(--pix-dim,#555);--muted:#999;
   --hr:#000;
-  --accent:var(--pix-accent,#3f22ec);--accent2:var(--pix-accent,#3f22ec);--on-accent:#fff;
+  --accent:var(--pix-accent,#2F35E1);--accent2:var(--pix-accent,#2F35E1);--on-accent:#fff;
   --warn:#ff7b00;--warn-bg:rgba(255,123,0,.12);
-  --low:#fa58a7;--low-bg:rgba(250,88,167,.12);
+  --low:#FF6B9D;--low-bg:rgba(250,88,167,.12);
 }
 [data-theme="pixel"] *{font-family:'Space Mono',monospace!important;}
 [data-theme="pixel"] .hero{border:4px solid #000;box-shadow:6px 6px 0 #000!important;border-radius:0;background:var(--surface)!important;}
-[data-theme="pixel"] .hero-num{color:var(--pix-accent,#3f22ec)!important;}
+[data-theme="pixel"] .hero-num{color:var(--pix-accent,#2F35E1)!important;}
 [data-theme="pixel"] .hero-num.low{color:var(--low)!important;}
 [data-theme="pixel"] .hero-num.warn{color:var(--warn)!important;}
 [data-theme="pixel"] .hero-rule{height:4px;background:#000;}
@@ -34,7 +34,7 @@
 [data-theme="pixel"] .hero-break b{color:var(--pix-text-hi,#000)!important;}
 [data-theme="pixel"] .hero-stats{gap:8px;}
 [data-theme="pixel"] .stat{border:2px solid #000;border-radius:0;background:var(--pix-stat1,#00e5ff)!important;}
-[data-theme="pixel"] .stat+.stat{border-left:2px solid #000;background:var(--pix-stat2,#fa58a7)!important;color:#fff;}
+[data-theme="pixel"] .stat+.stat{border-left:2px solid #000;background:var(--pix-stat2,#FF6B9D)!important;color:#fff;}
 [data-theme="pixel"] .stat+.stat .slabel,[data-theme="pixel"] .stat+.stat .sval,[data-theme="pixel"] .stat+.stat .snote{color:#fff!important;}
 [data-theme="pixel"] .status{border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;text-transform:uppercase;}
 [data-theme="pixel"] .status.safe{background:#dff700!important;}
@@ -42,17 +42,17 @@
 [data-theme="pixel"] .bpill::after{display:none;}
 [data-theme="pixel"] .bpill:nth-child(even){background:#f4f4f4!important;}
 [data-theme="pixel"] .bpill.paid{background:#ddd!important;border-style:dashed;opacity:1;}
-[data-theme="pixel"] .btn-main{background:var(--pix-accent,#3f22ec)!important;color:#fff;border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
+[data-theme="pixel"] .btn-main{background:var(--pix-accent,#2F35E1)!important;color:#fff;border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
 [data-theme="pixel"] .btn-sec{border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
 [data-theme="pixel"] .chk{border-radius:0;border:2px solid #000;box-shadow:none!important;}
-[data-theme="pixel"] .nav{background:var(--pix-nav,#ffcc00)!important;border-top:4px solid #000;box-shadow:none;}
-[data-theme="pixel"] .ctab.active{background:var(--pix-accent,#3f22ec)!important;color:#fff;border-radius:0;box-shadow:4px 4px 0 #000;}
+[data-theme="pixel"] .nav{background:var(--pix-nav,#FFD600)!important;border-top:4px solid #000;box-shadow:none;}
+[data-theme="pixel"] .ctab.active{background:var(--pix-accent,#2F35E1)!important;color:#fff;border-radius:0;box-shadow:4px 4px 0 #000;}
 [data-theme="pixel"] .ctabs{border-radius:0;}
 [data-theme="pixel"] .ctab{border-radius:0;}
 [data-theme="pixel"] .addbtn{border-radius:0;border-color:#000;}
 [data-theme="pixel"] .sheet{background:#fff!important;border-radius:0!important;}
 [data-theme="pixel"] .finput{border-radius:0;border:2px solid #000;}
-[data-theme="pixel"] .bconfirm{background:var(--pix-accent,#3f22ec)!important;border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
+[data-theme="pixel"] .bconfirm{background:var(--pix-accent,#2F35E1)!important;border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
 
 :root,[data-theme]{
   --safe:var(--accent);
@@ -239,8 +239,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 [data-theme="geo"]{
   --bg:#f0f0f5;--surface:#fff;--surface2:#fff;--sd:transparent;--sl:transparent;
   --text-hi:#111;--text:#444;--dim:#888;--muted:#c0c0c0;--hr:rgba(0,0,0,.05);
-  --accent:#3f22ec;--accent2:#5a3fff;--on-accent:#fff;
-  --warn:#ffcc00;--warn-bg:rgba(255,204,0,.12);--low:#ff3366;--low-bg:rgba(255,51,102,.12);
+  --accent:#2F35E1;--accent2:#5a3fff;--on-accent:#fff;
+  --warn:#FFD600;--warn-bg:rgba(255,214,0,.12);--low:#ff3366;--low-bg:rgba(255,51,102,.12);
 }
 [data-theme="geo"] *{font-family:'Outfit',sans-serif!important;}
 [data-theme="geo"] .hero{background:transparent!important;box-shadow:none!important;padding:0 14px;display:flex;flex-direction:column;gap:12px;}
@@ -251,14 +251,14 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 [data-theme="geo"] .stat .slabel,[data-theme="geo"] .stat .sval,[data-theme="geo"] .stat .snote{color:#fff!important;}
 [data-theme="geo"] .stat+.stat{border-left:none;background:#fff!important;color:#111;}
 [data-theme="geo"] .stat+.stat .slabel,[data-theme="geo"] .stat+.stat .sval,[data-theme="geo"] .stat+.stat .snote{color:#111!important;}
-[data-theme="geo"] .hero-break{background:#e8e6fb!important;color:#3f22ec;border-radius:28px;padding:14px 20px;}
-[data-theme="geo"] .hero-break b{color:#3f22ec!important;}
+[data-theme="geo"] .hero-break{background:#e8e6fb!important;color:#2F35E1;border-radius:28px;padding:14px 20px;}
+[data-theme="geo"] .hero-break b{color:#2F35E1!important;}
 [data-theme="geo"] .bpill{border-radius:20px;box-shadow:0 4px 15px rgba(0,0,0,.02);}
 [data-theme="geo"] .btn-main{background:#1a1a2e!important;color:#fff;border-radius:20px;}
 [data-theme="geo"] .btn-sec{background:#fff!important;color:#1a1a2e;border-radius:20px;}
-[data-theme="geo"] .ctab.active{background:#3f22ec!important;color:#fff;}
+[data-theme="geo"] .ctab.active{background:#2F35E1!important;color:#fff;}
 [data-theme="geo"] .sheet{background:#fff!important;}
-[data-theme="geo"] .bconfirm{background:#3f22ec!important;}
+[data-theme="geo"] .bconfirm{background:#2F35E1!important;}
 
 /* ══════════════════════════════════════
    NOTES SPECIFIC UI (Pixel Keep)
@@ -623,7 +623,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
     </div>
     <div class="flabel" style="margin-top:16px">Custom colors</div>
     <div id="custom-colors"></div>
-    <div id="pwa-install-btn" onclick="installPWA()" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 16px;background:#3f22ec;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
+    <div id="pwa-install-btn" onclick="installPWA()" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 16px;background:#2F35E1;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
       <span style="font-size:16px;">⬇</span> <span id="pwa-install-label">Install App</span>
     </div>
     <button class="bghost" onclick="closeSheet('sh-theme')" style="margin-top:8px">Done</button>
@@ -676,14 +676,14 @@ let S=load();
 if(!S.subTheme)S.subTheme=0;
 
 const THEMES={
-  pixel:{name:'Pixel',dots:['#ffcc00','#3f22ec','#fa58a7'],
+  pixel:{name:'Pixel',dots:['#FFD600','#2F35E1','#FF6B9D'],
     subs:[
-      {name:'Arcade', bg:'#ffcc00',accent:'#3f22ec',stat1:'#00e5ff',stat2:'#fa58a7',nav:'#ffcc00'},
+      {name:'Arcade', bg:'#FFD600',accent:'#2F35E1',stat1:'#00e5ff',stat2:'#FF6B9D',nav:'#FFD600'},
       {name:'Bubblegum',bg:'#ffb3d9',accent:'#d6336c',stat1:'#ffd43b',stat2:'#845ef7',nav:'#ffb3d9'},
       {name:'Terminal',bg:'#1a1a2e',accent:'#00ff41',stat1:'#00ff41',stat2:'#39ff14',nav:'#1a1a2e',textHi:'#00ff41',text:'#00cc33',dim:'#009926'},
       {name:'Ocean',  bg:'#0077b6',accent:'#fff',stat1:'#caf0f8',stat2:'#90e0ef',nav:'#0077b6',textHi:'#fff',text:'#caf0f8',dim:'#90e0ef'},
       {name:'Peach',  bg:'#fec89a',accent:'#6d4c41',stat1:'#f9dcc4',stat2:'#ffccd5',nav:'#fec89a'},
-      {name:'Mono',   bg:'#ffffff',accent:'#000000',stat1:'#000000',stat2:'#000000',nav:'#ffffff',textHi:'#000000',text:'#000000',dim:'#555555',safe:'#3f22ec'},
+      {name:'Mono',   bg:'#ffffff',accent:'#000000',stat1:'#000000',stat2:'#000000',nav:'#ffffff',textHi:'#000000',text:'#000000',dim:'#555555',safe:'#2F35E1'},
     ]},
   stack:{name:'Stack',dots:['#00d970','#fae100','#ff8c00'],
     subs:[
@@ -693,9 +693,9 @@ const THEMES={
       {name:'Ocean',  pills:['#0077b6','#00b4d8','#90e0ef','#caf0f8','#023e8a'],accent:'#00b4d8'},
       {name:'Candy',  pills:['#f72585','#7209b7','#3a0ca3','#4361ee','#4cc9f0'],accent:'#f72585'},
     ]},
-  geo:{name:'Geo',dots:['#ff7b00','#3f22ec','#f0f0f5'],
+  geo:{name:'Geo',dots:['#ff7b00','#2F35E1','#f0f0f5'],
     subs:[
-      {name:'Default',accent:'#3f22ec',stat1:'#ff7b00'},
+      {name:'Default',accent:'#2F35E1',stat1:'#ff7b00'},
       {name:'Ember',  accent:'#e63946',stat1:'#f4a261'},
       {name:'Teal',   accent:'#2a9d8f',stat1:'#264653'},
       {name:'Royal',  accent:'#6a0dad',stat1:'#e040fb'},
@@ -801,15 +801,15 @@ function renderThemeGrid(){
   // custom color pickers
   const cpEl=document.getElementById('custom-colors');
   if(cpEl){
-    let defBg = '#ffffff', defText = '#000000', defAccent = '#3f22ec', defBold = '#3f22ec';
+    let defBg = '#ffffff', defText = '#000000', defAccent = '#2F35E1', defBold = '#2F35E1';
     if (info && info.subs) {
       const sub = info.subs[S.subTheme || 0] || {};
       if (S.theme === 'pixel') {
-        defBg = sub.bg || '#ffcc00'; defText = sub.textHi || '#000000'; defAccent = sub.accent || '#3f22ec'; defBold = sub.stat1 || sub.accent || '#00e5ff';
+        defBg = sub.bg || '#FFD600'; defText = sub.textHi || '#000000'; defAccent = sub.accent || '#2F35E1'; defBold = sub.stat1 || sub.accent || '#00e5ff';
       } else if (S.theme === 'stack') {
         defBg = '#000000'; defText = '#ffffff'; defAccent = sub.accent || '#00d970'; defBold = (sub.pills && sub.pills[0]) ? sub.pills[0] : defAccent;
       } else if (S.theme === 'geo') {
-        defBg = '#f0f0f5'; defText = '#111111'; defAccent = sub.accent || '#3f22ec'; defBold = sub.stat1 || sub.accent || '#ff7b00';
+        defBg = '#f0f0f5'; defText = '#111111'; defAccent = sub.accent || '#2F35E1'; defBold = sub.stat1 || sub.accent || '#ff7b00';
       }
     }
     
@@ -1128,7 +1128,7 @@ function showPermissionBanner() {
 
 function showToast(msg) {
   let t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-family:Space Mono,monospace;font-size:11px;padding:8px 16px;border-radius:0;z-index:9999;white-space:nowrap;border:2px solid #ffcc00;';
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-family:Space Mono,monospace;font-size:11px;padding:8px 16px;border-radius:0;z-index:9999;white-space:nowrap;border:2px solid #FFD600;';
   t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3000);
