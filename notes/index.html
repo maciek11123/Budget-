@@ -313,6 +313,46 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 .tp-btn-save {flex: 2; border: none; border-radius: 0; padding: 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: var(--accent); color: #fff; border: 3px solid #000; box-shadow: 3px 3px 0 #000; text-transform: uppercase;}
 .tp-btn-discard {flex: 1; border: none; border-radius: 0; padding: 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: var(--surface); color: var(--text); border: 3px solid #000; box-shadow: 3px 3px 0 #000; text-transform: uppercase;}
 
+  /* ── BIG MODE overrides ── */
+  [data-big="1"] {
+    --fs-scale: 1.2;
+  }
+  [data-big="2"] {
+    --fs-scale: 1.45;
+  }
+  
+  :is([data-big="1"], [data-big="2"]) body { font-size: calc(15px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .finput { font-size: calc(15px * var(--fs-scale)); padding: calc(14px * var(--fs-scale)) calc(15px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .finput.big { font-size: calc(36px * var(--fs-scale)); padding: calc(18px * var(--fs-scale)) calc(16px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .btn-main, :is([data-big="1"], [data-big="2"]) .btn-sec { font-size: calc(14px * var(--fs-scale)); padding: calc(16px * var(--fs-scale)) calc(20px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .bname { font-size: calc(12px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .bmeta { font-size: calc(9px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .bamt { font-size: calc(13px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .logo { font-size: calc(11px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .hdate { font-size: calc(11px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .hero-num { font-size: calc(68px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .slabel { font-size: calc(9px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .sval { font-size: calc(21px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .snote { font-size: calc(11px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .status { font-size: calc(12px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .sec-title { font-size: calc(10px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .sec-link { font-size: calc(12px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .note-title { font-size: calc(14px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .note-body { font-size: calc(13px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .check-item { font-size: calc(13px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .nlabel { font-size: calc(8px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .nicon { font-size: calc(14px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .stitle { font-size: calc(17px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .flabel { font-size: calc(10px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .ctab { font-size: calc(12px * var(--fs-scale)); padding: calc(11px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .bpill { padding: calc(9px * var(--fs-scale)) calc(13px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .nav { padding: calc(5px * var(--fs-scale)) 0 calc(11px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .nbtn { padding: calc(4px * var(--fs-scale)) calc(12px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .note-card { padding: calc(14px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .ledger-summary { font-size: calc(14px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .ledger-item-desc { font-size: calc(14px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .ledger-item-meta { font-size: calc(10px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .ledger-item-amount { font-size: calc(18px * var(--fs-scale)); }
 </style>
 </head>
 <body>
@@ -567,6 +607,12 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
       <div class="flabel" style="margin-top:14px">Color variation</div>
       <div class="sub-grid" id="sub-grid"></div>
     </div>
+    <div class="flabel" style="margin-top:16px">Text & Button Size</div>
+    <div class="ctabs nm-pressed" style="margin-top:8px;margin-bottom:8px">
+      <button class="ctab" id="size-normal" onclick="applyBigMode('0')">Normal</button>
+      <button class="ctab" id="size-large" onclick="applyBigMode('1')">Large</button>
+      <button class="ctab" id="size-huge" onclick="applyBigMode('2')">Huge</button>
+    </div>
     <div class="flabel" style="margin-top:16px">Custom colors</div>
     <div id="custom-colors"></div>
     <div id="pwa-install-btn" onclick="installPWA()" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 16px;background:#3f22ec;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
@@ -654,6 +700,17 @@ function applyTheme(){
   document.documentElement.setAttribute('data-theme',S.theme);
   applySubTheme();
   applyCustomColors();
+}
+
+let bigMode = localStorage.getItem("pixel-keep-bigMode") || "0";
+function applyBigMode(val) {
+  bigMode = val;
+  localStorage.setItem("pixel-keep-bigMode", val);
+  document.documentElement.setAttribute("data-big", val);
+  ["0", "1", "2"].forEach(sz => {
+    const btn = document.getElementById("size-" + (sz === "0" ? "normal" : sz === "1" ? "large" : "huge"));
+    if (btn) btn.classList.toggle("active", bigMode === sz);
+  });
 }
 
 function applySubTheme(){
@@ -1384,6 +1441,7 @@ function playAudio(audioKey) {
 
 // ── INIT ───────────────────────────────────────────────────────────────────
 applyTheme();
+applyBigMode(bigMode);
 renderThemeGrid();
 render();
 </script>
