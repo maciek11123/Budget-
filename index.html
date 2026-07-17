@@ -436,6 +436,58 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   }
   .ledger-done-divider-line { flex: 1; height: 2px; background: #000; }
 
+  /* ── BRING LIST — exact DadApp parity ── */
+  .bring-item {
+    background: #fff;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .bring-item.packed { opacity: 0.6; }
+  .bring-check-zone {
+    width: 60px;
+    min-height: 72px;
+    border-right: 3px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    font-weight: 700;
+    background: #fff;
+  }
+  .bring-item.packed .bring-check-zone { background: #00C853; color: white; }
+  .bring-item-text {
+    flex: 1;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #000;
+  }
+  .bring-item.packed .bring-item-text { text-decoration: line-through; color: #555; }
+  .bring-delete {
+    width: 44px;
+    min-height: 72px;
+    border-left: 3px solid #000;
+    background: none;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    flex-shrink: 0;
+    font-family: inherit;
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+  }
+  .bring-delete:active { background: #e53935; color: white; }
+
   /* ── TRANSCRIBE OVERLAY ── */
   .transcribe-backdrop {
     display: none; position: fixed; inset: 0;
@@ -712,6 +764,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   :is([data-big="1"], [data-big="2"]) .ledger-item-desc { font-size: calc(14px * var(--fs-scale)); }
   :is([data-big="1"], [data-big="2"]) .ledger-item-meta { font-size: calc(10px * var(--fs-scale)); }
   :is([data-big="1"], [data-big="2"]) .ledger-item-amount { font-size: calc(18px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .bring-item-text { font-size: calc(13px * var(--fs-scale)); }
+  :is([data-big="1"], [data-big="2"]) .bring-check-zone { font-size: calc(20px * var(--fs-scale)); }
 </style>
 </head>
 <body>
@@ -870,6 +924,20 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 </div>
 
 
+<!-- ── BRING LIST PAGE (Firebase — synced with DadApp) ── -->
+<div class="page" id="pg-bring">
+  <div class="firebase-status-bar">
+    <span class="fb-dot" id="bringFbDot" style="background:#ffaa00;"></span>
+    <span id="bringFbStatus" style="color:#333;">⏳ CONNECTING...</span>
+  </div>
+  <div id="bringList"></div>
+  <div class="ledger-note-card" style="margin-top:16px;">
+    <input class="ledger-title-input" id="bringInput" type="text" maxlength="80" placeholder="ADD ITEM...">
+    <button class="ledger-btn-blue" onclick="bringAdd()">+ ADD ITEM</button>
+  </div>
+</div>
+
+
 <!-- ══ PAY TAB ══════════════════════════════════════════════════════════════ -->
 <div class="page" id="pg-pay">
   <div class="pay-page">
@@ -954,6 +1022,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   </button>
   <button class="nbtn" id="n-ledger" onclick="showPage('pg-ledger');setNav('n-ledger')">
     <span class="nicon">💳</span><span class="nlabel">Ledger</span>
+  </button>
+  <button class="nbtn" id="n-bring" onclick="showPage('pg-bring');setNav('n-bring')">
+    <span class="nicon">📦</span><span class="nlabel">Bring</span>
   </button>
 </div>
 </div>
@@ -1889,8 +1960,9 @@ window._LEDGER_FB = {
 
   window._fb = { db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp };
   window._ledgerDocs = [];
+  window._bringDocs = [];
 
-  // ── live listener ──
+  // ── ledger live listener ──
   const ledgerQ = query(collection(db, 'ledger'), orderBy('createdAt', 'desc'));
   onSnapshot(ledgerQ, (snap) => {
     window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
@@ -1901,9 +1973,28 @@ window._LEDGER_FB = {
     setFbStatus('offline');
   });
 
+  // ── bring live listener ──
+  const bringQ = query(collection(db, 'bringlist'), orderBy('createdAt', 'desc'));
+  onSnapshot(bringQ, (snap) => {
+    window._bringDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.renderBring && window.renderBring();
+    setBringFbStatus('live');
+  }, (err) => {
+    console.error(err);
+    setBringFbStatus('offline');
+  });
+
   function setFbStatus(state) {
     const dot    = document.getElementById('ledgerFbDot');
     const status = document.getElementById('ledgerFbStatus');
+    if (!dot || !status) return;
+    dot.className = 'fb-dot ' + state;
+    status.textContent = state === 'live' ? 'LIVE' : 'OFFLINE';
+  }
+
+  function setBringFbStatus(state) {
+    const dot    = document.getElementById('bringFbDot');
+    const status = document.getElementById('bringFbStatus');
     if (!dot || !status) return;
     dot.className = 'fb-dot ' + state;
     status.textContent = state === 'live' ? 'LIVE' : 'OFFLINE';
@@ -1996,7 +2087,8 @@ window._LEDGER_FB = {
         paidBy: 'him',
         settled: false,
         deleted: false,
-        createdAt: fb.serverTimestamp()
+        createdAt: fb.serverTimestamp(),
+        addedBy: 'maciek'
       });
       document.getElementById('ledgerDesc').value   = '';
       document.getElementById('ledgerAmount').value = '';
@@ -2011,7 +2103,8 @@ window._LEDGER_FB = {
     try {
       await fb.updateDoc(fb.doc(fb.db, 'ledger', id), {
         settled: true,
-        settledAt: new Date().toISOString()
+        settledAt: new Date().toISOString(),
+        modifiedBy: 'maciek'
       });
       showToast('✓ SETTLED');
     } catch(e) { showToast('ERROR: ' + e.message); }
@@ -2022,9 +2115,101 @@ window._LEDGER_FB = {
     const fb = window._fb;
     if (!fb) { showToast('NOT CONNECTED'); return; }
     try {
-      await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { deleted: true });
+      await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { 
+        deleted: true,
+        modifiedBy: 'maciek'
+      });
       showToast('🗑️ DELETED');
     } catch(e) { showToast('ERROR: ' + e.message); }
+  };
+
+  // ── bringAdd ──
+  window.bringAdd = async function() {
+    const inp = document.getElementById('bringInput');
+    if (!inp) return;
+    const text = inp.value.trim();
+    if (!text) { showToast('ADD AN ITEM TEXT'); return; }
+    const fb = window._fb;
+    if (!fb) { showToast('FIREBASE NOT READY'); return; }
+    try {
+      await fb.addDoc(fb.collection(fb.db, 'bringlist'), {
+        text,
+        packed: false,
+        deleted: false,
+        createdAt: fb.serverTimestamp(),
+        addedBy: 'maciek'
+      });
+      inp.value = '';
+      showToast('✓ SAVED');
+    } catch(e) { showToast('ERROR: ' + e.message); }
+  };
+
+  // ── bringToggle ──
+  window.bringToggle = async function(id) {
+    const item = window._bringDocs.find(x => x.id === id);
+    if (!item) return;
+    const fb = window._fb;
+    if (!fb) return;
+    try {
+      await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), {
+        packed: !item.packed,
+        modifiedBy: 'maciek'
+      });
+    } catch(e) { console.error(e); }
+  };
+
+  // ── bringDelete ──
+  window.bringDelete = async function(id) {
+    const fb = window._fb;
+    if (!fb) return;
+    try {
+      await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), {
+        deleted: true,
+        packed: true,
+        modifiedBy: 'maciek'
+      });
+      window._bringDocs = window._bringDocs.filter(x => x.id !== id);
+      window.renderBring();
+      showToast('🗑️ DELETED');
+    } catch(e) { showToast('ERROR: ' + e.message); }
+  };
+
+  // ── renderBring ──
+  window.renderBring = function() {
+    const el = document.getElementById('bringList');
+    if (!el) return;
+    const docs = window._bringDocs.filter(x => !x.deleted);
+    if (!docs.length) {
+      el.innerHTML = '<div class="empty-state" style="padding:40px;text-align:center;font-weight:700;color:var(--dim);text-transform:uppercase;font-size:11px;letter-spacing:0.06em;">Bring list is empty</div>';
+      return;
+    }
+    const unpacked = docs.filter(x => !x.packed);
+    const packed   = docs.filter(x => x.packed);
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function bringItemHTML(item) {
+      const check = item.packed ? '✓' : '';
+      return '<div class="bring-item' + (item.packed ? ' packed' : '') + '" onclick="bringToggle(\'' + item.id + '\')">'
+        + '<div class="bring-check-zone">' + check + '</div>'
+        + '<div class="bring-item-text">' + esc(item.text) + '</div>'
+        + '<button class="bring-delete" onclick="event.stopPropagation();bringDelete(\'' + item.id + '\')">✕</button>'
+        + '</div>';
+    }
+
+    let html = '';
+    unpacked.forEach(item => { html += bringItemHTML(item); });
+    if (packed.length) {
+      html += '<div class="ledger-done-divider">'
+        + '<div class="ledger-done-divider-line"></div>'
+        + '<span style="font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;">COMPLETED (' + packed.length + ')</span>'
+        + '<div class="ledger-done-divider-line"></div>'
+        + '</div>';
+      packed.forEach(item => { html += bringItemHTML(item); });
+    }
+    el.innerHTML = html;
   };
 </script>
 
