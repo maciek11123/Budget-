@@ -265,7 +265,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 
 /* ══════════════════════════════════════
    NOTES SPECIFIC UI (Pixel Keep)
-══════════════════════════════════════ */
+   ══════════════════════════════════════ */
 .notes-creator{border:4px solid #000;box-shadow:6px 6px 0 #000!important;border-radius:0;background:var(--surface)!important;padding:16px;margin:16px 14px 24px;}
 .notes-creator .finput {border-radius:0; border:2px solid #000;}
 .notes-creator .btn-main {border-radius:0; border:4px solid #000; box-shadow:4px 4px 0 #000;}
@@ -291,10 +291,59 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 .check-item {display: flex; align-items: center; gap: 8px; margin-bottom: 4px;}
 .note-chk {width: 18px; height: 18px; border: 2px solid #000; cursor: pointer; appearance: none; background: #fff;}
 .note-chk:checked {background: var(--accent);}
-.audio-container {margin-top: 8px; background: #f4f4f4; border: 2px dashed #000; padding: 6px; display: flex; align-items: center; justify-content: space-between;}
+.audio-container {margin-top: 8px; background: #f4f4f4; border: 2px dashed #000; padding: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px;}
 .audio-label {font-size: 10px; font-weight: 700;}
-.del-btn {background: none; border: none; color: var(--low); font-family: 'Space Mono', monospace !important; font-weight: 700; font-size: 11px; cursor: pointer;}
+.audio-btns {display: flex; gap: 4px; flex-shrink: 0;}
+.del-btn {background: none; border: none; color: var(--low); font-family: 'Space Mono', monospace !important; font-weight: 500; font-size: 9px !important; opacity: 0.6; cursor: pointer; transition: opacity 0.2s;}
+.del-btn:hover {opacity: 1;}
 
+/* ── GEMINI THINKING ── */
+.gemini-thinking {display: none; align-items: center; gap: 10px; padding: 10px 0;}
+.gemini-thinking.visible {display: flex;}
+.thinking-dot {width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: tdot 1.2s ease-in-out infinite;}
+.thinking-dot:nth-child(2) {animation-delay: .2s;}
+.thinking-dot:nth-child(3) {animation-delay: .4s;}
+@keyframes tdot {0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.thinking-label {font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--dim);}
+
+/* ── TRANSCRIPTION OVERLAY ── */
+.tp-overlay {display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; align-items: flex-end;}
+.tp-overlay.open {display: flex;}
+.tp-panel {background: var(--surface); border: 4px solid #000; box-shadow: 0 -4px 0 #000; border-radius: 0; padding: 16px 18px 36px; width: 100%; max-width: 420px; margin: 0 auto; animation: slideup .28s cubic-bezier(.32,1.15,.62,1); font-family: 'Space Mono', monospace;}
+.tp-handle {width: 36px; height: 4px; background: #000; margin: 0 auto 14px; border-radius: 2px;}
+.tp-title {font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px;}
+.tp-text {font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; background: var(--bg); border: 2px solid #000; padding: 10px 12px; margin-bottom: 14px; min-height: 60px; max-height: 200px; overflow-y: auto;}
+.tp-actions {display: flex; gap: 8px;}
+.tp-btn-save {flex: 2; border: none; border-radius: 0; padding: 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: var(--accent); color: #fff; border: 3px solid #000; box-shadow: 3px 3px 0 #000; text-transform: uppercase;}
+.tp-btn-discard {flex: 1; border: none; border-radius: 0; padding: 14px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .06em; cursor: pointer; background: var(--surface); color: var(--text); border: 3px solid #000; box-shadow: 3px 3px 0 #000; text-transform: uppercase;}
+
+textarea.finput {
+  max-width: 100%;
+  resize: vertical;
+  min-height: 80px;
+}
+.notes-creator-title-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: stretch;
+}
+.notes-creator-title-row .finput {
+  margin-bottom: 0 !important;
+  flex: 1;
+  height: 46px;
+  padding: 10px 12px;
+}
+.notes-creator-title-row .btn-icon {
+  width: 46px;
+  height: 46px;
+  box-shadow: 3px 3px 0 #000;
+}
+.notes-creator .action-row {
+  margin: 14px 0 0 !important;
+  display: flex;
+  gap: 10px;
+}
 
   /* ── LEDGER — exact DadApp parity ── */
   .ledger-summary {
@@ -488,78 +537,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   }
   .bring-delete:active { background: #e53935; color: white; }
 
-  /* ── TRANSCRIBE OVERLAY ── */
-  .transcribe-backdrop {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.55); z-index: 200;
-  }
-  .transcribe-backdrop.open { display: block; }
-  .transcribe-panel {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    max-width: 420px; margin: 0 auto;
-    background: #fff; border-top: 3px solid #000;
-    border-left: 3px solid #000; border-right: 3px solid #000;
-    box-shadow: 0 -4px 0 #000;
-    padding: 0 0 32px; z-index: 201;
-    animation: slideup .28s ease-out;
-    max-height: 75vh; display: flex; flex-direction: column;
-  }
-  @keyframes slideup {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(0); }
-  }
-  .transcribe-handle {
-    width: 36px; height: 4px; background: #000; border-radius: 2px;
-    margin: 12px auto 14px;
-  }
-  .transcribe-title {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-    text-transform: uppercase; color: #555;
-    padding: 0 16px 10px; border-bottom: 2px solid #000; margin: 0 0 14px;
-  }
-  .transcribe-body { flex: 1; overflow-y: auto; padding: 0 16px; }
-  .thinking-dots {
-    display: flex; gap: 8px; align-items: center; justify-content: center;
-    padding: 28px 0;
-  }
-  .thinking-dots span {
-    width: 10px; height: 10px; border-radius: 50%; background: #000;
-    animation: dotpulse 0.8s ease-in-out infinite;
-  }
-  .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes dotpulse {
-    0%, 100% { transform: scale(0.6); opacity: 0.3; }
-    50%       { transform: scale(1.2); opacity: 1; }
-  }
-  .transcribe-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px; line-height: 1.6; color: #000;
-    white-space: pre-wrap; word-break: break-word;
-    border: 3px solid #000; box-shadow: 3px 3px 0 #000;
-    padding: 12px; margin-bottom: 14px; display: none;
-    background: #fff;
-  }
-  .transcribe-actions {
-    display: none; gap: 10px; padding: 0 16px;
-  }
-  .transcribe-actions.show { display: flex; }
-  .transcribe-save-btn {
-    flex: 1; padding: 12px;
-    background: #000; color: #fff;
-    border: 3px solid #000; box-shadow: 3px 3px 0 #555;
-    font-family: inherit; font-size: 11px; font-weight: 700;
-    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
-  }
-  .transcribe-save-btn:active { transform: translate(2px,2px); box-shadow: none; }
-  .transcribe-discard-btn {
-    flex: 1; padding: 12px;
-    background: #fff; color: #000;
-    border: 3px solid #000; box-shadow: 3px 3px 0 #000;
-    font-family: inherit; font-size: 11px; font-weight: 700;
-    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
-  }
-  .transcribe-discard-btn:active { transform: translate(2px,2px); box-shadow: none; }
+  /* Transcription overlay styles replaced by new tp-overlay styles above */
 
   /* ══ PAY TAB ══════════════════════════════════════════════════════════════ */
   .pay-page { padding: 0 14px 80px; }
@@ -876,13 +854,12 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 <!-- NOTES PAGE IS NOW FIRST AND DEFAULT ACTIVE -->
 <div class="page active" id="pg-notes">
   <div class="header">
-    <div class="logo">Note$</div>
+    <div class="logo">DotMemo</div>
   </div>
 
-
   <div class="notes-creator">
-    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-      <input type="text" id="note-title" class="finput" style="margin-bottom: 0;" placeholder="TITLE..." autocomplete="off">
+    <div class="notes-creator-title-row">
+      <input type="text" id="note-title" class="finput" placeholder="TITLE..." autocomplete="off">
       <button class="btn-icon" id="mode-toggle-btn" onclick="toggleInputMode()" title="Toggle List Mode">☑️</button>
     </div>
     
@@ -893,7 +870,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
       <button class="btn-sec" style="width: fit-content; padding: 6px 12px; font-size: 12px;" onclick="addListInputRow()">+ Add Item</button>
     </div>
 
-    <div class="action-row" style="margin-top: 10px;">
+    <div class="action-row">
       <button class="btn-main" id="save-note-btn" onclick="saveNote()">Save Note</button>
       <button class="btn-sec" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none; background:var(--surface); color:#000;">Cancel</button>
       <button class="btn-sec" id="mic-btn" onclick="toggleRecording()">Rec Audio</button>
@@ -1688,7 +1665,6 @@ function addListInputRow(checked = false, text = '') {
 async function requestMicPermission() {
   const btn = document.getElementById("mic-btn");
   try {
-    // Check if permissions API is available
     if (navigator.permissions) {
       const status = await navigator.permissions.query({ name: 'microphone' });
       if (status.state === 'denied') {
@@ -1696,9 +1672,7 @@ async function requestMicPermission() {
         return false;
       }
     }
-    // Actually request the permission by calling getUserMedia
     const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    // Permission granted — stop the test stream immediately
     testStream.getTracks().forEach(t => t.stop());
     return true;
   } catch (err) {
@@ -1751,7 +1725,6 @@ async function toggleRecording() {
         const audioId = "audio-" + Date.now();
         const transaction = db.transaction(["audioBlobs"], "readwrite");
         transaction.objectStore("audioBlobs").put(audioBlob, audioId);
-        // Stop all mic tracks to release microphone
         stream.getTracks().forEach(t => t.stop());
         notes.unshift({ id: Date.now(), title: document.getElementById("note-title").value.trim() || "AUDIO DUMP", body: "", isList: false, audioKey: audioId });
         document.getElementById("note-title").value = "";
@@ -1842,13 +1815,14 @@ function saveNote() {
       notes[noteIndex].title = title || "UNTITLED NOTE";
       notes[noteIndex].body = noteItems;
       notes[noteIndex].isList = isListMode;
-      // move updated note to top
       const updatedNote = notes.splice(noteIndex, 1)[0];
       notes.unshift(updatedNote);
     }
     cancelEdit();
   } else {
-    notes.unshift({ id: Date.now(), title: title || "UNTITLED NOTE", body: noteItems, isList: isListMode, audioKey: null });
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
+    notes.unshift({ id: Date.now(), title: title || "UNTITLED NOTE", body: noteItems, isList: isListMode, audioKey: null, date: dateStr });
     document.getElementById("note-title").value = "";
     document.getElementById("note-body").value = "";
     document.getElementById("list-items-container").innerHTML = "";
@@ -1863,14 +1837,14 @@ function toggleCheck(noteId, itemIndex) {
   if (note && note.isList) { note.body[itemIndex].checked = !note.body[itemIndex].checked; saveNotesState(); }
 }
 
-function deleteNote(id, audioKey) {
+window.deleteNote = function(id, audioKey) {
   notes = notes.filter(n => n.id !== id);
   if (audioKey && audioKey !== 'null') {
     const transaction = db.transaction(["audioBlobs"], "readwrite");
     transaction.objectStore("audioBlobs").delete(audioKey);
   }
   saveNotesState();
-}
+};
 
 function renderNotes() {
   const container = document.getElementById("notes-container");
@@ -1885,9 +1859,9 @@ function renderNotes() {
         <div class="audio-container">
           <span class="audio-label">⚙ AUDIO_DUMP.WAV</span>
           <audio id="player-${note.audioKey}" controls style="display:none"></audio>
-          <div style="display:flex;gap:6px;margin-top:6px;">
-            <button class="btn-main" style="flex:1;padding:6px 0;font-size:11px;box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">Play</button>
-            <button class="btn-main" style="flex:1;padding:6px 0;font-size:11px;box-shadow:2px 2px 0 #000;background:#000;color:#fff;" onclick="openTranscribe('${note.audioKey}', '${note.title}')">✦ Transcribe</button>
+          <div class="audio-btns">
+            <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">▶ Play</button>
+            <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;background:var(--accent);" onclick="transcribeAudio('${note.audioKey}')">✦ Transcribe</button>
           </div>
         </div>`;
     } 
@@ -1912,6 +1886,117 @@ function renderNotes() {
     container.appendChild(card);
   });
 }
+
+// ── GEMINI TRANSCRIPTION ───────────────────────────────────────────────────
+const GEMINI_KEY = ['AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join('');
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+
+let currentTranscription = null;
+
+async function transcribeAudio(audioKey) {
+  document.getElementById('tpOverlay').classList.add('open');
+  document.getElementById('tpText').style.display = 'none';
+  document.getElementById('tpSaveBtn').style.display = 'none';
+  document.getElementById('geminiThinkingInline').classList.add('visible');
+  document.getElementById('thinkingLabel').textContent = 'LOADING AUDIO...';
+  currentTranscription = null;
+
+  try {
+    const blob = await new Promise((resolve, reject) => {
+      const tx = db.transaction(['audioBlobs'], 'readonly');
+      const req = tx.objectStore('audioBlobs').get(audioKey);
+      req.onsuccess = e => e.target.result ? resolve(e.target.result) : reject(new Error('Audio not found'));
+      req.onerror = reject;
+    });
+
+    document.getElementById('thinkingLabel').textContent = 'SENDING TO GEMINI...';
+
+    const base64Audio = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    const mimeType = blob.type || 'audio/webm';
+    const geminiMime = mimeType.includes('mp4') ? 'audio/mp4'
+                     : mimeType.includes('ogg')  ? 'audio/ogg'
+                     : mimeType.includes('aac')  ? 'audio/aac'
+                     : 'audio/webm';
+
+    const systemPrompt = `You are a transcription assistant. Transcribe the audio verbatim — word for word.
+RULES:
+- NEVER invent or add words not clearly spoken.
+- Use [unclear] for inaudible parts.
+- If there is only silence or noise, return an empty string.
+- Return ONLY a JSON object, no preamble, no markdown, no backticks.
+
+{ "transcription": "verbatim text here" }`;
+
+    const response = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ parts: [
+          { inline_data: { mime_type: geminiMime, data: base64Audio } },
+          { text: 'Transcribe exactly what is spoken.' }
+        ]}],
+        generationConfig: { temperature: 0, max_output_tokens: 800 }
+      })
+    });
+
+    if (!response.ok) throw new Error(`Gemini ${response.status}`);
+
+    const data = await response.json();
+    const rawText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+    const clean = rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    currentTranscription = parsed.transcription || '';
+
+    document.getElementById('geminiThinkingInline').classList.remove('visible');
+    document.getElementById('tpText').textContent = currentTranscription || '(no speech detected)';
+    document.getElementById('tpText').style.display = 'block';
+    document.getElementById('tpSaveBtn').style.display = 'block';
+
+  } catch (err) {
+    console.error('Transcription error:', err);
+    document.getElementById('geminiThinkingInline').classList.remove('visible');
+    document.getElementById('tpText').textContent = '❌ Error: ' + (err.message || 'Transcription failed');
+    document.getElementById('tpText').style.display = 'block';
+    document.getElementById('tpSaveBtn').style.display = 'none';
+  }
+}
+
+function saveTranscriptionAsNote() {
+  if (!currentTranscription) return;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
+  notes.unshift({
+    id: Date.now(),
+    title: `🎙 TRANSCRIPTION — ${timeStr}`,
+    body: currentTranscription,
+    isList: false,
+    audioKey: null,
+    date: dateStr
+  });
+  saveNotesState();
+  dismissTranscription();
+  showToast('Transcription saved ✓');
+}
+
+function dismissTranscription() {
+  document.getElementById('tpOverlay').classList.remove('open');
+  document.getElementById('geminiThinkingInline').classList.remove('visible');
+  document.getElementById('tpText').style.display = 'none';
+  document.getElementById('tpSaveBtn').style.display = 'none';
+  currentTranscription = null;
+}
+
+document.getElementById('tpOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('tpOverlay')) dismissTranscription();
+});
 
 function playAudio(audioKey) {
   const transaction = db.transaction(["audioBlobs"], "readonly");
@@ -2377,114 +2462,25 @@ window._LEDGER_FB = {
 </script>
 
 <!-- ── TRANSCRIBE OVERLAY ── -->
-<div class="transcribe-backdrop" id="transcribeBackdrop" onclick="dismissTranscribe()"></div>
-<div class="transcribe-panel" id="transcribePanel" style="display:none;">
-  <div class="transcribe-handle"></div>
-  <div class="transcribe-title">✦ TRANSCRIPTION</div>
-  <div class="transcribe-body">
-    <div class="thinking-dots" id="transcribeThinking">
-      <span></span><span></span><span></span>
+<div class="tp-overlay" id="tpOverlay">
+  <div class="tp-panel">
+    <div class="tp-handle"></div>
+    <div class="tp-title">🎙 Dictation</div>
+    <div id="geminiThinkingInline" class="gemini-thinking">
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <span class="thinking-label" id="thinkingLabel">PROCESSING AUDIO...</span>
     </div>
-    <div class="transcribe-text" id="transcribeText"></div>
-  </div>
-  <div class="transcribe-actions" id="transcribeActions">
-    <button class="transcribe-save-btn" onclick="saveTranscriptionAsNote()">Save as Note</button>
-    <button class="transcribe-discard-btn" onclick="dismissTranscribe()">Discard</button>
+    <div class="tp-text" id="tpText">(no text converted)</div>
+    <div class="tp-actions">
+      <button class="tp-btn-save" id="tpSaveBtn" onclick="saveTranscriptionAsNote()">Save as Note</button>
+      <button class="tp-btn-discard" onclick="dismissTranscription()">Discard</button>
+    </div>
   </div>
 </div>
 
 <script>
-// ── GEMINI TRANSCRIPTION ──────────────────────────────────────────────────
-let currentTranscription = '';
-
-function openTranscribe(audioKey, noteTitle) {
-  // reset state
-  currentTranscription = '';
-  document.getElementById('transcribeThinking').style.display = 'flex';
-  document.getElementById('transcribeText').style.display    = 'none';
-  document.getElementById('transcribeText').textContent      = '';
-  document.getElementById('transcribeActions').classList.remove('show');
-  document.getElementById('transcribePanel').dataset.noteTitle = noteTitle || 'AUDIO NOTE';
-
-  // show overlay
-  document.getElementById('transcribeBackdrop').classList.add('open');
-  document.getElementById('transcribePanel').style.display = 'flex';
-
-  // load blob from IndexedDB then call Gemini
-  loadAudioBlob(audioKey).then(blob => {
-    if (!blob) { showTranscribeError('Audio not found in storage.'); return; }
-    callGemini(blob);
-  }).catch(e => showTranscribeError(e.message));
-}
-
-function loadAudioBlob(key) {
-  return new Promise((resolve, reject) => {
-    if (!db) { reject(new Error('DB not ready')); return; }
-    const tx  = db.transaction('audioBlobs', 'readonly');
-    const req = tx.objectStore('audioBlobs').get(key);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror   = () => reject(req.error);
-  });
-}
-
-async function callGemini(blob) {
-  try {
-    const mimeType = blob.type.includes('mp4') ? 'audio/mp4' : 'audio/webm';
-    const b64 = await blobToBase64(blob);
-
-    const KEY = ['AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join('');
-    const URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + KEY;
-
-    const body = {
-      system_instruction: { parts: [{ text:
-        'You are a transcription assistant. Transcribe the audio verbatim — word for word.\n' +
-        'RULES:\n' +
-        '- NEVER invent or add words not clearly spoken.\n' +
-        '- Use [unclear] for inaudible parts.\n' +
-        '- If there is only silence or noise, return an empty string.\n' +
-        '- Return ONLY a JSON object, no preamble, no markdown, no backticks.\n' +
-        '{ "transcription": "verbatim text here" }'
-      }] },
-      contents: [{ parts: [
-        { inline_data: { mime_type: mimeType, data: b64 } },
-        { text: 'Transcribe this audio.' }
-      ]}],
-      generationConfig: { temperature: 0, maxOutputTokens: 800 }
-    };
-
-    const res  = await fetch(URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    const data = await res.json();
-
-    if (!res.ok) { showTranscribeError(data?.error?.message || 'API error ' + res.status); return; }
-
-    // parse response
-    let raw = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
-    raw = raw.replace(/```json|```/g, '').trim();
-
-    let transcription = '';
-    try {
-      const parsed = JSON.parse(raw);
-      transcription = parsed.transcription || '';
-    } catch {
-      // fallback: use raw text
-      transcription = raw;
-    }
-
-    currentTranscription = transcription;
-    showTranscribeResult(transcription || '[No speech detected]');
-  } catch(e) {
-    showTranscribeError(e.message);
-  }
-}
-
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(blob);
-  });
-}
 
 function showTranscribeResult(text) {
   document.getElementById('transcribeThinking').style.display = 'none';
