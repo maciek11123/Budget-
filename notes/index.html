@@ -15,7 +15,7 @@
    THEMES (From Budget App)
 ══════════════════════════════════════ */
 [data-theme="pixel"]{
-  --bg:var(--pix-bg,#FFD600);--surface:#fff;--surface2:#fff;
+  --bg:var(--pix-bg,#ffffff);--surface:#fff;--surface2:#fff;
   --sd:transparent;--sl:transparent;
   --text-hi:var(--pix-text-hi,#000);--text:var(--pix-text,#000);--dim:var(--pix-dim,#555);--muted:#999;
   --hr:#000;
@@ -361,6 +361,237 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   :is([data-big="1"], [data-big="2"]) .audio-label { font-size: calc(10px * var(--fs-scale)) !important; }
   :is([data-big="1"], [data-big="2"]) .del-btn { font-size: calc(11px * var(--fs-scale)) !important; }
   :is([data-big="1"], [data-big="2"]) .audio-container button { font-size: calc(11px * var(--fs-scale)) !important; padding: calc(4px * var(--fs-scale)) calc(8px * var(--fs-scale)) !important; }
+
+/* Hide original components no longer corresponding to the new layouts */
+.tcard-dots, #sub-theme-sec, #pwa-install-btn { display: none !important; }
+
+/* ══════════════════════════════════════
+   NEOMORPHIC THEMES (Stack = Dark, Geo = Light)
+   ══════════════════════════════════════ */
+/* Scoped to Stack and Geo so Pixel (Default) remains Brutalist */
+
+[data-theme="stack"] {
+  --bg: #26282B;
+  --text-hi: #E0E5EC;
+  --text: #C0C5CE;
+  --dim: #888;
+  --muted: #555;
+  --hr: #1a1c1e;
+  --accent-grad: linear-gradient(145deg, #FF6A4A, #FF4B2B);
+  --accent-glow: rgba(255, 75, 43, 0.4);
+}
+
+[data-theme="geo"] {
+  --bg: #E0E5EC;
+  --text-hi: #22223b;
+  --text: #4a4e69;
+  --dim: #888;
+  --muted: #aaa;
+  --hr: #a3b1c6;
+  --accent-grad: linear-gradient(145deg, #FF6A4A, #FF4B2B);
+  --accent-glow: rgba(255, 75, 43, 0.4);
+}
+
+/* ── ADAPTIVE ADAPTIVE SHADOW ENGINE ── */
+/* Generates perfect math-calculated neomorphic extrusions for ANY selected color from the custom picker */
+:is([data-theme="stack"], [data-theme="geo"]) {
+  --sd: color-mix(in srgb, var(--bg) 82%, #000) !important;
+  --sl: color-mix(in srgb, var(--bg) 86%, #fff) !important;
+  --surface: var(--bg) !important;
+  --surface2: var(--bg) !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) * {
+  font-family: 'Nunito', sans-serif !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .logo {
+  font-size: 14px; font-weight: 800; letter-spacing: .2em; color: var(--text-hi);
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .notes-creator,
+:is([data-theme="stack"], [data-theme="geo"]) .note-card,
+:is([data-theme="stack"], [data-theme="geo"]) .sheet,
+:is([data-theme="stack"], [data-theme="geo"]) .tp-panel {
+  background: var(--bg) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 8px 8px 16px var(--sd), -8px -8px 16px var(--sl) !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .finput,
+:is([data-theme="stack"], [data-theme="geo"]) .tp-text,
+:is([data-theme="stack"], [data-theme="geo"]) .audio-container {
+  background: var(--bg) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: inset 6px 6px 12px var(--sd), inset -6px -6px 12px var(--sl) !important;
+  color: var(--text-hi) !important;
+  outline: none !important;
+}
+:is([data-theme="stack"], [data-theme="geo"]) .finput:focus { outline: none !important; background: var(--bg) !important; }
+
+:is([data-theme="stack"], [data-theme="geo"]) .btn-sec,
+:is([data-theme="stack"], [data-theme="geo"]) .btn-icon,
+:is([data-theme="stack"], [data-theme="geo"]) .del-btn,
+:is([data-theme="stack"], [data-theme="geo"]) .bghost,
+:is([data-theme="stack"], [data-theme="geo"]) .ctab,
+:is([data-theme="stack"], [data-theme="geo"]) .theme-fab,
+:is([data-theme="stack"], [data-theme="geo"]) .tcard {
+  background: var(--bg) !important;
+  border: none !important;
+  border-radius: 50px !important;
+  color: var(--text-hi) !important;
+  box-shadow: 8px 8px 16px var(--sd), -8px -8px 16px var(--sl) !important;
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+:is([data-theme="stack"], [data-theme="geo"]) .btn-icon {
+  width: 46px; height: 46px; border-radius: 50% !important;
+}
+:is([data-theme="stack"], [data-theme="geo"]) .tcard {
+  border-radius: 16px !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .btn-main,
+:is([data-theme="stack"], [data-theme="geo"]) .bconfirm,
+:is([data-theme="stack"], [data-theme="geo"]) .tp-btn-save {
+  background: var(--accent-grad) !important;
+  border: none !important;
+  border-radius: 50px !important;
+  padding: 14px 24px !important;
+  color: #fff !important;
+  font-weight: 800;
+  box-shadow: 6px 6px 12px var(--sd), -6px -6px 12px var(--sl), 0 6px 16px var(--accent-glow) !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .btn-sec:active,
+:is([data-theme="stack"], [data-theme="geo"]) .btn-icon:active,
+:is([data-theme="stack"], [data-theme="geo"]) .del-btn:active,
+:is([data-theme="stack"], [data-theme="geo"]) .bghost:active,
+:is([data-theme="stack"], [data-theme="geo"]) .ctab:active,
+:is([data-theme="stack"], [data-theme="geo"]) .theme-fab:active,
+:is([data-theme="stack"], [data-theme="geo"]) .tcard:active {
+  box-shadow: inset 6px 6px 12px var(--sd), inset -6px -6px 12px var(--sl) !important;
+}
+:is([data-theme="stack"], [data-theme="geo"]) .btn-main:active,
+:is([data-theme="stack"], [data-theme="geo"]) .bconfirm:active,
+:is([data-theme="stack"], [data-theme="geo"]) .tp-btn-save:active {
+  box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3), inset -4px -4px 10px rgba(255,255,255,0.2) !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .tcard.active {
+  box-shadow: inset 6px 6px 12px var(--sd), inset -6px -6px 12px var(--sl) !important;
+  outline: none !important;
+  border: 2px solid var(--accent-glow) !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .note-chk {
+  appearance: none;
+  background: var(--bg) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  box-shadow: inset 4px 4px 8px var(--sd), inset -4px -4px 8px var(--sl) !important;
+  width: 24px; height: 24px;
+  position: relative;
+}
+:is([data-theme="stack"], [data-theme="geo"]) .note-chk:checked::after {
+  content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px;
+  background: var(--accent-grad); border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .nav {
+  background: var(--bg) !important;
+  border: none !important;
+  box-shadow: 0 -8px 16px var(--sd) !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .shandle,
+:is([data-theme="stack"], [data-theme="geo"]) .tp-handle {
+  background: var(--sl) !important;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2) !important;
+  border: none !important;
+  height: 6px !important;
+  border-radius: 3px !important;
+}
+:is([data-theme="stack"], [data-theme="geo"]) .note-title,
+:is([data-theme="stack"], [data-theme="geo"]) .stitle {
+  border-bottom: none !important;
+  color: var(--text-hi) !important;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .notes-creator .btn-sec.recording {
+  background: var(--accent-grad) !important;
+  color: #fff !important;
+  box-shadow: 0 0 16px var(--accent-glow), inset 4px 4px 10px rgba(0,0,0,0.3) !important;
+  animation: none !important;
+}
+
+/* ── COLOR SELECTOR STYLING ── */
+:is([data-theme="stack"], [data-theme="geo"]) #custom-colors {
+  display: block !important;
+  margin-top: 10px;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .flabel {
+  display: block !important;
+  font-family: 'Nunito', sans-serif !important;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-hi);
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .cp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg) !important;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  box-shadow: 6px 6px 12px var(--sd), -6px -6px 12px var(--sl);
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .cp-row label {
+  font-family: 'Nunito', sans-serif !important;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .cp-row input[type="color"] {
+  -webkit-appearance: none;
+  border: none !important;
+  width: 44px;
+  height: 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: none !important;
+  box-shadow: inset 3px 3px 6px var(--sd), inset -3px -3px 6px var(--sl);
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .cp-row input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+:is([data-theme="stack"], [data-theme="geo"]) .cp-row input[type="color"]::-webkit-color-swatch {
+  border: none !important;
+  border-radius: 8px;
+}
 </style>
 </head>
 <body>
@@ -676,9 +907,9 @@ let S=load();
 if(!S.subTheme)S.subTheme=0;
 
 const THEMES={
-  pixel:{name:'Pixel',dots:['#FFD600','#2F35E1','#FF6B9D'],
+  pixel:{name:'Pixel',dots: ['#ffffff','#2F35E1','#FF6B9D'],
     subs:[
-      {name:'Arcade', bg:'#FFD600',accent:'#2F35E1',stat1:'#00e5ff',stat2:'#FF6B9D',nav:'#FFD600'},
+      {name: 'Arcade', bg: '#ffffff',accent:'#2F35E1',stat1:'#00e5ff',stat2:'#FF6B9D',nav: '#ffffff'},
       {name:'Bubblegum',bg:'#ffb3d9',accent:'#d6336c',stat1:'#ffd43b',stat2:'#845ef7',nav:'#ffb3d9'},
       {name:'Terminal',bg:'#1a1a2e',accent:'#00ff41',stat1:'#00ff41',stat2:'#39ff14',nav:'#1a1a2e',textHi:'#00ff41',text:'#00cc33',dim:'#009926'},
       {name:'Ocean',  bg:'#0077b6',accent:'#fff',stat1:'#caf0f8',stat2:'#90e0ef',nav:'#0077b6',textHi:'#fff',text:'#caf0f8',dim:'#90e0ef'},
@@ -1290,7 +1521,7 @@ function renderNotes() {
           <span class="audio-label">⚙ AUDIO_DUMP.WAV</span>
           <audio id="player-${note.audioKey}" controls style="display:none"></audio>
           <div class="audio-btns">
-            <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;" onclick="playAudio('${note.audioKey}')">▶ Play</button>
+            <button id="btn-audio-${note.audioKey}" class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;" onclick="toggleAudioPlayback('${note.audioKey}')">▶ Play</button>
             <button class="btn-main" style="padding:4px 8px;font-size:11px;width:auto;box-shadow:2px 2px 0 #000;background:var(--accent);" onclick="transcribeAudio('${note.audioKey}')">✦ Transcribe</button>
           </div>
         </div>`;
@@ -1433,18 +1664,64 @@ document.getElementById('tpOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('tpOverlay')) dismissTranscription();
 });
 
-function playAudio(audioKey) {
-  const transaction = db.transaction(["audioBlobs"], "readonly");
-  const request = transaction.objectStore("audioBlobs").get(audioKey);
-  request.onsuccess = (e) => {
-    const blob = e.target.result;
-    if (blob) {
-      const audioUrl = URL.createObjectURL(blob);
-      const audioEl = document.getElementById(`player-${audioKey}`);
-      audioEl.src = audioUrl;
-      audioEl.play();
+function toggleAudioPlayback(audioKey) {
+  const audio = document.getElementById(`player-${audioKey}`);
+  const btn = document.getElementById(`btn-audio-${audioKey}`);
+  if (!audio || !btn) return;
+
+  // Stop any other currently playing audios on the page
+  document.querySelectorAll('audio').forEach(otherAudio => {
+    if (otherAudio !== audio && !otherAudio.paused) {
+      otherAudio.pause();
+      otherAudio.currentTime = 0;
+      const otherKey = otherAudio.id.replace('player-', '');
+      const otherBtn = document.getElementById(`btn-audio-${otherKey}`);
+      if (otherBtn) otherBtn.textContent = "▶ Play";
     }
-  };
+  });
+
+  // If audio is playing, pause it (triggers onpause event to set button to Stop)
+  if (!audio.paused) {
+    audio.pause();
+  }
+  // If audio is paused and button is Stop, stop/reset it completely
+  else if (btn.textContent.includes("Stop")) {
+    audio.currentTime = 0;
+    btn.textContent = "▶ Play";
+  }
+  // Otherwise (if stopped or paused in Play state), start playing
+  else {
+    if (!audio.src || audio.src === "") {
+      const transaction = db.transaction(["audioBlobs"], "readonly");
+      const request = transaction.objectStore("audioBlobs").get(audioKey);
+      request.onsuccess = (e) => {
+        const blob = e.target.result;
+        if (blob) {
+          audio.src = URL.createObjectURL(blob);
+          
+          audio.onplay = () => {
+            btn.textContent = "⏸ Pause";
+          };
+          audio.onpause = () => {
+            if (audio.currentTime === 0 || audio.ended) {
+              btn.textContent = "▶ Play";
+            } else {
+              btn.textContent = "⏹ Stop";
+            }
+          };
+          audio.onended = () => {
+            btn.textContent = "▶ Play";
+            audio.currentTime = 0;
+          };
+          
+          audio.play();
+        }
+      };
+    } else {
+      audio.play();
+    }
+  }
+};
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────────
