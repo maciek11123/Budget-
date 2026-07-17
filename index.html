@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FFD600">
+<meta name="theme-color" content="#ffffff">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Note$</title>
@@ -48,7 +48,7 @@
 [data-theme="pixel"] .btn-main{background:var(--pix-accent,#2F35E1)!important;color:#fff;border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
 [data-theme="pixel"] .btn-sec{border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
 [data-theme="pixel"] .chk{border-radius:0;border:2px solid #000;box-shadow:none!important;}
-[data-theme="pixel"] .nav{background:var(--pix-nav,#FFD600)!important;border-top:4px solid #000;box-shadow:none;}
+[data-theme="pixel"] .nav{background:var(--pix-nav,#ffffff)!important;border-top:4px solid #000;box-shadow:none;}
 [data-theme="pixel"] .ctab.active{background:var(--pix-accent,#2F35E1)!important;color:#fff;border-radius:0;box-shadow:4px 4px 0 #000;}
 [data-theme="pixel"] .ctabs{border-radius:0;}
 [data-theme="pixel"] .ctab{border-radius:0;}
@@ -1437,18 +1437,7 @@ function save(){
 }
 let S=load();
 if(!S.subTheme)S.subTheme=0;
-// Safety: if nextPay is somehow still in the past after a previous session's advance,
-// snap it forward without re-processing bills (they were already handled).
-(function snapNextPayIfStale(){
-  const today=new Date();today.setHours(0,0,0,0);
-  let pay=new Date(S.nextPay+'T00:00:00');pay.setHours(0,0,0,0);
-  if(today>=pay){
-    // Advance date only — bills were presumably already rolled last session
-    while(today>=pay){const n=new Date(pay);n.setDate(n.getDate()+14);pay=n;}
-    S.nextPay=pay.toISOString().slice(0,10);
-    save();
-  }
-})();
+
 
 const THEMES={
   pixel:{name:'Pixel',dots: ['#ffffff','#2F35E1','#FF6B9D'],
@@ -1580,7 +1569,7 @@ function renderThemeGrid(){
     if (info && info.subs) {
       const sub = info.subs[S.subTheme || 0] || {};
       if (S.theme === 'pixel') {
-        defBg = sub.bg || '#FFD600'; defText = sub.textHi || '#000000'; defAccent = sub.accent || '#2F35E1'; defBold = sub.stat1 || sub.accent || '#00e5ff';
+        defBg = sub.bg || '#ffffff'; defText = sub.textHi || '#000000'; defAccent = sub.accent || '#2F35E1'; defBold = sub.stat1 || sub.accent || '#00e5ff';
       } else if (S.theme === 'stack') {
         defBg = '#000000'; defText = '#ffffff'; defAccent = sub.accent || '#00d970'; defBold = (sub.pills && sub.pills[0]) ? sub.pills[0] : defAccent;
       } else if (S.theme === 'geo') {
@@ -2329,11 +2318,52 @@ function checkCycleAdvance() {
   showToast('✅ New cycle started — payday!');
 }
 
+function cleanupStuckBills() {
+  if (!S.nextPay) return;
+  const cycleStart = new Date(new Date(S.nextPay + 'T00:00:00').getTime() - 14 * 86400000);
+  cycleStart.setHours(0,0,0,0);
+  
+  const currentYear = new Date().getFullYear();
+  const kept = [];
+  let changed = false;
+
+  for (const b of S.bills) {
+    if (b.cycle === 'current') {
+      if (b.date) {
+        const parsed = Date.parse(b.date + ' ' + currentYear);
+        if (!isNaN(parsed)) {
+          const billDate = new Date(parsed);
+          billDate.setHours(0,0,0,0);
+          if (billDate < cycleStart) {
+            changed = true;
+            if (b.paid) {
+              continue;
+            } else {
+              b.cycle = 'next';
+            }
+          }
+        }
+      }
+    }
+    kept.push(b);
+  }
+  
+  if (changed) {
+    S.bills = kept;
+    save();
+  }
+}
+
 // ── INIT ───────────────────────────────────────────────────────────────────
+if (S.customColors && S.customColors.bg === '#FFD600') {
+  S.customColors.bg = '#ffffff';
+  save();
+}
 applyTheme();
 applyBigMode(bigMode);
 renderThemeGrid();
 checkCycleAdvance();
+cleanupStuckBills();
 render();
 </script>
 <script>
