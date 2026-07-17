@@ -363,46 +363,54 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   :is([data-big="1"], [data-big="2"]) .audio-container button { font-size: calc(11px * var(--fs-scale)) !important; padding: calc(4px * var(--fs-scale)) calc(8px * var(--fs-scale)) !important; }
 
 /* Hide original components no longer corresponding to the new layouts */
-.tcard-dots, #sub-theme-sec, #pwa-install-btn { display: none !important; }
+/* Hide original components no longer corresponding to the new layouts */
+.tcard-dots, #pwa-install-btn { display: none !important; }
 
 /* ══════════════════════════════════════
-   NEOMORPHIC THEMES (Stack = Dark, Geo = Light)
+   E-INK THEMES (Stack = Charcoal Dark, Geo = Paper Light)
    ══════════════════════════════════════ */
 /* Scoped to Stack and Geo so Pixel (Default) remains Brutalist */
 
 [data-theme="stack"] {
-  --bg: #26282B;
-  --text-hi: #E0E5EC;
-  --text: #C0C5CE;
-  --dim: #888;
-  --muted: #555;
-  --hr: #1a1c1e;
-  --accent-grad: linear-gradient(145deg, #FF6A4A, #FF4B2B);
-  --accent-glow: rgba(255, 75, 43, 0.4);
+  --bg: #151515;
+  --surface: #1c1c1c;
+  --surface2: #262626;
+  --text-hi: #f5f5f5;
+  --text: #c5c5c5;
+  --dim: #777777;
+  --muted: #444444;
+  --hr: #444444;
+  --accent: #ffffff;
+  --accent-grad: #ffffff;
+  --on-accent: #000000;
+  --low: #a8a8a8;
+  --warn: #d4d4d4;
+  --stk-pill-1: #333; --stk-pill-2: #444; --stk-pill-3: #555;
 }
 
 [data-theme="geo"] {
-  --bg: #E0E5EC;
-  --text-hi: #22223b;
-  --text: #4a4e69;
-  --dim: #888;
-  --muted: #aaa;
-  --hr: #a3b1c6;
-  --accent-grad: linear-gradient(145deg, #FF6A4A, #FF4B2B);
-  --accent-glow: rgba(255, 75, 43, 0.4);
+  --bg: #f5f5f0; /* Warm e-paper gray */
+  --surface: #ffffff;
+  --surface2: #eae9e2;
+  --text-hi: #111111;
+  --text: #222222;
+  --dim: #666666;
+  --muted: #999999;
+  --hr: #111111;
+  --accent: #000000;
+  --accent-grad: #000000;
+  --on-accent: #ffffff;
+  --low: #555555;
+  --warn: #333333;
 }
 
-/* ── ADAPTIVE ADAPTIVE SHADOW ENGINE ── */
-/* Generates perfect math-calculated neomorphic extrusions for ANY selected color from the custom picker */
+/* ── E-INK STYLE ENGINE ── */
 :is([data-theme="stack"], [data-theme="geo"]) {
-  --sd: color-mix(in srgb, var(--bg) 82%, #000) !important;
-  --sl: color-mix(in srgb, var(--bg) 86%, #fff) !important;
-  --surface: var(--bg) !important;
-  --surface2: var(--bg) !important;
+  font-family: 'Space Mono', monospace !important;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) * {
-  font-family: 'Nunito', sans-serif !important;
+  font-family: 'Space Mono', monospace !important;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) body {
@@ -411,30 +419,30 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .logo {
-  font-size: 14px; font-weight: 800; letter-spacing: .2em; color: var(--text-hi);
+  font-size: 14px; font-weight: 700; letter-spacing: .15em; color: var(--text-hi);
+  text-transform: uppercase;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .notes-creator,
 :is([data-theme="stack"], [data-theme="geo"]) .note-card,
 :is([data-theme="stack"], [data-theme="geo"]) .sheet,
 :is([data-theme="stack"], [data-theme="geo"]) .tp-panel {
-  background: var(--bg) !important;
-  border: none !important;
-  border-radius: 16px !important;
-  box-shadow: 8px 8px 16px var(--sd), -8px -8px 16px var(--sl) !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--hr) !important;
+  border-radius: 6px !important;
+  box-shadow: 3px 3px 0 var(--hr) !important;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .finput,
 :is([data-theme="stack"], [data-theme="geo"]) .tp-text,
 :is([data-theme="stack"], [data-theme="geo"]) .audio-container {
-  background: var(--bg) !important;
-  border: none !important;
-  border-radius: 12px !important;
-  box-shadow: inset 6px 6px 12px var(--sd), inset -6px -6px 12px var(--sl) !important;
+  background: var(--surface2) !important;
+  border: 1px solid var(--hr) !important;
+  border-radius: 4px !important;
   color: var(--text-hi) !important;
+  box-shadow: none !important;
   outline: none !important;
 }
-:is([data-theme="stack"], [data-theme="geo"]) .finput:focus { outline: none !important; background: var(--bg) !important; }
 
 :is([data-theme="stack"], [data-theme="geo"]) .btn-sec,
 :is([data-theme="stack"], [data-theme="geo"]) .btn-icon,
@@ -443,154 +451,110 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 :is([data-theme="stack"], [data-theme="geo"]) .ctab,
 :is([data-theme="stack"], [data-theme="geo"]) .theme-fab,
 :is([data-theme="stack"], [data-theme="geo"]) .tcard {
-  background: var(--bg) !important;
-  border: none !important;
-  border-radius: 50px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--hr) !important;
+  border-radius: 4px !important;
   color: var(--text-hi) !important;
-  box-shadow: 8px 8px 16px var(--sd), -8px -8px 16px var(--sl) !important;
-  transition: box-shadow 0.1s ease, transform 0.1s ease;
-  display: flex; align-items: center; justify-content: center;
+  box-shadow: 2px 2px 0 var(--hr) !important;
+  transition: all 0.1s ease;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
 }
+
 :is([data-theme="stack"], [data-theme="geo"]) .btn-icon {
-  width: 46px; height: 46px; border-radius: 50% !important;
-}
-:is([data-theme="stack"], [data-theme="geo"]) .tcard {
-  border-radius: 16px !important;
+  width: 36px; height: 36px; border-radius: 4px !important;
+  display: flex; align-items: center; justify-content: center;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .btn-main,
 :is([data-theme="stack"], [data-theme="geo"]) .bconfirm,
 :is([data-theme="stack"], [data-theme="geo"]) .tp-btn-save {
-  background: var(--accent-grad) !important;
-  border: none !important;
-  border-radius: 50px !important;
-  padding: 14px 24px !important;
-  color: #fff !important;
+  background: var(--accent) !important;
+  border: 1px solid var(--hr) !important;
+  border-radius: 4px !important;
+  padding: 10px 18px !important;
+  color: var(--on-accent) !important;
   font-weight: 800;
-  box-shadow: 6px 6px 12px var(--sd), -6px -6px 12px var(--sl), 0 6px 16px var(--accent-glow) !important;
+  box-shadow: 3px 3px 0 var(--hr) !important;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
+/* Hover/Active E-ink Inversion Micro-interactions */
 :is([data-theme="stack"], [data-theme="geo"]) .btn-sec:active,
 :is([data-theme="stack"], [data-theme="geo"]) .btn-icon:active,
 :is([data-theme="stack"], [data-theme="geo"]) .del-btn:active,
 :is([data-theme="stack"], [data-theme="geo"]) .bghost:active,
 :is([data-theme="stack"], [data-theme="geo"]) .ctab:active,
-:is([data-theme="stack"], [data-theme="geo"]) .theme-fab:active,
 :is([data-theme="stack"], [data-theme="geo"]) .tcard:active {
-  box-shadow: inset 6px 6px 12px var(--sd), inset -6px -6px 12px var(--sl) !important;
+  background: var(--text-hi) !important;
+  color: var(--surface) !important;
+  box-shadow: none !important;
+  transform: translate(2px, 2px);
 }
 :is([data-theme="stack"], [data-theme="geo"]) .btn-main:active,
 :is([data-theme="stack"], [data-theme="geo"]) .bconfirm:active,
 :is([data-theme="stack"], [data-theme="geo"]) .tp-btn-save:active {
-  box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3), inset -4px -4px 10px rgba(255,255,255,0.2) !important;
+  background: var(--surface) !important;
+  color: var(--accent) !important;
+  box-shadow: none !important;
+  transform: translate(3px, 3px);
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .tcard.active {
-  box-shadow: inset 6px 6px 12px var(--sd), inset -6px -6px 12px var(--sl) !important;
-  outline: none !important;
-  border: 2px solid var(--accent-glow) !important;
+  background: var(--accent) !important;
+  color: var(--on-accent) !important;
+  border: 2px double var(--hr) !important;
+  box-shadow: none !important;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .note-chk {
   appearance: none;
-  background: var(--bg) !important;
-  border: none !important;
-  border-radius: 50% !important;
-  box-shadow: inset 4px 4px 8px var(--sd), inset -4px -4px 8px var(--sl) !important;
-  width: 24px; height: 24px;
+  background: var(--surface) !important;
+  border: 1px solid var(--hr) !important;
+  border-radius: 2px !important;
+  width: 18px; height: 18px;
   position: relative;
+  cursor: pointer;
 }
 :is([data-theme="stack"], [data-theme="geo"]) .note-chk:checked::after {
-  content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px;
-  background: var(--accent-grad); border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent-glow);
+  content: '✓'; position: absolute; top: -1px; left: 2px;
+  color: var(--text-hi); font-size: 13px; font-weight: bold;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .nav {
-  background: var(--bg) !important;
-  border: none !important;
-  box-shadow: 0 -8px 16px var(--sd) !important;
+  background: var(--surface) !important;
+  border-top: 1px solid var(--hr) !important;
+  box-shadow: none !important;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .shandle,
 :is([data-theme="stack"], [data-theme="geo"]) .tp-handle {
-  background: var(--sl) !important;
-  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2) !important;
+  background: var(--hr) !important;
   border: none !important;
-  height: 6px !important;
-  border-radius: 3px !important;
+  height: 4px !important;
+  border-radius: 0 !important;
 }
+
 :is([data-theme="stack"], [data-theme="geo"]) .note-title,
 :is([data-theme="stack"], [data-theme="geo"]) .stitle {
-  border-bottom: none !important;
+  border-bottom: 1px dashed var(--hr) !important;
   color: var(--text-hi) !important;
 }
 
 :is([data-theme="stack"], [data-theme="geo"]) .notes-creator .btn-sec.recording {
-  background: var(--accent-grad) !important;
-  color: #fff !important;
-  box-shadow: 0 0 16px var(--accent-glow), inset 4px 4px 10px rgba(0,0,0,0.3) !important;
+  background: var(--accent) !important;
+  color: var(--on-accent) !important;
+  box-shadow: none !important;
   animation: none !important;
 }
 
-/* ── COLOR SELECTOR STYLING ── */
-:is([data-theme="stack"], [data-theme="geo"]) #custom-colors {
-  display: block !important;
-  margin-top: 10px;
-}
-
+/* Hide color variations and custom colors in E-ink mode */
+:is([data-theme="stack"], [data-theme="geo"]) #sub-theme-sec,
+:is([data-theme="stack"], [data-theme="geo"]) #custom-colors,
 :is([data-theme="stack"], [data-theme="geo"]) .flabel {
-  display: block !important;
-  font-family: 'Nunito', sans-serif !important;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-hi);
-  margin-top: 18px;
-  margin-bottom: 8px;
-}
-
-:is([data-theme="stack"], [data-theme="geo"]) .cp-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--bg) !important;
-  border-radius: 14px;
-  margin-bottom: 10px;
-  box-shadow: 6px 6px 12px var(--sd), -6px -6px 12px var(--sl);
-}
-
-:is([data-theme="stack"], [data-theme="geo"]) .cp-row label {
-  font-family: 'Nunito', sans-serif !important;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-:is([data-theme="stack"], [data-theme="geo"]) .cp-row input[type="color"] {
-  -webkit-appearance: none;
-  border: none !important;
-  width: 44px;
-  height: 26px;
-  border-radius: 8px;
-  cursor: pointer;
-  background: none !important;
-  box-shadow: inset 3px 3px 6px var(--sd), inset -3px -3px 6px var(--sl);
-}
-
-:is([data-theme="stack"], [data-theme="geo"]) .cp-row input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-:is([data-theme="stack"], [data-theme="geo"]) .cp-row input[type="color"]::-webkit-color-swatch {
-  border: none !important;
-  border-radius: 8px;
+  display: none !important;
 }
 </style>
 </head>
