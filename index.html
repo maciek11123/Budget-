@@ -1202,68 +1202,68 @@ textarea.finput {
   <div class="cycle-strip" id="cycle-strip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin:8px 0 10px;scrollbar-width:none;-ms-overflow-style:none;"></div>
   
   <!-- HERO: Real Balance -->
-  <div class="hero-card" style="background:var(--surface2);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:inset 1px 1px 3px var(--sl),inset -1px -1px 3px var(--sd);">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+  <div class="hero nm-raised" style="margin: 8px 14px 12px; padding: 24px 20px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;border-bottom:3px solid #000;padding-bottom:10px;">
       <div style="display:flex;align-items:baseline;gap:8px;">
-        <span class="real-num pos" id="real-num" style="font-size:32px;font-weight:800;line-height:1;margin-bottom:0;color:var(--text-hi);">—</span>
+        <span class="real-num pos" id="real-num" style="font-family:'Space Mono',monospace;font-size:36px;font-weight:800;line-height:1;margin-bottom:0;color:var(--text-hi);">—</span>
         <span class="real-label" style="font-size:9px;font-weight:700;letter-spacing:.1em;opacity:0.6;text-transform:uppercase;color:var(--dim);">REAL BALANCE</span>
       </div>
-      <span id="cycle-badge" style="background:var(--accent);color:var(--on-accent);padding:2px 8px;font-size:9px;border-radius:8px;letter-spacing:.05em;font-weight:700">—</span>
+      <span id="cycle-badge" style="background:var(--accent);color:var(--on-accent);padding:4px 10px;font-size:9px;border:2.5px solid #000;border-radius:0;letter-spacing:.05em;font-weight:700">—</span>
     </div>
-    <div class="hero-sub" style="display:flex;gap:12px;font-size:11px;color:var(--text);margin-bottom:10px;">
+    <div class="hero-sub" style="display:flex;gap:16px;font-size:12px;color:var(--text);margin-bottom:12px;font-family:'Space Mono',monospace;">
       <span>BANK <b id="display-bank" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
       <span>BILLS DUE <b id="display-bills" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
     </div>
-    <div class="alert-bar" id="alert-bar" style="border:1.5px solid var(--low);border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;color:var(--low);margin-bottom:10px;display:none;">—</div>
+    <div class="alert-bar" id="alert-bar" style="border:3.5px solid var(--low);border-radius:0;padding:8px 12px;font-size:11px;font-weight:700;color:var(--low);margin-bottom:12px;display:none;">—</div>
     <div class="two-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div class="chip" style="background:var(--accent2);border-radius:12px;padding:10px;color:var(--on-accent);">
-        <div class="cl" style="font-size:8px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;opacity:0.8;">SAFE TODAY</div>
-        <div class="cv" id="chip-safe" style="font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+      <div class="chip" style="background:var(--pix-stat1,#00e5ff);border:2.5px solid #000;border-radius:0;padding:10px;color:#000;">
+        <div class="cl" style="font-size:9px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;">SAFE TODAY</div>
+        <div class="cv" id="chip-safe" style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
         <div class="cs" id="chip-safe-note" style="font-size:8px;opacity:.75;margin-top:2px;">per day, fixed bills aside</div>
       </div>
-      <div class="chip" style="background:var(--surface);border-radius:12px;padding:10px;color:var(--text-hi);border:1px solid var(--hr);">
-        <div class="cl" style="font-size:8px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;color:var(--dim);">NEXT PAY</div>
-        <div class="cv" id="chip-nextpay" style="font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
-        <div class="cs" id="chip-days" style="font-size:8px;opacity:.75;margin-top:2px;color:var(--dim);">—</div>
+      <div class="chip" style="background:var(--pix-stat2,#FF6B9D);border:2.5px solid #000;border-radius:0;padding:10px;color:#fff;">
+        <div class="cl" style="font-size:9px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;color:#fff;">NEXT PAY</div>
+        <div class="cv" id="chip-nextpay" style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+        <div class="cs" id="chip-days" style="font-size:8px;opacity:.75;margin-top:2px;color:#fff;">—</div>
       </div>
     </div>
   </div>
 
   <!-- PROJECTION CHART -->
-  <div class="graph-card" style="background:var(--surface2);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:inset 1px 1px 3px var(--sl),inset -1px -1px 3px var(--sd);">
-    <div class="graph-label" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;"><span id="graph-label-text">6</span>-PERIOD PROJECTION</div>
+  <div class="hero nm-raised" style="margin: 0 14px 12px; padding: 20px 20px 14px;">
+    <div class="graph-label" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;border-bottom:2px dashed #000;padding-bottom:6px;"><span id="graph-label-text">6</span>-PERIOD PROJECTION</div>
     <div class="graph-wrap" style="position:relative;height:55px;margin-bottom:4px;">
       <div id="proj-chart-container" style="position:relative;width:100%;height:100%;"></div>
     </div>
   </div>
 
   <!-- BILLS LIST -->
-  <div class="section-hdr" style="display:flex;justify-content:space-between;align-items:center;margin:18px 4px 6px;">
-    <div class="sec-title" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);flex:1;">Bills this cycle</div>
-    <span id="remaining-count" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;">—</span>
+  <div class="section-hdr" style="display:flex;justify-content:space-between;align-items:center;margin:18px 14px 6px;padding:0 4px;">
+    <div class="sec-title" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);flex:1;">Bills this cycle</div>
+    <span id="remaining-count" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;">—</span>
   </div>
-  <div id="bill-list-today" class="bstack"></div>
+  <div id="bill-list-today" class="bstack" style="padding: 0 14px;"></div>
 
   <!-- ADD BILL/EXPENSE DIRECTLY IN CASHFLOW VIEW -->
-  <div class="sec-head" style="margin-top:24px;padding:0 4px;">
-    <div class="sec-title" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);">Add bill / 1-time expense</div>
+  <div class="sec-head" style="margin-top:24px;padding:0 18px;">
+    <div class="sec-title" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);">Add bill / 1-time expense</div>
   </div>
-  <div class="nm-raised" style="border-radius:16px;padding:12px;background:var(--surface);margin:0 0 20px;display:flex;flex-direction:column;gap:8px;">
-    <input class="finput" id="cf-bill-name" type="text" placeholder="Bill name..." style="margin:0;padding:10px 12px;font-size:13px;border-radius:10px;">
+  <div class="notes-creator" style="margin: 8px 14px 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+    <input class="finput" id="cf-bill-name" type="text" placeholder="Bill name..." style="margin:0;padding:10px 12px;font-size:13px;border-radius:0;">
     <div style="display:flex;gap:8px;">
-      <input class="finput" id="cf-bill-amt" type="number" placeholder="Amount $" step="0.01" style="margin:0;padding:10px 12px;font-size:13px;border-radius:10px;flex:1;">
-      <input class="finput" id="cf-bill-date" type="text" placeholder="Due e.g. Jul 3" style="margin:0;padding:10px 12px;font-size:13px;border-radius:10px;flex:1;">
+      <input class="finput" id="cf-bill-amt" type="number" placeholder="Amount $" step="0.01" style="margin:0;padding:10px 12px;font-size:13px;border-radius:0;flex:1;">
+      <input class="finput" id="cf-bill-date" type="text" placeholder="Due e.g. Jul 3" style="margin:0;padding:10px 12px;font-size:13px;border-radius:0;flex:1;">
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0 2px;">
       <div style="display:flex;gap:6px;">
-        <button class="ctab active" id="cf-type-fixed" onclick="cfSetType('fixed')" style="padding:6px 12px;font-size:11px;border-radius:8px;flex:none;width:auto;">🔴 Fixed</button>
-        <button class="ctab" id="cf-type-flex" onclick="cfSetType('flex')" style="padding:6px 12px;font-size:11px;border-radius:8px;flex:none;width:auto;">🟠 Flex</button>
+        <button class="ctab active" id="cf-type-fixed" onclick="cfSetType('fixed')" style="padding:6px 12px;font-size:11px;border-radius:0;border:2.5px solid #000;box-shadow:2px 2px 0 #000;flex:none;width:auto;">🔴 Fixed</button>
+        <button class="ctab" id="cf-type-flex" onclick="cfSetType('flex')" style="padding:6px 12px;font-size:11px;border-radius:0;border:2.5px solid #000;box-shadow:2px 2px 0 #000;flex:none;width:auto;">🟠 Flex</button>
       </div>
       <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;user-select:none;">
-        <input type="checkbox" id="cf-bill-recurring" style="cursor:pointer;"> Recurring
+        <input type="checkbox" id="cf-bill-recurring" style="cursor:pointer;width:18px;height:18px;border:2px solid #000;appearance:none;background:#fff;border-radius:0;" onchange="this.style.background=this.checked?'var(--accent)':'#fff'"> Recurring
       </label>
     </div>
-    <button class="bconfirm" style="margin:4px 0 0;padding:10px;" onclick="cfAddBill()">+ Add Bill / Expense</button>
+    <button class="bconfirm" style="margin:4px 0 0;padding:12px;border-radius:0;border:3px solid #000;box-shadow:3px 3px 0 #000;" onclick="cfAddBill()">+ Add Bill / Expense</button>
   </div>
 </div>
 <!-- NAV REORDERED TO MATCH -->
@@ -1374,23 +1374,54 @@ textarea.finput {
 <script>
 // ── BUDGET LOGIC & STATE ──────────────────────────────────────────────────
 const DEF={
-  bank:400, income:1780, nextPay:'2026-06-19', carryover:0, cycleView:'current', spentLog:[],
+  bank:1790, income:1780, nextPay:'2026-06-19', carryover:0, cycleView:'current', spentLog:[],
   theme:'pixel', customColors:null, bills:[
-    {id:1, name:'Janelle Birthday',       amt:200,date:'Jun 13',paid:false,cycle:'current'},
-    {id:2, name:'Buffer (misc)',           amt:50, date:'',      paid:false,cycle:'current'},
-    {id:3, name:'NA Beer',                amt:35, date:'',      paid:false,cycle:'both'},
-    {id:4, name:'Fizz Internet',          amt:56, date:'Jun 14',paid:false,cycle:'both'},
-    {id:5, name:'Baby Food',              amt:35, date:'',      paid:true, cycle:'both'},
-    {id:6, name:'Medication',             amt:30, date:'',      paid:true, cycle:'both'},
-    {id:7, name:'Spotify',                amt:26, date:'Jun 15',paid:true, cycle:'both'},
-    {id:8, name:'PlayStation',            amt:14, date:'',      paid:false,cycle:'both'},
-    {id:9, name:'Toilet Paper & Towels',  amt:10, date:'',      paid:false,cycle:'both'},
-    {id:10,name:'Rent Allocation Jul 1',  amt:82, date:'Jul 1', paid:false,cycle:'current'},
-    {id:11,name:'Rent (Jul 1 remaining)', amt:954,date:'Jul 1', paid:false,cycle:'next'},
-    {id:12,name:'PC Monitor Loan 1/5',    amt:130,date:'',      paid:false,cycle:'next'},
-    {id:13,name:'Daycamp — last payment', amt:127,date:'Jun 19',paid:false,cycle:'next'},
-    {id:14,name:'Groceries',              amt:200,date:'',      paid:false,cycle:'next'},
-    {id:15,name:'Amazon Subscription',    amt:12, date:'',      paid:false,cycle:'next'},
+    // Cycle 'both' (recurring)
+    {id:1, name:'PlayStation',            amt:20,  date:'',      paid:false, cycle:'both'},
+    {id:2, name:'Amazon',                 amt:12,  date:'',      paid:false, cycle:'both'},
+    {id:3, name:'Groceries',              amt:200, date:'',      paid:false, cycle:'both'},
+    {id:4, name:'Non-essentials',         amt:100, date:'',      paid:false, cycle:'both'},
+    {id:5, name:'Non-alc beer',           amt:56,  date:'',      paid:false, cycle:'both'},
+
+    // Cycle 'current' (Period 0: Jun 19)
+    {id:6, name:'Daycamp (last)',         amt:127, date:'Jun 19',paid:false, cycle:'current'},
+    {id:7, name:'Janelle birthday',       amt:200, date:'Jun 19',paid:false, cycle:'current'},
+    {id:8, name:'Staycation extra',       amt:150, date:'Jun 19',paid:false, cycle:'current'},
+
+    // Cycle 'next' (Period 1: Jul 3)
+    {id:9, name:'Rent + buffer',          amt:1050,date:'Jul 1', paid:false, cycle:'next'},
+    {id:10,name:'Daycare',                amt:205, date:'Jul 1', paid:false, cycle:'next'},
+    {id:11,name:'Gemini',                 amt:27,  date:'Jul 3', paid:false, cycle:'next'},
+    {id:12,name:'Iegeek',                 amt:5,   date:'Jul 9', paid:false, cycle:'next'},
+    {id:13,name:'Claude Pro',             amt:9,   date:'Jul 9', paid:false, cycle:'next'},
+    {id:14,name:'Spotify',                amt:12,  date:'Jul 12',paid:false, cycle:'next'},
+
+    // Cycle 2 (Period 2: Jul 17)
+    {id:15,name:'Rogers',                 amt:170, date:'Jul 17',paid:false, cycle:2},
+    {id:16,name:'Monitor loan',           amt:130, date:'Jul 17',paid:false, cycle:2},
+    {id:17,name:'Medication',             amt:30,  date:'Jul 17',paid:false, cycle:2},
+
+    // Cycle 3 (Period 3: Jul 31)
+    {id:18,name:'Rent + buffer',          amt:1050,date:'Aug 1', paid:false, cycle:3},
+    {id:19,name:'Daycare',                amt:205, date:'Aug 1', paid:false, cycle:3},
+    {id:20,name:'Gemini',                 amt:27,  date:'Aug 3', paid:false, cycle:3},
+    {id:21,name:'Iegeek',                 amt:5,   date:'Aug 9', paid:false, cycle:3},
+    {id:22,name:'Claude Pro',             amt:9,   date:'Aug 9', paid:false, cycle:3},
+    {id:23,name:'Spotify',                amt:12,  date:'Aug 12',paid:false, cycle:3},
+
+    // Cycle 4 (Period 4: Aug 14)
+    {id:24,name:'Rogers',                 amt:170, date:'Aug 14',paid:false, cycle:4},
+    {id:25,name:'Monitor loan',           amt:130, date:'Aug 14',paid:false, cycle:4},
+    {id:26,name:'Medication',             amt:30,  date:'Aug 14',paid:false, cycle:4},
+    {id:27,name:'Birthday extra',         amt:200, date:'Aug 15',paid:false, cycle:4},
+
+    // Cycle 5 (Period 5: Aug 28)
+    {id:28,name:'Rent + buffer',          amt:1050,date:'Sep 1', paid:false, cycle:5},
+    {id:29,name:'Daycare',                amt:205, date:'Sep 1', paid:false, cycle:5},
+    {id:30,name:'Gemini',                 amt:27,  date:'Sep 3', paid:false, cycle:5},
+    {id:31,name:'Iegeek',                 amt:5,   date:'Sep 9', paid:false, cycle:5},
+    {id:32,name:'Claude Pro',             amt:9,   date:'Sep 9', paid:false, cycle:5},
+    {id:33,name:'Spotify',                amt:12,  date:'Sep 12',paid:false, cycle:5}
   ]
 };
 function load(){try{const s=localStorage.getItem('real-v6');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
@@ -1401,6 +1432,17 @@ function save(){
 }
 let S=load();
 if(!S.subTheme)S.subTheme=0;
+
+// Migration: Push Cashflow bills if we detect outdated/missing data
+const oldBillsDetector = S.bills.find(b => b.name === 'Rent Allocation Jul 1' || b.name === 'Rent (Jul 1 remaining)');
+const newBillsDetector = S.bills.find(b => b.name === 'Rent + buffer');
+if (oldBillsDetector || !newBillsDetector) {
+  S.bills = JSON.parse(JSON.stringify(DEF.bills));
+  S.bank = DEF.bank;
+  S.income = DEF.income;
+  S.nextPay = DEF.nextPay;
+  save();
+}
 
 
 const THEMES={
@@ -3193,7 +3235,7 @@ window.payRender = function() {
           <input class="bamt" type="number" value="${b.amt}" min="0" step="1"
             onchange="cfUpdateAmt(${cfSelected}, ${b.id}, this.value)"
             onclick="this.select()"
-            style="width: 70px; background: transparent; border-bottom: 1px dotted var(--dim); border-radius: 0; padding: 2px 4px; font-weight: 700; color: var(--text-hi);" />
+            style="width: 70px; background: transparent; border: none; border-bottom: 2px solid var(--hr); border-radius: 0; padding: 2px 4px; font-weight: 700; color: var(--text-hi); text-align: right; outline: none;" />
           ${skipButton}
           ${deleteButton}
         `;
