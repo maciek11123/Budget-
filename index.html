@@ -852,7 +852,7 @@ textarea.finput {
 <div class="app">
 
 <!-- NOTES PAGE IS NOW FIRST AND DEFAULT ACTIVE -->
-<div class="page active" id="pg-notes">
+<div class="page" id="pg-notes">
   <div class="header">
     <div class="logo">DotMemo</div>
   </div>
@@ -880,7 +880,7 @@ textarea.finput {
   <div class="notes-grid" id="notes-container"></div>
 </div>
 
-<div class="page" id="pg-dash">
+<div class="page active" id="pg-dash">
   <div class="header">
     <div class="logo">Real</div>
     <div class="hdate" id="hdr-date"></div>
@@ -928,6 +928,17 @@ textarea.finput {
     </div>
     <div class="bstack" id="dash-bills"></div>
   </div>
+
+  <div class="section" style="margin-top: 24px; border-top: 3px solid #000; padding-top: 18px;">
+    <div class="sec-head">
+      <div class="sec-title">Month Forecast</div>
+    </div>
+    <div class="month-sum nm-raised" id="month-summary" style="margin-bottom: 16px;"></div>
+    <div class="sec-head"><div class="sec-title" style="font-size:11px;">This Cycle</div></div>
+    <div class="bstack" id="m-cur-bills" style="margin-bottom: 16px;"></div>
+    <div class="sec-head"><div class="sec-title" style="font-size:11px;">Next Cycle</div></div>
+    <div class="bstack" id="m-nxt-bills"></div>
+  </div>
 </div>
 
 <div class="page" id="pg-bills">
@@ -956,34 +967,7 @@ textarea.finput {
   </div>
 </div>
 
-<div class="page" id="pg-hist">
-  <div class="header">
-    <div class="logo">History</div>
-    <div class="hdate"></div>
-  </div>
-  <div class="section" style="margin-top:18px">
-    <div class="sec-head"><div class="sec-title">Unplanned purchases</div></div>
-    <div id="hist-log"></div>
-  </div>
-</div>
 
-<div class="page" id="pg-month">
-  <div class="header">
-    <div class="logo">Month View</div>
-    <div class="hdate" id="month-range">Forecast</div>
-  </div>
-  <div style="padding:6px 16px 20px">
-    <div class="month-sum nm-raised" id="month-summary"></div>
-  </div>
-  <div class="section">
-    <div class="sec-head"><div class="sec-title">This Cycle</div></div>
-    <div class="bstack" id="m-cur-bills"></div>
-  </div>
-  <div class="section">
-    <div class="sec-head"><div class="sec-title">Next Cycle</div></div>
-    <div class="bstack" id="m-nxt-bills"></div>
-  </div>
-</div>
 
 
 <!-- ── LEDGER PAGE (Firebase — synced with DadApp) ── -->
@@ -1088,33 +1072,28 @@ textarea.finput {
   </div>
 </div>
 <!-- NAV REORDERED TO MATCH -->
+<!-- NAV REORDERED TO MATCH -->
 <div class="nav nm-raised">
-  <button class="nbtn active" id="n-notes" onclick="showPage('pg-notes');setNav('n-notes')">
-    <span class="nicon">📝</span><span class="nlabel">Notes</span>
-  </button>
-  <button class="nbtn" id="n-today" onclick="showPage('pg-dash');setNav('n-today')">
+  <button class="nbtn active" id="n-today" onclick="showPage('pg-dash');setNav('n-today')">
     <span class="nicon">●</span><span class="nlabel">Today</span>
-  </button>
-  <button class="nbtn" id="n-month" onclick="showPage('pg-month');setNav('n-month');renderMonth()">
-    <span class="nicon">☰</span><span class="nlabel">Month</span>
-  </button>
-  <button class="nbtn" id="n-bills" onclick="showPage('pg-bills');setNav('n-bills')">
-    <span class="nicon">▤</span><span class="nlabel">Bills</span>
-  </button>
-  <button class="nbtn" id="n-hist" onclick="showPage('pg-hist');setNav('n-hist');renderHist()">
-    <span class="nicon">◴</span><span class="nlabel">History</span>
-  </button>
-  <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
-    <span class="nicon">◐</span><span class="nlabel">Theme</span>
   </button>
   <button class="nbtn" id="n-pay" onclick="showPage('pg-pay');setNav('n-pay');payRender()">
     <span class="nicon">💸</span><span class="nlabel">Cashflow</span>
+  </button>
+  <button class="nbtn" id="n-bills" onclick="showPage('pg-bills');setNav('n-bills')">
+    <span class="nicon">▤</span><span class="nlabel">Bills</span>
   </button>
   <button class="nbtn" id="n-ledger" onclick="showPage('pg-ledger');setNav('n-ledger')">
     <span class="nicon">💳</span><span class="nlabel">Ledger</span>
   </button>
   <button class="nbtn" id="n-bring" onclick="showPage('pg-bring');setNav('n-bring')">
     <span class="nicon">📦</span><span class="nlabel">Bring</span>
+  </button>
+  <button class="nbtn" id="n-notes" onclick="showPage('pg-notes');setNav('n-notes')">
+    <span class="nicon">📝</span><span class="nlabel">Notes</span>
+  </button>
+  <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
+    <span class="nicon">◐</span><span class="nlabel">Theme</span>
   </button>
 </div>
 </div>
@@ -1423,6 +1402,7 @@ function render(){
   if(setPay) setPay.textContent=fd(S.nextPay)+' · '+days()+' DAYS AWAY';
   const setInc=document.getElementById('set-income');
   if(setInc) setInc.textContent=$(S.income)+' PER CHEQUE';
+  renderMonth();
 }
 
 function pillHTML(b, edit, isNextView = false){
@@ -1470,15 +1450,7 @@ function renderEdBills(){
   const bills=S.bills.filter(b=>v==='current'?(b.cycle==='current'||b.cycle==='both'):(b.cycle==='next'||b.cycle==='both'));
   el.innerHTML=bills.length?bills.map(b=>pillHTML(b,true, isNext)).join(''):'<div class="empty nm-pressed">No bills</div>';
 }
-function renderHist(){
-  const el=document.getElementById('hist-log');
-  if(!S.spentLog.length){el.innerHTML='<div class="empty nm-pressed">Nothing yet.</div>';return;}
-  el.innerHTML='<div class="spstack">'+S.spentLog.slice().reverse().map(s=>`
-    <div class="sppill nm-raised-sm">
-      <div><div class="spname">${s.label||'Unplanned purchase'}</div><div class="sptime">${s.time}</div></div>
-      <div class="spamt">−${$(s.amt)}</div>
-    </div>`).join('')+'</div>';
-}
+
 
 function renderMonth() {
   const curBills = S.bills.filter(b => b.cycle === 'current' || b.cycle === 'both');
