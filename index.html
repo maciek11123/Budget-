@@ -774,6 +774,100 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
   :is([data-big="1"], [data-big="2"]) .audio-label { font-size: calc(10px * var(--fs-scale)) !important; }
   :is([data-big="1"], [data-big="2"]) .del-btn { font-size: calc(11px * var(--fs-scale)) !important; }
   :is([data-big="1"], [data-big="2"]) .audio-container button { font-size: calc(11px * var(--fs-scale)) !important; padding: calc(4px * var(--fs-scale)) calc(8px * var(--fs-scale)) !important; }
+
+  /* ── Cashflow Styles ── */
+  .cycle-strip::-webkit-scrollbar { display: none; }
+  .cpill {
+    flex-shrink: 0;
+    border: 2px solid var(--hr);
+    border-radius: 99px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--text);
+    transition: all .2s;
+  }
+  .cpill.active {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: var(--accent);
+  }
+  .cpill.rent {
+    border-color: var(--low);
+  }
+  .cpill.vac {
+    border-color: var(--safe);
+  }
+  
+  /* Compact Projection Chart CSS */
+  .cf-proj-bar {
+    position: absolute;
+    width: 16px;
+    border: 1.5px solid var(--text-hi);
+    border-radius: 3px;
+    transition: all .3s;
+  }
+  .cf-proj-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    position: absolute;
+    width: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: var(--text-hi);
+    line-height: 1;
+  }
+  .cf-proj-date {
+    position: absolute;
+    bottom: -16px;
+    width: 100%;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    font-weight: 700;
+    color: var(--dim);
+  }
+  
+  /* Skip badge in bills list */
+  .cf-skip-btn {
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+  .cf-skip-btn:hover {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  .cf-skipped-badge {
+    display: inline-block;
+    font-size: 7.5px;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--hr);
+    border-radius: 4px;
+    padding: 1px 4px;
+    font-weight: 700;
+    margin-left: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .cf-skipped-badge:hover {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: var(--accent);
+  }
 </style>
 </head>
 <body>
@@ -946,63 +1040,74 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font
 </div>
 
 
-<!-- ══ PAY TAB ══════════════════════════════════════════════════════════════ -->
+<!-- ══ PAY TAB (Cashflow view) ══════════════════════════════════════════════ -->
 <div class="page" id="pg-pay">
-  <div class="pay-page">
-    <div class="pay-tabs">
-      <button class="pay-tab active" id="pay-tab-timeline" onclick="payShowTab('timeline')">📅 Timeline</button>
-      <button class="pay-tab" id="pay-tab-setup" onclick="payShowTab('setup')">⚙ Setup</button>
-    </div>
-
-    <!-- TIMELINE VIEW -->
-    <div id="pay-timeline-view">
-      <div id="pay-balance-bar"></div>
-      <div id="pay-windows-list"></div>
-    </div>
-
-    <!-- SETUP VIEW -->
-    <div id="pay-setup-view" style="display:none;">
-
-      <!-- Bank balance -->
-      <div class="pay-card">
-        <div class="pay-card-label">💰 Current bank balance</div>
-        <div class="pay-row">
-          <input class="pay-input" id="pay-bank-input" type="number" placeholder="$0.00" step="0.01">
-          <button class="pay-btn" style="width:auto;padding:9px 16px;margin-top:0;" onclick="paySetBank()">SET</button>
-        </div>
+  <!-- Cycle strip -->
+  <div class="cycle-strip" id="cycle-strip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin:8px 0 10px;scrollbar-width:none;-ms-overflow-style:none;"></div>
+  
+  <!-- HERO: Real Balance -->
+  <div class="hero-card" style="background:var(--surface2);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:inset 1px 1px 3px var(--sl),inset -1px -1px 3px var(--sd);">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <span class="real-num pos" id="real-num" style="font-size:32px;font-weight:800;line-height:1;margin-bottom:0;color:var(--text-hi);">—</span>
+        <span class="real-label" style="font-size:9px;font-weight:700;letter-spacing:.1em;opacity:0.6;text-transform:uppercase;color:var(--dim);">REAL BALANCE</span>
       </div>
-
-      <!-- Paydays -->
-      <div class="pay-card">
-        <div class="pay-card-label">📅 Upcoming paydays</div>
-        <div class="pay-row" style="margin-bottom:8px;">
-          <input class="pay-input" id="pay-pd-amt" type="number" placeholder="Amount $" step="0.01" style="margin:0;">
-          <input class="pay-input" id="pay-pd-date" type="date" style="margin:0;">
-        </div>
-        <button class="pay-btn" onclick="payAddPayday()">+ ADD PAYDAY</button>
-        <div class="pay-pill-list" id="pay-payday-list"></div>
-      </div>
-
-      <!-- Bills -->
-      <div class="pay-card">
-        <div class="pay-card-label">📋 Bills &amp; expenses</div>
-        <div class="pay-type-toggle">
-          <button class="pay-type-btn active fixed" id="pay-type-fixed" onclick="paySetType('fixed')">🔴 Fixed — no play</button>
-          <button class="pay-type-btn flex"  id="pay-type-flex"  onclick="paySetType('flex')">🟠 Flex — has play</button>
-        </div>
-        <input class="pay-input" id="pay-bill-name" type="text" placeholder="Bill name...">
-        <div class="pay-row">
-          <input class="pay-input" id="pay-bill-amt"  type="number" placeholder="Amount $" step="0.01" style="margin:0;">
-          <input class="pay-input" id="pay-bill-date" type="date" style="margin:0;">
-        </div>
-        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;font-weight:700;">
-          <input type="checkbox" id="pay-bill-recurring"> Repeats monthly
-        </label>
-        <button class="pay-btn" style="margin-top:10px;" onclick="payAddBill()">+ ADD BILL</button>
-        <div class="pay-pill-list" id="pay-bills-list"></div>
-      </div>
-
+      <span id="cycle-badge" style="background:var(--accent);color:var(--on-accent);padding:2px 8px;font-size:9px;border-radius:8px;letter-spacing:.05em;font-weight:700">—</span>
     </div>
+    <div class="hero-sub" style="display:flex;gap:12px;font-size:11px;color:var(--text);margin-bottom:10px;">
+      <span>BANK <b id="display-bank" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
+      <span>BILLS DUE <b id="display-bills" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
+    </div>
+    <div class="alert-bar" id="alert-bar" style="border:1.5px solid var(--low);border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;color:var(--low);margin-bottom:10px;display:none;">—</div>
+    <div class="two-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="chip" style="background:var(--accent2);border-radius:12px;padding:10px;color:var(--on-accent);">
+        <div class="cl" style="font-size:8px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;opacity:0.8;">SAFE TODAY</div>
+        <div class="cv" id="chip-safe" style="font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+        <div class="cs" id="chip-safe-note" style="font-size:8px;opacity:.75;margin-top:2px;">per day, fixed bills aside</div>
+      </div>
+      <div class="chip" style="background:var(--surface);border-radius:12px;padding:10px;color:var(--text-hi);border:1px solid var(--hr);">
+        <div class="cl" style="font-size:8px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;color:var(--dim);">NEXT PAY</div>
+        <div class="cv" id="chip-nextpay" style="font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+        <div class="cs" id="chip-days" style="font-size:8px;opacity:.75;margin-top:2px;color:var(--dim);">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTION CHART -->
+  <div class="graph-card" style="background:var(--surface2);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:inset 1px 1px 3px var(--sl),inset -1px -1px 3px var(--sd);">
+    <div class="graph-label" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;"><span id="graph-label-text">6</span>-PERIOD PROJECTION</div>
+    <div class="graph-wrap" style="position:relative;height:55px;margin-bottom:4px;">
+      <div id="proj-chart-container" style="position:relative;width:100%;height:100%;"></div>
+    </div>
+  </div>
+
+  <!-- BILLS LIST -->
+  <div class="section-hdr" style="display:flex;justify-content:space-between;align-items:center;margin:18px 4px 6px;">
+    <div class="sec-title" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);flex:1;">Bills this cycle</div>
+    <span id="remaining-count" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;">—</span>
+  </div>
+  <div id="bill-list-today" class="bstack"></div>
+
+  <!-- ADD BILL/EXPENSE DIRECTLY IN CASHFLOW VIEW -->
+  <div class="sec-head" style="margin-top:24px;padding:0 4px;">
+    <div class="sec-title" style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);">Add bill / 1-time expense</div>
+  </div>
+  <div class="nm-raised" style="border-radius:16px;padding:12px;background:var(--surface);margin:0 0 20px;display:flex;flex-direction:column;gap:8px;">
+    <input class="finput" id="cf-bill-name" type="text" placeholder="Bill name..." style="margin:0;padding:10px 12px;font-size:13px;border-radius:10px;">
+    <div style="display:flex;gap:8px;">
+      <input class="finput" id="cf-bill-amt" type="number" placeholder="Amount $" step="0.01" style="margin:0;padding:10px 12px;font-size:13px;border-radius:10px;flex:1;">
+      <input class="finput" id="cf-bill-date" type="text" placeholder="Due e.g. Jul 3" style="margin:0;padding:10px 12px;font-size:13px;border-radius:10px;flex:1;">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0 2px;">
+      <div style="display:flex;gap:6px;">
+        <button class="ctab active" id="cf-type-fixed" onclick="cfSetType('fixed')" style="padding:6px 12px;font-size:11px;border-radius:8px;flex:none;width:auto;">🔴 Fixed</button>
+        <button class="ctab" id="cf-type-flex" onclick="cfSetType('flex')" style="padding:6px 12px;font-size:11px;border-radius:8px;flex:none;width:auto;">🟠 Flex</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;user-select:none;">
+        <input type="checkbox" id="cf-bill-recurring" style="cursor:pointer;"> Recurring
+      </label>
+    </div>
+    <button class="bconfirm" style="margin:4px 0 0;padding:10px;" onclick="cfAddBill()">+ Add Bill / Expense</button>
   </div>
 </div>
 <!-- NAV REORDERED TO MATCH -->
@@ -1138,7 +1243,11 @@ const DEF={
   ]
 };
 function load(){try{const s=localStorage.getItem('real-v6');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
-function save(){localStorage.setItem('real-v6',JSON.stringify(S));}
+function save(){
+  localStorage.setItem('real-v6',JSON.stringify(S));
+  if(window.saveStateToFirebase) window.saveStateToFirebase(S);
+  if(window.payRender) window.payRender();
+}
 let S=load();
 if(!S.subTheme)S.subTheme=0;
 // Safety: if nextPay is somehow still in the past after a previous session's advance,
@@ -1337,12 +1446,12 @@ function render(){
   if(setPay) setPay.textContent=fd(S.nextPay)+' · '+days()+' DAYS AWAY';
   const setInc=document.getElementById('set-income');
   if(setInc) setInc.textContent=$(S.income)+' PER CHEQUE';
-  save();
 }
 
 function pillHTML(b, edit, isNextView = false){
   const amt = (isNextView && b.cycle === 'both' && b.amtNext !== undefined) ? b.amtNext : b.amt;
   const paid = isNextView && b.cycle === 'both' ? false : b.paid;
+  const delBtn = edit ? `<button class="ebtn" onclick="deleteBill(${b.id})" title="Delete" style="margin-left: 6px; padding: 2px 4px; color: var(--low); font-size: 13px;">✕</button>` : '';
   return `<div class="bpill nm-raised-sm${paid?' paid':''}">
     <button class="chk nm-raised-xs${paid?' on':''}" onclick="togglePaid(${b.id})">${paid?'✓':''}</button>
     <div class="binfo">
@@ -1354,6 +1463,7 @@ function pillHTML(b, edit, isNextView = false){
       onblur="aBlur(this,${b.id}, ${isNextView})"
       onkeydown="aKey(event,this,${b.id}, ${isNextView})" 
       oninput="aInput(this)">${$(amt)}</span>
+    ${delBtn}
   </div>`;
 }
 
@@ -1422,7 +1532,7 @@ function renderMonth() {
 
 function bkFocus(el){el.classList.add('editing');el.textContent=S.bank.toFixed(2);}
 function bkInput(el){const c=el.textContent.replace(/[^\d.]/g,'');if(c!==el.textContent)el.textContent=c;}
-function bkBlur(el){el.classList.remove('editing');const v=parseFloat(el.textContent);if(!isNaN(v)&&v>=0)S.bank=Math.round(v*100)/100;render();}
+function bkBlur(el){el.classList.remove('editing');const v=parseFloat(el.textContent);if(!isNaN(v)&&v>=0)S.bank=Math.round(v*100)/100;save();render();}
 function bkKey(e,el){if(e.key==='Enter'){e.preventDefault();el.blur();}}
 
 function aFocus(el, id, isNextView){
@@ -1455,6 +1565,7 @@ function aBlur(el, id, isNextView){
   } else {
     b.amt = Math.round(v*100)/100;
   }
+  save();
   render();
 }
 function aKey(e, el, id, isNextView){
@@ -1466,8 +1577,14 @@ function aKey(e, el, id, isNextView){
   }
 }
 
-function togglePaid(id){const b=S.bills.find(x=>x.id===id);if(b)b.paid=!b.paid;render();}
-function applyBal(){const v=parseFloat(document.getElementById('i-bal').value);if(isNaN(v)||v<0)return;S.bank=Math.round(v*100)/100;closeSheet('sh-bal');render();}
+function togglePaid(id){const b=S.bills.find(x=>x.id===id);if(b)b.paid=!b.paid;save();render();}
+window.deleteBill = function(id) {
+  S.bills = S.bills.filter(b => b.id !== id);
+  save();
+  render();
+  showToast('🗑️ BILL DELETED');
+};
+function applyBal(){const v=parseFloat(document.getElementById('i-bal').value);if(isNaN(v)||v<0)return;S.bank=Math.round(v*100)/100;closeSheet('sh-bal');save();render();}
 function applySpent(){
   const amt=parseFloat(document.getElementById('i-sp-amt').value);if(isNaN(amt)||amt<=0)return;
   const lbl=document.getElementById('i-sp-lbl').value.trim();
@@ -1475,7 +1592,7 @@ function applySpent(){
   S.bank=Math.round((S.bank-r)*100)/100;
   S.spentLog.push({amt:r,label:lbl||null,time:new Date().toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})});
   document.getElementById('i-sp-amt').value='';document.getElementById('i-sp-lbl').value='';
-  closeSheet('sh-spent');render();
+  closeSheet('sh-spent');save();render();
 }
 function addBill(){
   const name=document.getElementById('i-nb-name').value.trim();
@@ -1487,11 +1604,11 @@ function addBill(){
   S.bills.push({id,name,amt:Math.round(amt*100)/100,date,paid:false,cycle:both?'both':'current'});
   document.getElementById('i-nb-name').value='';document.getElementById('i-nb-amt').value='';
   document.getElementById('tog-nb-both').classList.remove('on');
-  closeSheet('sh-addbill');render();
+  closeSheet('sh-addbill');save();render();
 }
 function setCycle(view){S.cycleView=view;document.getElementById('tab-cur').classList.toggle('active',view==='current');document.getElementById('tab-nxt').classList.toggle('active',view==='next');renderEdBills();}
-function applyPay(){const v=document.getElementById('i-pay').value;if(!v)return;S.nextPay=v;closeSheet('sh-payday');render();}
-function applyInc(){const v=parseFloat(document.getElementById('i-inc').value);if(isNaN(v)||v<=0)return;S.income=Math.round(v*100)/100;closeSheet('sh-income');render();}
+function applyPay(){const v=document.getElementById('i-pay').value;if(!v)return;S.nextPay=v;closeSheet('sh-payday');save();render();}
+function applyInc(){const v=parseFloat(document.getElementById('i-inc').value);if(isNaN(v)||v<=0)return;S.income=Math.round(v*100)/100;closeSheet('sh-income');save();render();}
 
 // ── NAV & SHEETS ───────────────────────────────────────────────────────────
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
@@ -1839,10 +1956,14 @@ function checkCycleAdvance() {
 
   // Process bills
   const kept = [];
+  const limitDateStr = new Date(new Date(S.nextPay + 'T12:00:00').getTime() - 14 * 86400000).toISOString().slice(0, 10);
+
   for (const b of S.bills) {
     if (b.cycle === 'both') {
-      // Recurring: reset paid, keep as-is
-      kept.push({...b, paid: false});
+      // Clean up past skipped dates
+      let cleanSkipped = b.skippedDates || [];
+      cleanSkipped = cleanSkipped.filter(d => d >= limitDateStr);
+      kept.push({...b, paid: false, skippedDates: cleanSkipped});
     } else if (b.cycle === 'current') {
       if (!b.paid) {
         // Unpaid current → roll to next cycle
@@ -1853,6 +1974,12 @@ function checkCycleAdvance() {
     } else if (b.cycle === 'next') {
       // Next-cycle bills become current
       kept.push({...b, cycle: 'current', paid: false});
+    } else if (b.cycle === 2 || b.cycle === '2') {
+      kept.push({...b, cycle: 'next', paid: false});
+    } else if (typeof b.cycle === 'number' && b.cycle > 2) {
+      kept.push({...b, cycle: b.cycle - 1, paid: false});
+    } else if (!isNaN(parseInt(b.cycle)) && parseInt(b.cycle) > 2) {
+      kept.push({...b, cycle: parseInt(b.cycle) - 1, paid: false});
     }
   }
   S.bills = kept;
@@ -1960,7 +2087,7 @@ window._LEDGER_FB = {
 <script type="module">
   import { initializeApp }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
+  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, setDoc, query, orderBy, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const fbApp = initializeApp(window._LEDGER_FB, 'ledger-app');
@@ -2219,6 +2346,34 @@ window._LEDGER_FB = {
     }
     el.innerHTML = html;
   };
+
+  // ── budget state live listener ──
+  const budgetDocRef = doc(db, 'budget_state', 'maciek_state');
+  let isUpdatingFromFirebase = false;
+
+  onSnapshot(budgetDocRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const fbStateStr = JSON.stringify(data);
+      const localStateStr = JSON.stringify(S);
+      if (fbStateStr !== localStateStr) {
+        isUpdatingFromFirebase = true;
+        S = data;
+        localStorage.setItem('real-v6', fbStateStr);
+        render();
+        if (window.payRender) window.payRender();
+        isUpdatingFromFirebase = false;
+      }
+    } else {
+      // Initialize Firebase state document
+      setDoc(budgetDocRef, S).catch(err => console.error("Error initializing budget state in Firestore:", err));
+    }
+  });
+
+  window.saveStateToFirebase = function(state) {
+    if (isUpdatingFromFirebase) return;
+    setDoc(budgetDocRef, state).catch(err => console.error("Error saving state to Firestore:", err));
+  };
 </script>
 
 <!-- ── TRANSCRIBE OVERLAY ── -->
@@ -2325,7 +2480,7 @@ async function callGemini(blob) {
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload  = () => resolve(reader.result.split(',')[1]);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(blob);
   });
@@ -2344,7 +2499,6 @@ function showTranscribeError(msg) {
   const el = document.getElementById('transcribeText');
   el.textContent = '⚠ ' + msg;
   el.style.display = 'block';
-  // hide save btn on error
   const actions = document.getElementById('transcribeActions');
   actions.classList.add('show');
   actions.querySelector('.transcribe-save-btn').style.display = 'none';
@@ -2374,344 +2528,478 @@ function saveTranscriptionAsNote() {
 </script>
 
 <script>
-// ══ PAY TAB — Independent state ══════════════════════════════════════════════
-const PAY_KEY = 'note$-pay-v1';
+// ══ PAY TAB (Cashflow Controller) ══════════════════════════════════════════════
+let cfSelected = 0;
+let cfBillType = 'fixed';
 
-function payLoad() {
-  try { return JSON.parse(localStorage.getItem(PAY_KEY)) || payDefault(); }
-  catch { return payDefault(); }
-}
-function payDefault() {
-  return { bank: 0, paydays: [], bills: [] };
-}
-function paySave(s) {
-  localStorage.setItem(PAY_KEY, JSON.stringify(s));
-}
+window.cfSetType = function(t) {
+  cfBillType = t;
+  const btnFixed = document.getElementById('cf-type-fixed');
+  const btnFlex = document.getElementById('cf-type-flex');
+  if (btnFixed) btnFixed.classList.toggle('active', t === 'fixed');
+  if (btnFlex) btnFlex.classList.toggle('active', t === 'flex');
+};
 
-let payState = payLoad();
-let payBillType = 'fixed'; // current form selection
-
-// ── Tab switching ─────────────────────────────────────────────────────────────
-function payShowTab(tab) {
-  document.getElementById('pay-timeline-view').style.display = tab === 'timeline' ? '' : 'none';
-  document.getElementById('pay-setup-view').style.display    = tab === 'setup'    ? '' : 'none';
-  document.getElementById('pay-tab-timeline').classList.toggle('active', tab === 'timeline');
-  document.getElementById('pay-tab-setup').classList.toggle('active', tab === 'setup');
-  if (tab === 'timeline') payRenderTimeline();
-  else payRenderSetup();
-}
-
-// ── Setup helpers ─────────────────────────────────────────────────────────────
-function paySetBank() {
-  const v = parseFloat(document.getElementById('pay-bank-input').value);
-  if (isNaN(v)) { showToast('Enter a number'); return; }
-  payState.bank = v;
-  paySave(payState);
-  document.getElementById('pay-bank-input').value = '';
-  showToast('✓ Balance set to $' + v.toFixed(2));
-  payRenderSetup();
-}
-
-function paySetType(t) {
-  payBillType = t;
-  document.getElementById('pay-type-fixed').classList.toggle('active', t === 'fixed');
-  document.getElementById('pay-type-fixed').classList.toggle('fixed',  t === 'fixed');
-  document.getElementById('pay-type-flex').classList.toggle('active',  t === 'flex');
-  document.getElementById('pay-type-flex').classList.toggle('flex',    t === 'flex');
+function getDynamicPeriods() {
+  const list = [];
+  if (!S.nextPay) return list;
+  const basePayDate = new Date(S.nextPay + 'T12:00:00');
+  for (let i = 0; i < 6; i++) {
+    const start = new Date(basePayDate);
+    start.setDate(start.getDate() + (i - 1) * 14);
+    const end = new Date(basePayDate);
+    end.setDate(end.getDate() + i * 14);
+    
+    const startStr = start.toISOString().slice(0, 10);
+    const endStr = end.toISOString().slice(0, 10);
+    
+    const label = start.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
+    const nextPayLabel = end.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
+    
+    list.push({
+      index: i,
+      label: label,
+      startDateStr: startStr,
+      nextPay: nextPayLabel,
+      nextPayDate: endStr
+    });
+  }
+  return list;
 }
 
-function payAddPayday() {
-  const amt  = parseFloat(document.getElementById('pay-pd-amt').value);
-  const date = document.getElementById('pay-pd-date').value;
-  if (isNaN(amt) || amt <= 0) { showToast('Enter amount'); return; }
-  if (!date) { showToast('Pick a date'); return; }
-  payState.paydays.push({ id: Date.now(), amt, date });
-  payState.paydays.sort((a,b) => a.date.localeCompare(b.date));
-  paySave(payState);
-  document.getElementById('pay-pd-amt').value  = '';
-  document.getElementById('pay-pd-date').value = '';
-  payRenderSetup();
-}
-
-function payDeletePayday(id) {
-  payState.paydays = payState.paydays.filter(p => p.id !== id);
-  paySave(payState);
-  payRenderSetup();
-}
-
-function payAddBill() {
-  const name = document.getElementById('pay-bill-name').value.trim();
-  const amt  = parseFloat(document.getElementById('pay-bill-amt').value);
-  const date = document.getElementById('pay-bill-date').value;
-  const recurring = document.getElementById('pay-bill-recurring').checked;
-  if (!name) { showToast('Enter a name'); return; }
-  if (isNaN(amt) || amt <= 0) { showToast('Enter amount'); return; }
-  payState.bills.push({
-    id: Date.now(), name, amt,
-    date: date || null,
-    type: payBillType,   // 'fixed' or 'flex'
-    recurring            // repeats monthly
+function getBillsForPeriod(pi, periodsList) {
+  if (!periodsList || !periodsList[pi]) return [];
+  const period = periodsList[pi];
+  return S.bills.filter(b => {
+    if (b.skippedDates && b.skippedDates.includes(period.startDateStr)) {
+      return false;
+    }
+    if (b.cycle === 'both') return true;
+    if (pi === 0 && b.cycle === 'current') return true;
+    if (pi === 1 && b.cycle === 'next') return true;
+    if (typeof b.cycle === 'number' && b.cycle === pi) return true;
+    if (b.cycle === String(pi)) return true;
+    return false;
   });
-  paySave(payState);
-  document.getElementById('pay-bill-name').value = '';
-  document.getElementById('pay-bill-amt').value  = '';
-  document.getElementById('pay-bill-date').value = '';
-  document.getElementById('pay-bill-recurring').checked = false;
-  payRenderSetup();
 }
 
-function payDeleteBill(id) {
-  payState.bills = payState.bills.filter(b => b.id !== id);
-  paySave(payState);
-  payRenderSetup();
-}
+window.cfAddBill = function() {
+  const name = document.getElementById('cf-bill-name').value.trim();
+  const amtVal = parseFloat(document.getElementById('cf-bill-amt').value);
+  const date = document.getElementById('cf-bill-date').value.trim();
+  const recurring = document.getElementById('cf-bill-recurring').checked;
+  
+  if (!name) { showToast('ENTER A NAME'); return; }
+  if (isNaN(amtVal) || amtVal <= 0) { showToast('ENTER AN AMOUNT'); return; }
+  
+  const id = Math.max(0, ...S.bills.map(b => b.id)) + 1;
+  const newBill = {
+    id,
+    name,
+    amt: Math.round(amtVal * 100) / 100,
+    date: date || '',
+    paid: false,
+    type: cfBillType,
+    cycle: recurring ? 'both' : (cfSelected === 0 ? 'current' : cfSelected === 1 ? 'next' : cfSelected)
+  };
+  
+  S.bills.push(newBill);
+  save();
+  render();
+  payRender();
+  
+  document.getElementById('cf-bill-name').value = '';
+  document.getElementById('cf-bill-amt').value = '';
+  document.getElementById('cf-bill-date').value = '';
+  document.getElementById('cf-bill-recurring').checked = false;
+  showToast('✓ BILL ADDED');
+};
 
-// ── Setup render ──────────────────────────────────────────────────────────────
-function payRenderSetup() {
-  // paydays
-  const pdEl = document.getElementById('pay-payday-list');
-  if (payState.paydays.length) {
-    pdEl.innerHTML = payState.paydays.map(p =>
-      `<div class="pay-payday-row">
-        <span class="icon">💰</span>
-        <div class="info">
-          <div>$${p.amt.toFixed(2)}</div>
-          <div class="date">${payFmtDate(p.date)}</div>
-        </div>
-        <button class="del" onclick="payDeletePayday(${p.id})">✕</button>
-      </div>`
-    ).join('');
-  } else {
-    pdEl.innerHTML = '<div class="pay-empty">No paydays yet</div>';
-  }
+window.cfDeleteBill = function(id) {
+  S.bills = S.bills.filter(b => b.id !== id);
+  save();
+  render();
+  payRender();
+  showToast('🗑️ BILL DELETED');
+};
 
-  // bills — fixed first, then flex
-  const bEl = document.getElementById('pay-bills-list');
-  if (payState.bills.length) {
-    const fixed = payState.bills.filter(b => b.type === 'fixed');
-    const flex  = payState.bills.filter(b => b.type === 'flex');
-    let html = '';
-    if (fixed.length) {
-      html += '<div class="pay-bill-section-label" style="margin-top:10px;">🔴 Fixed</div>';
-      html += fixed.map(b => payBillPill(b)).join('');
-    }
-    if (flex.length) {
-      html += '<div class="pay-bill-section-label" style="margin-top:10px;">🟠 Flex</div>';
-      html += flex.map(b => payBillPill(b)).join('');
-    }
-    bEl.innerHTML = html;
-  } else {
-    bEl.innerHTML = '<div class="pay-empty">No bills yet</div>';
-  }
-}
-
-function payBillPill(b) {
-  const dateStr = b.date ? payFmtDate(b.date) : 'This cycle';
-  const rec = b.recurring ? ' · repeats' : '';
-  return `<div class="pay-pill">
-    <span class="dot ${b.type}"></span>
-    <span class="name">${b.name}</span>
-    <span class="meta">${dateStr}${rec}</span>
-    <span class="amt">$${b.amt.toFixed(2)}</span>
-    <button class="del" onclick="payDeleteBill(${b.id})">✕</button>
-  </div>`;
-}
-
-// ── Timeline render ───────────────────────────────────────────────────────────
-function payRender() {
-  payState = payLoad();
-  payRenderTimeline();
-  payRenderSetup();
-}
-
-function payRenderTimeline() {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const todayStr = today.toISOString().slice(0,10);
-
-  const winEl = document.getElementById('pay-windows-list');
-  const balEl = document.getElementById('pay-balance-bar');
-
-  if (!payState.paydays.length) {
-    balEl.innerHTML = '';
-    winEl.innerHTML = '<div class="pay-empty" style="padding:40px 20px;">Add paydays + bills in ⚙ Setup to see your timeline.</div>';
+window.cfTogglePaid = function(pi, id) {
+  if (pi !== 0) {
+    showToast('CAN ONLY TOGGLE PAID FOR CURRENT CYCLE');
     return;
   }
+  const b = S.bills.find(x => x.id === id);
+  if (b) {
+    b.paid = !b.paid;
+    save();
+    render();
+    payRender();
+  }
+};
 
-  // Build windows: [now→pd1], [pd1→pd2], [pd2→pd3], ...
-  const paydays = [...payState.paydays].sort((a,b) => a.date.localeCompare(b.date));
+window.cfManualSkipBill = function(pi, id) {
+  const periodsList = getDynamicPeriods();
+  const period = periodsList[pi];
+  if (!period) return;
+  const b = S.bills.find(x => x.id === id);
+  if (!b) return;
+  
+  if (b.cycle === 'both') {
+    if (!b.skippedDates) b.skippedDates = [];
+    if (!b.skippedDates.includes(period.startDateStr)) {
+      b.skippedDates.push(period.startDateStr);
+    }
+  } else {
+    if (b.cycle === 'current') {
+      b.cycle = 'next';
+    } else if (b.cycle === 'next') {
+      b.cycle = 2;
+    } else if (typeof b.cycle === 'number') {
+      b.cycle = b.cycle + 1;
+    } else if (!isNaN(parseInt(b.cycle))) {
+      b.cycle = parseInt(b.cycle) + 1;
+    }
+  }
+  save();
+  render();
+  payRender();
+  showToast('⏭️ BILL SKIPPED');
+};
 
-  // Build list of window boundaries: today + all future paydays
-  const boundaries = [todayStr, ...paydays.map(p => p.date)];
+window.cfRevertBill = function(pi, id) {
+  const periodsList = getDynamicPeriods();
+  const period = periodsList[pi];
+  if (!period) return;
+  const b = S.bills.find(x => x.id === id);
+  if (!b) return;
+  
+  if (b.cycle === 'both' && b.skippedDates) {
+    b.skippedDates = b.skippedDates.filter(d => d !== period.startDateStr);
+  } else {
+    if (b.cycle === 'next') {
+      b.cycle = 'current';
+    } else if (b.cycle === 2 || b.cycle === '2') {
+      b.cycle = 'next';
+    } else if (typeof b.cycle === 'number' && b.cycle > 2) {
+      b.cycle = b.cycle - 1;
+    } else if (!isNaN(parseInt(b.cycle)) && parseInt(b.cycle) > 2) {
+      b.cycle = parseInt(b.cycle) - 1;
+    }
+  }
+  save();
+  render();
+  payRender();
+  showToast('↩️ BILL RESTORED');
+};
 
-  // For each window, figure out which bills fall in it
-  // A bill falls in a window if its date >= window start and < window end
-  // Recurring bills: expand to next month's date if needed
-  function getBillsForWindow(winStart, winEnd) {
-    const results = [];
-    for (const b of payState.bills) {
-      const dates = payGetBillDates(b, winStart, winEnd);
-      for (const d of dates) {
-        results.push({ ...b, resolvedDate: d });
+window.cfUpdateAmt = function(pi, id, val) {
+  const v = parseFloat(val);
+  if (isNaN(v) || v < 0) return;
+  const b = S.bills.find(x => x.id === id);
+  if (b) {
+    b.amt = Math.round(v * 100) / 100;
+    save();
+    render();
+    payRender();
+  }
+};
+
+function daysRemaining() {
+  if (!S.nextPay) return 14;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const np = new Date(S.nextPay + 'T00:00:00');
+  return Math.max(Math.round((np - now) / 86400000), 1);
+}
+
+window.payRender = function() {
+  const periodsList = getDynamicPeriods();
+  if (!periodsList.length) return;
+  
+  if (cfSelected < 0 || cfSelected >= periodsList.length) {
+    cfSelected = 0;
+  }
+  
+  // ── 1. Render Cycle Strip ──
+  const stripEl = document.getElementById('cycle-strip');
+  if (stripEl) {
+    stripEl.innerHTML = '';
+    periodsList.forEach((p, idx) => {
+      const pBills = getBillsForPeriod(idx, periodsList);
+      const hasRent = pBills.some(b => b.name.toLowerCase().includes('rent'));
+      const hasVac = pBills.some(b => b.name.toLowerCase().includes('vac') || b.name.toLowerCase().includes('camp'));
+      
+      let cls = 'cpill';
+      if (idx === cfSelected) cls += ' active';
+      else if (hasRent) cls += ' rent';
+      else if (hasVac) cls += ' vac';
+      
+      const pill = document.createElement('div');
+      pill.className = cls;
+      pill.textContent = `${idx + 1} · ${p.label}`;
+      pill.onclick = () => {
+        cfSelected = idx;
+        payRender();
+      };
+      stripEl.appendChild(pill);
+    });
+    
+    setTimeout(() => {
+      const active = stripEl.querySelector('.cpill.active');
+      if (active) {
+        active.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
       }
-    }
-    return results.sort((a,b) => a.resolvedDate.localeCompare(b.resolvedDate));
+    }, 50);
   }
-
-  // Get all dates a bill applies within a window
-  function payGetBillDates(b, winStart, winEnd) {
-    const dates = [];
-    if (!b.date) {
-      // no date — falls in first window (current)
-      if (winStart === todayStr) dates.push(winStart);
-      return dates;
+  
+  // ── 2. Render Hero Card ──
+  const activePeriod = periodsList[cfSelected];
+  const pBills = getBillsForPeriod(cfSelected, periodsList);
+  
+  const unpaidBillsSum = pBills.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+  const totalBillsSum = pBills.reduce((sum, b) => sum + b.amt, 0);
+  
+  let realBal = 0;
+  let bankLabel = '';
+  let billsDueVal = 0;
+  let safeTodayVal = 0;
+  
+  if (cfSelected === 0) {
+    realBal = S.bank - unpaidBillsSum;
+    bankLabel = `$${S.bank.toFixed(2)}`;
+    billsDueVal = unpaidBillsSum;
+    
+    const fixedBills = pBills.filter(b => b.type === 'fixed' || !b.type);
+    const fixedUnpaid = fixedBills.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+    const afterFixed = S.bank - fixedUnpaid;
+    safeTodayVal = afterFixed > 0 ? afterFixed / daysRemaining() : 0;
+  } else {
+    realBal = S.income - totalBillsSum;
+    bankLabel = `$${S.income.toFixed(2)} Proj.`;
+    billsDueVal = totalBillsSum;
+    
+    const fixedBills = pBills.filter(b => b.type === 'fixed' || !b.type);
+    const fixedSum = fixedBills.reduce((sum, b) => sum + b.amt, 0);
+    const afterFixed = S.income - fixedSum;
+    safeTodayVal = afterFixed > 0 ? afterFixed / 14 : 0;
+  }
+  
+  const realNumEl = document.getElementById('real-num');
+  if (realNumEl) {
+    realNumEl.textContent = (realBal < 0 ? '-$' : '$') + Math.abs(realBal).toFixed(2);
+    realNumEl.className = 'real-num ' + (realBal >= 200 ? 'pos' : realBal >= 0 ? 'warn' : 'neg');
+  }
+  
+  const badgeEl = document.getElementById('cycle-badge');
+  if (badgeEl) badgeEl.textContent = `CYCLE ${cfSelected + 1}/${periodsList.length}`;
+  
+  const bankEl = document.getElementById('display-bank');
+  if (bankEl) bankEl.textContent = bankLabel;
+  
+  const billsEl = document.getElementById('display-bills');
+  if (billsEl) billsEl.textContent = `$${billsDueVal.toFixed(2)}`;
+  
+  const alertEl = document.getElementById('alert-bar');
+  if (alertEl) {
+    if (realBal < 0) {
+      alertEl.textContent = `$${Math.abs(realBal).toFixed(2)} SHORT — BILLS EXCEED BALANCE`;
+      alertEl.style.display = 'block';
+    } else if (realBal < 200) {
+      alertEl.textContent = `LOW BUFFER — ONLY $${realBal.toFixed(2)} AFTER BILLS`;
+      alertEl.style.display = 'block';
+    } else {
+      alertEl.style.display = 'none';
     }
-    // Check base date
-    if (b.date >= winStart && b.date < winEnd) dates.push(b.date);
-    // If recurring, check +1 month, +2 month etc within window
-    if (b.recurring) {
-      const base = new Date(b.date + 'T00:00:00');
-      for (let m = 1; m <= 12; m++) {
-        const next = new Date(base);
-        next.setMonth(next.getMonth() + m);
-        const nextStr = next.toISOString().slice(0,10);
-        if (nextStr >= winEnd) break;
-        if (nextStr >= winStart) dates.push(nextStr);
+  }
+  
+  const safeEl = document.getElementById('chip-safe');
+  if (safeEl) safeEl.textContent = `$${safeTodayVal.toFixed(2)}`;
+  
+  const nextPayEl = document.getElementById('chip-nextpay');
+  if (nextPayEl) nextPayEl.textContent = activePeriod.nextPay;
+  
+  const daysEl = document.getElementById('chip-days');
+  if (daysEl) {
+    if (cfSelected === 0) {
+      const d = daysRemaining();
+      daysEl.textContent = d === 0 ? 'Today! 🎉' : `${d} day${d === 1 ? '' : 's'} away`;
+    } else {
+      daysEl.textContent = '14 days';
+    }
+  }
+  
+  // ── 3. Render Projection Chart ──
+  const wrapEl = document.getElementById('proj-chart-container');
+  if (wrapEl) {
+    wrapEl.innerHTML = '';
+    
+    const nets = periodsList.map((p, idx) => {
+      const pB = getBillsForPeriod(idx, periodsList);
+      if (idx === 0) {
+        return S.bank - pB.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+      } else {
+        return S.income - pB.reduce((sum, b) => sum + b.amt, 0);
       }
-    }
-    return dates;
+    });
+    
+    const maxAbs = Math.max(...nets.map(Math.abs), 500);
+    
+    const zeroLine = document.createElement('div');
+    zeroLine.style.position = 'absolute';
+    zeroLine.style.left = '0';
+    zeroLine.style.right = '0';
+    zeroLine.style.top = '50%';
+    zeroLine.style.height = '2px';
+    zeroLine.style.background = 'var(--text)';
+    zeroLine.style.opacity = '0.5';
+    zeroLine.style.zIndex = '5';
+    wrapEl.appendChild(zeroLine);
+    
+    const colWidth = 100 / periodsList.length;
+    
+    periodsList.forEach((p, idx) => {
+      const val = nets[idx];
+      let heightPx = Math.round((Math.abs(val) / maxAbs) * 22);
+      if (val !== 0 && heightPx < 4) heightPx = 4;
+      
+      const col = document.createElement('div');
+      col.style.position = 'absolute';
+      col.style.left = (idx * colWidth) + '%';
+      col.style.width = colWidth + '%';
+      col.style.top = '0';
+      col.style.bottom = '0';
+      col.style.display = 'flex';
+      col.style.flexDirection = 'column';
+      col.style.alignItems = 'center';
+      
+      const bar = document.createElement('div');
+      bar.className = 'cf-proj-bar';
+      bar.style.height = heightPx + 'px';
+      
+      const valLbl = document.createElement('div');
+      valLbl.className = 'cf-proj-label';
+      valLbl.textContent = (val < 0 ? '-$' : '$') + Math.abs(Math.round(val)).toLocaleString();
+      
+      if (val >= 0) {
+        bar.style.bottom = '50%';
+        valLbl.style.bottom = '100%';
+        valLbl.style.marginBottom = '2px';
+        bar.style.background = 'var(--safe, #27ae60)';
+        bar.style.borderColor = 'var(--safe, #27ae60)';
+      } else {
+        bar.style.top = '50%';
+        valLbl.style.top = '100%';
+        valLbl.style.marginTop = '2px';
+        bar.style.background = 'var(--low, #c0392b)';
+        bar.style.borderColor = 'var(--low, #c0392b)';
+      }
+      
+      bar.appendChild(valLbl);
+      col.appendChild(bar);
+      
+      const dateLbl = document.createElement('div');
+      dateLbl.className = 'cf-proj-date';
+      dateLbl.textContent = p.label;
+      col.appendChild(dateLbl);
+      
+      wrapEl.appendChild(col);
+    });
   }
-
-  // Rolling balance tracker
-  let runningBalance = payState.bank;
-
-  // Balance bar
-  const balClass = runningBalance >= 0 ? (runningBalance > 200 ? 'ok' : 'tight') : 'over';
-  balEl.innerHTML = `<div class="pay-balance-hero">
-    <div class="pay-balance-label">BANK RIGHT NOW</div>
-    <div class="pay-balance-num ${balClass}">$${runningBalance.toFixed(2)}</div>
-    <div class="pay-balance-sub">As of ${payFmtDate(todayStr)}</div>
-  </div>`;
-
-  let windowsHTML = '';
-
-  for (let i = 0; i < boundaries.length; i++) {
-    const winStart = boundaries[i];
-    const winEnd   = boundaries[i+1] || null; // null = open-ended last window
-    const isCurrent = i === 0;
-
-    // Payday that lands AT winStart (not the first boundary which is today)
-    const landingPay = i > 0 ? paydays.find(p => p.date === winStart) : null;
-
-    // Bills in this window
-    const bills = getBillsForWindow(winStart, winEnd || '2099-12-31');
-
-    const fixedBills = bills.filter(b => b.type === 'fixed');
-    const flexBills  = bills.filter(b => b.type === 'flex');
-
-    const fixedTotal = fixedBills.reduce((s,b) => s+b.amt, 0);
-    const flexTotal  = flexBills.reduce((s,b) => s+b.amt, 0);
-    const totalOut   = fixedTotal + flexTotal;
-
-    // Balance at start of window (after receiving pay if applicable)
-    const balanceIn = runningBalance + (landingPay ? landingPay.amt : 0);
-    const freeToSpend = balanceIn - totalOut;
-    const isOver = freeToSpend < 0;
-
-    // Window label
-    const winLabel = isCurrent
-      ? 'NOW → ' + (winEnd ? payFmtDate(winEnd) : 'onward')
-      : payFmtDate(winStart) + (winEnd ? ' → ' + payFmtDate(winEnd) : ' →');
-
-    const winSubLabel = isCurrent ? 'Current window' :
-      (landingPay ? `+$${landingPay.amt.toFixed(2)} payday` : '');
-
-    const headerClass = isCurrent ? 'current' : (isOver ? 'over' : '');
-    const amtClass = isOver ? 'over' : '';
-
-    const freeClass = isOver ? 'over' : (freeToSpend < 100 ? 'tight' : 'ok');
-    const freeLabel = isOver
-      ? `OVER BY $${Math.abs(freeToSpend).toFixed(2)}`
-      : `$${freeToSpend.toFixed(2)} FREE TO SPEND`;
-
-    // Bill rows HTML
-    function billRowHTML(b) {
-      const d = b.resolvedDate && b.resolvedDate !== todayStr ? payFmtDate(b.resolvedDate) : 'this cycle';
-      return `<div class="pay-bill-row">
-        <span class="pay-bill-dot ${b.type}"></span>
-        <span class="pay-bill-name">${b.name}</span>
-        <span class="pay-bill-date">${d}</span>
-        <span class="pay-bill-amt">$${b.amt.toFixed(2)}</span>
-      </div>`;
+  
+  // ── 4. Render Bills List ──
+  const billsListEl = document.getElementById('bill-list-today');
+  if (billsListEl) {
+    billsListEl.innerHTML = '';
+    
+    const unpaidBills = pBills.filter(b => !b.paid);
+    const remCountEl = document.getElementById('remaining-count');
+    if (remCountEl) {
+      remCountEl.textContent = cfSelected === 0
+        ? `${unpaidBills.length} REMAINING`
+        : `${pBills.length} BILLS`;
     }
-
-    let billsHTML = '';
-    if (fixedBills.length) {
-      billsHTML += `<div class="pay-bill-section-label">🔴 Fixed</div>`;
-      billsHTML += fixedBills.map(billRowHTML).join('');
+    
+    if (!pBills.length) {
+      billsListEl.innerHTML = '<div style="text-align:center;padding:24px;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:0.05em;text-transform:uppercase;">No bills this cycle</div>';
+    } else {
+      pBills.forEach((b) => {
+        const isPaid = b.paid && cfSelected === 0;
+        const isSkipped = b.skippedDates && b.skippedDates.includes(activePeriod.startDateStr);
+        
+        const pill = document.createElement('div');
+        pill.className = 'bpill nm-raised-sm' + (isPaid ? ' paid' : '');
+        
+        const checkedClass = isPaid ? ' on' : '';
+        const checkZone = cfSelected === 0
+          ? `<button class="chk nm-raised-xs${checkedClass}" onclick="cfTogglePaid(0, ${b.id})">${isPaid ? '✓' : ''}</button>`
+          : `<span style="font-size:12px;opacity:0.6;margin-left:4px;">📅</span>`;
+          
+        const skipButton = (!isPaid && cfSelected < periodsList.length - 1)
+          ? `<button class="cf-skip-btn" onclick="cfManualSkipBill(${cfSelected}, ${b.id})" title="Skip to next cycle">⏭️</button>`
+          : '';
+          
+        const deleteButton = `<button class="cf-skip-btn" onclick="cfDeleteBill(${b.id})" title="Delete bill" style="color:var(--low);">🗑️</button>`;
+        
+        const skipTag = isSkipped 
+          ? `<span class="cf-skipped-badge" onclick="cfRevertBill(${cfSelected}, ${b.id})">Skipped ↩</span>`
+          : '';
+          
+        const typeLabel = b.type === 'flex' ? ' · FLEX' : ' · FIXED';
+        const dateLabel = b.date ? ` · ${b.date}` : '';
+        
+        pill.innerHTML = `
+          ${checkZone}
+          <div class="binfo">
+            <div class="bname">${b.name}${skipTag}</div>
+            <div class="bmeta">${typeLabel}${dateLabel}</div>
+          </div>
+          <input class="bamt" type="number" value="${b.amt}" min="0" step="1"
+            onchange="cfUpdateAmt(${cfSelected}, ${b.id}, this.value)"
+            onclick="this.select()"
+            style="width: 70px; background: transparent; border-bottom: 1px dotted var(--dim); border-radius: 0; padding: 2px 4px; font-weight: 700; color: var(--text-hi);" />
+          ${skipButton}
+          ${deleteButton}
+        `;
+        billsListEl.appendChild(pill);
+      });
     }
-    if (flexBills.length) {
-      billsHTML += `<div class="pay-bill-section-label">🟠 Flex</div>`;
-      billsHTML += flexBills.map(billRowHTML).join('');
-    }
-    if (!bills.length) {
-      billsHTML = '<div style="font-size:11px;color:#aaa;padding:8px 0;">No bills in this window</div>';
-    }
-
-    // Totals
-    const totalsHTML = `<div class="pay-totals">
-      <div class="pay-total-box">
-        <div class="lbl">COMING IN</div>
-        <div class="val" style="color:#27ae60;">+$${(balanceIn).toFixed(2)}</div>
-      </div>
-      <div class="pay-total-box">
-        <div class="lbl">GOING OUT</div>
-        <div class="val" style="color:#c0392b;">-$${totalOut.toFixed(2)}</div>
-      </div>
-    </div>`;
-
-    // Open current window by default
-    const bodyOpen = isCurrent ? 'open' : '';
-
-    windowsHTML += `
-    <div class="pay-window">
-      <div class="pay-window-header ${headerClass}" onclick="payToggleWindow(this)">
-        <div>
-          <div class="pay-window-label">${winLabel}</div>
-          <div class="pay-window-sublabel">${winSubLabel}</div>
-        </div>
-        <div>
-          <div class="pay-window-amount ${amtClass}">${isOver ? '−' : '+'}$${Math.abs(freeToSpend).toFixed(2)}</div>
-          <div style="font-size:8px;opacity:.6;text-align:right;">${isOver ? 'OVER' : 'FREE'}</div>
-        </div>
-      </div>
-      <div class="pay-window-body ${bodyOpen}">
-        <div class="pay-free-hero">
-          <div class="pay-free-label">${isOver ? '⚠ OVER BUDGET' : '✓ FREE TO SPEND'}</div>
-          <div class="pay-free-num ${freeClass}">${isOver ? '-' : ''}$${Math.abs(freeToSpend).toFixed(2)}</div>
-        </div>
-        ${billsHTML}
-        ${totalsHTML}
-      </div>
-    </div>`;
-
-    // Update running balance for next window
-    runningBalance = freeToSpend;
   }
+};
 
-  winEl.innerHTML = windowsHTML;
+function autoSweepUnpaidBills() {
+  const periodsList = getDynamicPeriods();
+  if (!periodsList.length) return;
+  
+  const now = new Date(); now.setHours(0,0,0,0);
+  let activeIdx = 0;
+  
+  for (let i = 0; i < periodsList.length; i++) {
+    const start = new Date(periodsList[i].startDateStr + 'T00:00:00');
+    const end = new Date(periodsList[i].nextPayDate + 'T00:00:00');
+    if (now >= start && now < end) {
+      activeIdx = i;
+      break;
+    }
+  }
+  
+  let movedAny = false;
+  for (let i = 0; i < activeIdx; i++) {
+    const pBills = S.bills.filter(b => b.cycle === i || (i === 0 && b.cycle === 'current') || (i === 1 && b.cycle === 'next'));
+    
+    pBills.forEach(b => {
+      if (!b.paid && b.cycle !== 'both') {
+        b.cycle = 'current';
+        movedAny = true;
+      }
+    });
+  }
+  
+  if (movedAny) {
+    save();
+  }
 }
 
-function payToggleWindow(header) {
-  const body = header.nextElementSibling;
-  body.classList.toggle('open');
-}
-
-// ── Utilities ─────────────────────────────────────────────────────────────────
-function payFmtDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
-}
+autoSweepUnpaidBills();
+payRender();
 </script>
 </body>
 </html>
