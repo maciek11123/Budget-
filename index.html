@@ -1493,6 +1493,59 @@ textarea.finput {
   </div>
 </div>
 
+<!-- ══ V4 TAB (Ultimate Merge view) ═══════════════════════════════════════════ -->
+<div class="page" id="pg-v4">
+  <div class="header">
+    <div class="logo">Budget V4</div>
+    <div class="hdate" id="v4-hdr-date"></div>
+  </div>
+
+  <!-- Cycle strip -->
+  <div class="cycle-strip" id="v4-cycle-strip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin:8px 14px 10px;scrollbar-width:none;-ms-overflow-style:none;"></div>
+
+  <!-- HERO: Real Balance & Unified Allowances -->
+  <div class="hero nm-raised" style="margin: 8px 14px 12px; padding: 24px 20px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;border-bottom:3px solid #000;padding-bottom:10px;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <span class="real-num pos" id="v4-real-num" style="font-family:'Space Mono',monospace;font-size:36px;font-weight:800;line-height:1;margin-bottom:0;color:var(--text-hi);">—</span>
+        <span class="real-label" style="font-size:9px;font-weight:700;letter-spacing:.1em;opacity:0.6;text-transform:uppercase;color:var(--dim);">REAL BALANCE</span>
+      </div>
+      <span id="v4-cycle-badge" style="background:var(--accent);color:var(--on-accent);padding:4px 10px;font-size:9px;border:2.5px solid #000;border-radius:0;letter-spacing:.05em;font-weight:700">—</span>
+    </div>
+    <div class="hero-sub" style="display:flex;gap:16px;font-size:12px;color:var(--text);margin-bottom:12px;font-family:'Space Mono',monospace;">
+      <span>BANK <b id="v4-display-bank" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
+      <span>BILLS DUE <b id="v4-display-bills" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
+    </div>
+    <div class="two-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="chip strict-allowance-mode" style="border:2.5px solid #000;border-radius:8px;padding:10px;">
+        <div class="cl" style="font-size:9px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;">TODAY (STRICT)</div>
+        <div class="cv" id="v4-chip-strict" style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+        <div class="cs" style="font-size:8px;opacity:.75;margin-top:2px;">per day, all bills locked</div>
+      </div>
+      <div class="chip flexible-allowance-mode" style="border:2.5px solid #000;border-radius:8px;padding:10px;">
+        <div class="cl" style="font-size:9px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;">CASHFLOW (FLEX)</div>
+        <div class="cv" id="v4-chip-flex" style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+        <div class="cs" style="font-size:8px;opacity:.75;margin-top:2px;">per day, fixed bills aside</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V4 PROJECTION CHART -->
+  <div class="hero nm-raised" style="margin: 0 14px 12px; padding: 20px 20px 14px;">
+    <div class="graph-label" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;border-bottom:2px dashed #000;padding-bottom:6px;">6-PERIOD PROJECTION</div>
+    <div class="graph-wrap" style="position:relative;height:55px;margin-bottom:4px;">
+      <div id="v4-proj-chart-container" style="position:relative;width:100%;height:100%;"></div>
+    </div>
+  </div>
+
+  <!-- V4 BILLS LIST -->
+  <div class="section-hdr" style="display:flex;justify-content:space-between;align-items:center;margin:18px 14px 6px;padding:0 4px;">
+    <div class="sec-title" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);flex:1;">Bills this cycle</div>
+    <span id="v4-remaining-count" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;">—</span>
+  </div>
+  <div id="v4-bill-list" class="bstack" style="padding: 0 14px; margin-bottom: 24px;"></div>
+</div>
+
 <!-- ══ SIM TAB (Simulation view) ══════════════════════════════════════════════ -->
 <div class="page" id="pg-sim">
   <div class="header">
@@ -1586,6 +1639,9 @@ textarea.finput {
   </button>
   <button class="nbtn" id="n-pay" onclick="showPage('pg-pay');setNav('n-pay');payRender()">
     <span class="nicon">💸</span><span class="nlabel">Cashflow</span>
+  </button>
+  <button class="nbtn" id="n-v4" onclick="showPage('pg-v4');setNav('n-v4');v4Render()">
+    <span class="nicon">⚡</span><span class="nlabel">V4</span>
   </button>
   <button class="nbtn" id="n-sim" onclick="showPage('pg-sim');setNav('n-sim');simRender()">
     <span class="nicon">🎛️</span><span class="nlabel">SIM</span>
@@ -1975,6 +2031,7 @@ function render(){
   const setInc=document.getElementById('set-income');
   if(setInc) setInc.textContent=$(S.income)+' PER CHEQUE';
   renderMonth();
+  if (typeof v4Render === 'function') v4Render();
 }
 
 function pillHTML(b, edit, isNextView = false){
@@ -4307,8 +4364,224 @@ USER QUESTION: ${promptText}`;
   }
 };
 
+window.v4Render = function() {
+  const today = new Date();
+  document.getElementById('v4-hdr-date').textContent = today.toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
+
+  const periodsList = getDynamicPeriods();
+  if (!periodsList.length) return;
+  
+  if (cfSelected < 0 || cfSelected >= periodsList.length) {
+    cfSelected = 0;
+  }
+  
+  // Render Cycle Strip
+  const stripEl = document.getElementById('v4-cycle-strip');
+  if (stripEl) {
+    stripEl.innerHTML = '';
+    periodsList.forEach((p, idx) => {
+      const pBills = getBillsForPeriod(idx, periodsList);
+      const hasRent = pBills.some(b => b.name.toLowerCase().includes('rent'));
+      const hasVac = pBills.some(b => b.name.toLowerCase().includes('vac') || b.name.toLowerCase().includes('camp'));
+      
+      let cls = 'cpill';
+      if (idx === cfSelected) cls += ' active';
+      else if (hasRent) cls += ' rent';
+      else if (hasVac) cls += ' vac';
+      
+      const pill = document.createElement('div');
+      pill.className = cls;
+      pill.textContent = `${idx + 1} · ${p.label}`;
+      pill.onclick = () => {
+        cfSelected = idx;
+        v4Render();
+      };
+      stripEl.appendChild(pill);
+    });
+  }
+
+  // Calculations for Period 0
+  const pBills = getBillsForPeriod(cfSelected, periodsList);
+  const unpaidBillsSum = pBills.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+  const totalBillsSum = pBills.reduce((sum, b) => sum + b.amt, 0);
+
+  let realBal = 0;
+  let bankLabel = '';
+  let billsDueVal = 0;
+  
+  if (cfSelected === 0) {
+    realBal = S.bank - unpaidBillsSum;
+    bankLabel = `$${S.bank.toFixed(2)}`;
+    billsDueVal = unpaidBillsSum;
+  } else {
+    realBal = S.income - totalBillsSum;
+    bankLabel = `$${S.income.toFixed(2)} Proj.`;
+    billsDueVal = totalBillsSum;
+  }
+
+  // Update Real Balance
+  const realNumEl = document.getElementById('v4-real-num');
+  if (realNumEl) {
+    realNumEl.textContent = (realBal < 0 ? '-$' : '$') + Math.abs(realBal).toFixed(2);
+    realNumEl.className = 'real-num ' + (realBal < 0 ? 'neg' : 'pos');
+  }
+
+  const badgeEl = document.getElementById('v4-cycle-badge');
+  if (badgeEl) {
+    badgeEl.textContent = `CYCLE ${cfSelected + 1}/${periodsList.length}`;
+  }
+
+  document.getElementById('v4-display-bank').textContent = bankLabel;
+  document.getElementById('v4-display-bills').textContent = `$${billsDueVal.toFixed(2)}`;
+
+  // Strict and Flex Safe Today values for current cycle (Period 0)
+  let strictVal = 0;
+  let flexVal = 0;
+
+  if (cfSelected === 0) {
+    strictVal = safe();
+    
+    const fixedBills = pBills.filter(b => b.type === 'fixed' || !b.type);
+    const fixedUnpaid = fixedBills.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+    const afterFixed = S.bank - fixedUnpaid;
+    flexVal = afterFixed > 0 ? afterFixed / getSafeDivisor() : 0;
+  } else {
+    strictVal = Math.max((realBal) / 14, 0);
+    
+    const fixedBills = pBills.filter(b => b.type === 'fixed' || !b.type);
+    const fixedSum = fixedBills.reduce((sum, b) => sum + b.amt, 0);
+    const afterFixed = S.income - fixedSum;
+    flexVal = afterFixed > 0 ? afterFixed / 14 : 0;
+  }
+
+  document.getElementById('v4-chip-strict').textContent = $(strictVal);
+  document.getElementById('v4-chip-flex').textContent = $(flexVal);
+
+  // Render Projection Chart
+  const wrapEl = document.getElementById('v4-proj-chart-container');
+  if (wrapEl) {
+    wrapEl.innerHTML = '';
+    
+    const nets = periodsList.map((p, idx) => {
+      const pB = getBillsForPeriod(idx, periodsList);
+      if (idx === 0) {
+        return S.bank - pB.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+      } else {
+        return S.income - pB.reduce((sum, b) => sum + b.amt, 0);
+      }
+    });
+    
+    const maxAbs = Math.max(...nets.map(Math.abs), 500);
+    
+    const zeroLine = document.createElement('div');
+    zeroLine.style.position = 'absolute';
+    zeroLine.style.left = '0';
+    zeroLine.style.right = '0';
+    zeroLine.style.top = '50%';
+    zeroLine.style.height = '2px';
+    zeroLine.style.background = 'var(--text)';
+    zeroLine.style.opacity = '0.5';
+    zeroLine.style.zIndex = '5';
+    wrapEl.appendChild(zeroLine);
+    
+    const colWidth = 100 / periodsList.length;
+    
+    periodsList.forEach((p, idx) => {
+      const val = nets[idx];
+      let heightPx = Math.round((Math.abs(val) / maxAbs) * 22);
+      if (val !== 0 && heightPx < 4) heightPx = 4;
+      
+      const col = document.createElement('div');
+      col.style.position = 'absolute';
+      col.style.left = (idx * colWidth) + '%';
+      col.style.width = colWidth + '%';
+      col.style.top = '0';
+      col.style.bottom = '0';
+      col.style.display = 'flex';
+      col.style.flexDirection = 'column';
+      col.style.alignItems = 'center';
+      
+      const bar = document.createElement('div');
+      bar.className = 'cf-proj-bar';
+      bar.style.height = heightPx + 'px';
+      
+      const valLbl = document.createElement('div');
+      valLbl.className = 'cf-proj-label';
+      valLbl.textContent = (val < 0 ? '-$' : '$') + Math.abs(Math.round(val)).toLocaleString();
+      
+      if (val >= 0) {
+        bar.style.bottom = '50%';
+        valLbl.style.bottom = '100%';
+        valLbl.style.marginBottom = '2px';
+        bar.style.background = 'var(--safe, #27ae60)';
+        bar.style.borderColor = 'var(--safe, #27ae60)';
+      } else {
+        bar.style.top = '50%';
+        valLbl.style.top = '100%';
+        valLbl.style.marginTop = '2px';
+        bar.style.background = 'var(--low, #c0392b)';
+        bar.style.borderColor = 'var(--low, #c0392b)';
+      }
+      
+      bar.appendChild(valLbl);
+      col.appendChild(bar);
+      
+      const dateLbl = document.createElement('div');
+      dateLbl.className = 'cf-proj-date';
+      dateLbl.textContent = p.label;
+      col.appendChild(dateLbl);
+      
+      wrapEl.appendChild(col);
+    });
+  }
+
+  // Render V4 Bills List
+  const billsListEl = document.getElementById('v4-bill-list');
+  if (billsListEl) {
+    billsListEl.innerHTML = '';
+    
+    const unpaidBills = pBills.filter(b => !b.paid);
+    document.getElementById('v4-remaining-count').textContent = cfSelected === 0
+      ? `${unpaidBills.length} REMAINING`
+      : `${pBills.length} BILLS`;
+      
+    if (!pBills.length) {
+      billsListEl.innerHTML = '<div style="text-align:center;padding:24px;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:0.05em;text-transform:uppercase;">No bills this cycle</div>';
+    } else {
+      pBills.forEach((b) => {
+        const isPaid = b.paid && cfSelected === 0;
+        
+        const pill = document.createElement('div');
+        pill.className = 'bpill nm-raised-sm' + (isPaid ? ' paid' : '');
+        
+        const isFixed = b.type === 'fixed' || !b.type;
+        const typeBadge = isFixed 
+          ? `<span style="font-size:8px;background:var(--low-bg);color:var(--low);padding:2px 4px;font-weight:700;letter-spacing:0.05em;">FIXED</span>`
+          : `<span style="font-size:8px;background:var(--warn-bg);color:var(--warn);padding:2px 4px;font-weight:700;letter-spacing:0.05em;">FLEX</span>`;
+
+        pill.innerHTML = `
+          <button class="chk nm-raised-xs${isPaid?' on':''}" onclick="togglePaid(${b.id}); setTimeout(v4Render, 10);">${isPaid?'✓':''}</button>
+          <div class="binfo">
+            <div class="bname">${b.name}</div>
+            <div class="bmeta" style="display:flex;gap:6px;align-items:center;">${b.date || 'This cycle'} ${typeBadge}</div>
+          </div>
+          <span class="bamt">${$(b.amt)}</span>
+        `;
+        billsListEl.appendChild(pill);
+      });
+    }
+  }
+};
+
 autoSweepUnpaidBills();
 payRender();
+v4Render();
+
+const initView = S.activeView || 'pg-v4';
+const viewId = initView.startsWith('pg-') ? initView : (initView === 'today' ? 'pg-dash' : (initView === 'cashflow' ? 'pg-pay' : 'pg-' + initView));
+showPage(viewId);
+const btnId = viewId === 'pg-dash' ? 'n-today' : (viewId === 'pg-pay' ? 'n-pay' : 'n-' + viewId.replace('pg-', ''));
+setNav(btnId);
 </script>
 </body>
 </html>
