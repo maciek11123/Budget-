@@ -975,6 +975,8 @@ function refresh(){
 }
 
 updatePeriodsArray();
+window.refresh = refresh;
+window.buildChart = buildChart;
 buildChart();
 refresh();
 
@@ -1038,13 +1040,13 @@ window._LEDGER_FB = {
         S = { ...S, ...data };
         localStorage.setItem('real-v6', JSON.stringify(S));
         updatePeriodsArray();
-        refresh();
+        if (window.refresh) window.refresh();
         if (typeof currentTab !== 'undefined') {
           if (currentTab === 'bills') buildBillsPaid();
           if (currentTab === 'projections') buildProjections();
           if (currentTab === 'sim') buildSim();
         }
-        buildChart();
+        if (window.buildChart) window.buildChart();
         isUpdatingFromFirebase = false;
       }
     } else {
