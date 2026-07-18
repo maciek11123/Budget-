@@ -1,967 +1,1586 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="pixel">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>CASHFLOW</title>
+<link rel="manifest" href="cashflow-manifest.json"/>
+<link rel="apple-touch-icon" href="cashflow-icon-192.png"/>
 <meta name="theme-color" content="#FFD600"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="CASHFLOW"/>
-<link rel="manifest" href="cashflow-manifest.json"/>
-<link rel="apple-touch-icon" href="cashflow-icon-192.png"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{font-family:'Space Mono',monospace;background:#FFD600;color:#111;min-height:100vh}
-.app{max-width:420px;margin:0 auto;padding:14px 12px 80px}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Mono:wght@400;700&family=Outfit:wght@400;700;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
-/* top bar */
-.top-bar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
-.brand{font-size:11px;letter-spacing:.14em;font-weight:700}
-.date-lbl{font-size:11px;letter-spacing:.06em}
+/* ══════════════════════════════════════
+   THEMES
+   ══════════════════════════════════════ */
 
-/* cycle strip */
-.cycle-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:10px;scrollbar-width:none}
-.cycle-strip::-webkit-scrollbar{display:none}
-.cpill{flex-shrink:0;border:2.5px solid #111;border-radius:99px;padding:5px 13px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;font-family:'Space Mono',monospace}
-.cpill.active{background:#111;color:#FFD600}
-.cpill.rent{border-color:#E24B4A}
-.cpill.vac{border-color:#1D9E75}
+/* PIXEL — retro blocky */
+[data-theme="pixel"]{
+  --bg:var(--pix-bg,#FFD600);--surface:#fff;--surface2:#fff;
+  --sd:transparent;--sl:transparent;
+  --text-hi:var(--pix-text-hi,#000);--text:var(--pix-text,#000);--dim:var(--pix-dim,#555);--muted:#999;
+  --hr:#000;
+  --accent:var(--pix-accent,#2F35E1);--accent2:var(--pix-accent,#2F35E1);--on-accent:#fff;
+  --warn:#ff7b00;--warn-bg:rgba(255,123,0,.12);
+  --low:#FF6B9D;--low-bg:rgba(250,88,167,.12);
+}
+[data-theme="pixel"] *{font-family:'Space Mono',monospace!important;}
+[data-theme="pixel"] .hero{border:4px solid #000;box-shadow:6px 6px 0 #000!important;border-radius:0;background:var(--surface)!important;}
+[data-theme="pixel"] .real-num{color:var(--pix-accent,#2F35E1)!important;}
+[data-theme="pixel"] .real-num.low{color:var(--low)!important;}
+[data-theme="pixel"] .real-num.warn{color:var(--warn)!important;}
+[data-theme="pixel"] .hero-rule{height:4px;background:#000;}
+[data-theme="pixel"] .hero-sub b{color:var(--pix-text-hi,#000)!important;}
+[data-theme="pixel"] .stat{border:2px solid #000;border-radius:0;background:var(--pix-stat1,#00e5ff)!important;}
+[data-theme="pixel"] .stat+.stat{border-left:2px solid #000;background:var(--pix-stat2,#FF6B9D)!important;color:#fff;}
+[data-theme="pixel"] .stat+.stat .slabel,[data-theme="pixel"] .stat+.stat .sval,[data-theme="pixel"] .stat+.stat .snote{color:#fff!important;}
+[data-theme="pixel"] .status{border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;text-transform:uppercase;}
+[data-theme="pixel"] .status.safe{background:#dff700!important;}
+[data-theme="pixel"] .bpill{border:2px solid #000;border-radius:0;}
+[data-theme="pixel"] .bpill::after{display:none;}
+[data-theme="pixel"] .bpill:nth-child(even){background:#f4f4f4!important;}
+[data-theme="pixel"] .bpill.paid{background:#ddd!important;border-style:dashed;opacity:1;}
+[data-theme="pixel"] .btn-main{background:var(--pix-accent,#2F35E1)!important;color:#fff;border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
+[data-theme="pixel"] .btn-sec{border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
+[data-theme="pixel"] .chk{border-radius:0;border:2px solid #000;box-shadow:none!important;}
+[data-theme="pixel"] .nav{background:var(--pix-nav,#FFD600)!important;border-top:4px solid #000;box-shadow:none;}
+[data-theme="pixel"] .ctab.active{background:var(--pix-accent,#2F35E1)!important;color:#fff;border-radius:0;box-shadow:4px 4px 0 #000;}
+[data-theme="pixel"] .ctabs{border-radius:0;}
+[data-theme="pixel"] .ctab{border-radius:0;}
+[data-theme="pixel"] .addbtn{border-radius:0;border-color:#000;}
+[data-theme="pixel"] .sheet{background:#fff!important;border-radius:0!important;}
+[data-theme="pixel"] .finput{border-radius:0;border:2px solid #000;}
+[data-theme="pixel"] .bconfirm{background:var(--pix-accent,#2F35E1)!important;border:4px solid #000;box-shadow:4px 4px 0 #000;border-radius:0;}
 
-/* real balance hero */
-.hero-card{background:#fff;border:3px solid #111;padding:14px;margin-bottom:8px}
-.hero-label{font-size:10px;letter-spacing:.14em;font-weight:700;color:#888;margin-bottom:4px}
-.real-num{font-size:40px;font-weight:700;line-height:1;margin-bottom:3px}
-.real-num.pos{color:#111}
-.real-num.warn{color:#BA7517}
-.real-num.neg{color:#E8157A}
-.hero-sub{font-size:11px;color:#888;margin-bottom:10px;display:flex;gap:12px}
-.hero-sub b{color:#111}
-.alert-bar{border:2px solid #E8157A;padding:7px 10px;font-size:11px;font-weight:700;color:#E8157A;margin-bottom:10px;display:none}
-.alert-bar.show{display:block}
-.two-chips{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
-.chip{border:2.5px solid #111;padding:10px 12px}
-.chip.cyan{background:#00E5FF}
-.chip.pink{background:#E8157A;color:#fff}
-.chip .cl{font-size:9px;letter-spacing:.1em;font-weight:700;margin-bottom:3px}
-.chip .cv{font-size:17px;font-weight:700;line-height:1}
-.chip .cs{font-size:10px;opacity:.75;margin-top:2px}
-.bank-row{display:flex;align-items:center;gap:8px;border-top:2px solid #111;padding-top:10px}
-.bank-label{font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;flex:1}
-.bank-input{border:2px solid #111;padding:6px 10px;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;width:110px;text-align:right;background:#fff;outline:none}
-.bank-input:focus{background:#FFD600}
+/* STACK — dark mode overlap cards */
+[data-theme="stack"]{
+  --bg:#000;--surface:#111;--surface2:#1a1a1a;
+  --sd:transparent;--sl:transparent;
+  --text-hi:#fff;--text:#a0a0a0;--dim:#555;--muted:#333;
+  --hr:#222;
+  --accent:#00d970;--accent2:#33ff99;--on-accent:#000;
+  --warn:#ff8c00;--warn-bg:rgba(255,140,0,.12);
+  --low:#ff4d4d;--low-bg:rgba(255,77,77,.12);
+}
+[data-theme="stack"] .hero{background:transparent!important;box-shadow:none!important;padding:10px 20px;}
+[data-theme="stack"] .hero::after{display:none;}
+[data-theme="stack"] .hero-rule{display:none;}
+[data-theme="stack"] .stat{background:#111!important;border-radius:24px;flex:1;padding:14px;}
+[data-theme="stack"] .stat+.stat{border-left:none;}
+[data-theme="stack"] .bstack{gap:0;padding-bottom:20px;}
+[data-theme="stack"] .bpill{margin-bottom:-16px;border:2px solid #000;border-radius:40px;padding:16px 20px;}
+[data-theme="stack"] .bpill:nth-child(7n+1){background:var(--stk-pill-1,#fae100)!important;color:#000;z-index:100;}
+[data-theme="stack"] .bpill:nth-child(7n+2){background:var(--stk-pill-2,#00d970)!important;color:#000;z-index:99;}
+[data-theme="stack"] .bpill:nth-child(7n+3){background:var(--stk-pill-3,#ff8c00)!important;color:#000;z-index:98;}
+[data-theme="stack"] .bpill:nth-child(7n+4){background:var(--stk-pill-4,#7a63ff)!important;color:#000;z-index:97;}
+[data-theme="stack"] .bpill:nth-child(7n+5){background:var(--stk-pill-5,#ff6b9e)!important;color:#000;z-index:96;}
+[data-theme="stack"] .bpill .bname,[data-theme="stack"] .bpill .bmeta,[data-theme="stack"] .bpill .bamt{color:inherit!important;}
+[data-theme="stack"] .bpill.paid{background:#111!important;color:#555!important;border-color:#000;z-index:1;margin-bottom:4px;opacity:1;}
+[data-theme="stack"] .bpill.paid .bname,[data-theme="stack"] .bpill.paid .bmeta,[data-theme="stack"] .bpill.paid .bamt{color:#555!important;}
+[data-theme="stack"] .btn-main{background:#fff!important;color:#000;border-radius:30px;}
+[data-theme="stack"] .btn-sec{background:var(--surface)!important;color:#fff;border-radius:30px;}
+[data-theme="stack"] .nav{background:#0a0a0a!important;box-shadow:0 -2px 20px rgba(0,0,0,.6);}
+[data-theme="stack"] .ctab.active{background:#00d970!important;color:#000;}
+[data-theme="stack"] .sheet{background:#111!important;}
+[data-theme="stack"] .bconfirm{background:#00d970!important;color:#000;}
 
-/* graph */
-.graph-card{background:#fff;border:3px solid #111;padding:14px;margin-bottom:8px}
-.graph-label{font-size:10px;letter-spacing:.14em;font-weight:700;margin-bottom:8px}
-.graph-wrap{position:relative;height:100px}
+/* GEO — geometric split grid */
+[data-theme="geo"]{
+  --bg:#f0f0f5;--surface:#fff;--surface2:#fff;
+  --sd:transparent;--sl:transparent;
+  --text-hi:#111;--text:#444;--dim:#888;--muted:#c0c0c0;
+  --hr:rgba(0,0,0,.05);
+  --accent:#2F35E1;--accent2:#5a3fff;--on-accent:#fff;
+  --warn:#FFD600;--warn-bg:rgba(255,214,0,.12);
+  --low:#ff3366;--low-bg:rgba(255,51,102,.12);
+}
+[data-theme="geo"] *{font-family:'Outfit',sans-serif!important;}
+[data-theme="geo"] .hero{background:transparent!important;box-shadow:none!important;padding:0 14px;display:flex;flex-direction:column;gap:12px;}
+[data-theme="geo"] .hero::after{display:none;}
+[data-theme="geo"] .hero-rule{display:none;}
+[data-theme="geo"] .stat{background:var(--geo-stat1,#ff7b00)!important;color:#fff;border-radius:28px;padding:20px;flex:1;}
+[data-theme="geo"] .stat .slabel,[data-theme="geo"] .stat .sval,[data-theme="geo"] .stat .snote{color:#fff!important;}
+[data-theme="geo"] .stat+.stat{border-left:none;background:#fff!important;color:#111;}
+[data-theme="geo"] .stat+.stat .slabel,[data-theme="geo"] .stat+.stat .sval,[data-theme="geo"] .stat+.stat .snote{color:#111!important;}
+[data-theme="geo"] .bpill{border-radius:20px;box-shadow:0 4px 15px rgba(0,0,0,.02);}
+[data-theme="geo"] .btn-main{background:#1a1a2e!important;color:#fff;border-radius:20px;}
+[data-theme="geo"] .btn-sec{background:#fff!important;color:#1a1a2e;border-radius:20px;box-shadow:0 4px 15px rgba(0,0,0,.03);}
+[data-theme="geo"] .ctab.active{background:#2F35E1!important;color:#fff;}
+[data-theme="geo"] .sheet{background:#fff!important;}
+[data-theme="geo"] .bconfirm{background:#2F35E1!important;}
 
-/* nav tabs */
-.nav-tabs{display:flex;border:3px solid #111;margin-bottom:10px;background:#fff}
-.ntab{flex:1;padding:9px 4px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.04em;cursor:pointer;text-align:center;border:none;background:transparent;border-right:2px solid #111}
-.ntab:last-child{border-right:none}
-.ntab.active{background:#111;color:#FFD600}
+/* MIN-DARK — flat dark theme */
+[data-theme="min-dark"]{
+  --bg:#121212;--surface:#1e1e1e;--surface2:#2a2a2a;
+  --sd:transparent;--sl:transparent;
+  --text-hi:#ffffff;--text:#e0e0e0;--dim:#a0a0a0;--muted:#555;
+  --hr:#333;
+  --accent:#e5e4df;--accent2:#ffffff;--on-accent:#121212;
+  --warn:#ffb74d;--warn-bg:rgba(255,183,77,0.12);
+  --low:#e57373;--low-bg:rgba(229,115,115,0.12);
+}
+[data-theme="min-dark"] *{font-family:'Space Mono',monospace!important;}
+[data-theme="min-dark"] .hero{background:#1e1e1e!important;border:1px solid #333!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-dark"] .stat{background:#2a2a2a!important;border:none!important;border-radius:6px;}
+[data-theme="min-dark"] .stat+.stat{background:#2a2a2a!important;border:none!important;}
+[data-theme="min-dark"] .bpill{background:#1e1e1e!important;border:1px solid #333!important;border-radius:6px;box-shadow:none!important;}
+[data-theme="min-dark"] .bpill.paid{background:#181818!important;border-color:#2a2a2a!important;opacity:0.6;}
+[data-theme="min-dark"] .btn-main{background:#e5e4df!important;color:#121212!important;border:none!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-dark"] .btn-sec{background:#2a2a2a!important;color:#ffffff!important;border:none!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-dark"] .chk{border:1px solid #555!important;border-radius:3px;box-shadow:none!important;}
+[data-theme="min-dark"] .nav{background:#121212!important;border-top:1px solid #333!important;box-shadow:none;}
+[data-theme="min-dark"] .ctab.active{background:#e5e4df!important;color:#121212!important;border-radius:6px;}
+[data-theme="min-dark"] .sheet{background:#1e1e1e!important;border-radius:12px 12px 0 0!important;}
+[data-theme="min-dark"] .finput{border:1px solid #333!important;border-radius:6px;background:#121212!important;}
+[data-theme="min-dark"] .bconfirm{background:#e5e4df!important;color:#121212!important;border:none!important;box-shadow:none!important;border-radius:6px;}
 
-/* tab panes */
-.pane{display:none}
-.pane.active{display:block}
+/* MIN-LIGHT — warm grey theme */
+[data-theme="min-light"]{
+  --bg:#e5e4df;--surface:#f4f3ef;--surface2:#ffffff;
+  --sd:transparent;--sl:transparent;
+  --text-hi:#1c1b18;--text:#4a4843;--dim:#7d7b74;--muted:#b5b3ad;
+  --hr:#d5d3cd;
+  --accent:#1c1b18;--accent2:#4a4843;--on-accent:#e5e4df;
+  --warn:#d97706;--warn-bg:rgba(217,119,6,0.08);
+  --low:#dc2626;--low-bg:rgba(220,38,38,0.08);
+}
+[data-theme="min-light"] *{font-family:'Space Mono',monospace!important;}
+[data-theme="min-light"] .hero{background:#f4f3ef!important;border:1px solid #d5d3cd!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-light"] .stat{background:#ffffff!important;border:1px solid #e5e4df!important;border-radius:6px;}
+[data-theme="min-light"] .stat+.stat{background:#ffffff!important;border:1px solid #e5e4df!important;}
+[data-theme="min-light"] .bpill{background:#f4f3ef!important;border:1px solid #d5d3cd!important;border-radius:6px;box-shadow:none!important;}
+[data-theme="min-light"] .bpill.paid{background:#deddd8!important;border-color:#c8c7c1!important;opacity:0.6;}
+[data-theme="min-light"] .btn-main{background:#1c1b18!important;color:#e5e4df!important;border:none!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-light"] .btn-sec{background:#ffffff!important;color:#1c1b18!important;border:1px solid #d5d3cd!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-light"] .chk{border:1px solid #b5b3ad!important;border-radius:3px;box-shadow:none!important;}
+[data-theme="min-light"] .nav{background:#e5e4df!important;border-top:1px solid #d5d3cd!important;box-shadow:none;}
+[data-theme="min-light"] .ctab.active{background:#1c1b18!important;color:#e5e4df!important;border-radius:6px;}
+[data-theme="min-light"] .sheet{background:#f4f3ef!important;border-radius:12px 12px 0 0!important;}
+[data-theme="min-light"] .finput{border:1px solid #d5d3cd!important;border-radius:6px;background:#ffffff!important;}
+[data-theme="min-light"] .bconfirm{background:#1c1b18!important;color:#e5e4df!important;border:none!important;box-shadow:none!important;border-radius:6px;}
 
-/* bills */
-.section-hdr{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.12em;font-weight:700;color:#444;margin:0 0 6px}
-.bill-item{background:#ffffff !important;border:2.5px solid #111;padding:10px 12px;margin-bottom:5px;display:flex;align-items:center;gap:10px}
-.bill-item.is-paid{background:#f0f0f0 !important;border-style:dashed;border-color:#aaa}
-.bcheck{width:18px;height:18px;border:2.5px solid #111;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;font-size:11px;font-weight:700}
-.bcheck.on{background:#111;color:#FFD600;border-color:#111}
-.binfo{flex:1;min-width:0}
-.bname{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bname.dim{color:#aaa}
-.bmeta{font-size:10px;color:#999;letter-spacing:.04em;margin-top:1px}
-.bamt{font-weight:700;font-size:13px;white-space:nowrap}
-.bamt.flex-c{color:#7a3f00}
-.bamt.dim{color:#aaa}
-.amt-input{border:none;border-bottom:2px solid #111;background:transparent;font-family:Space Mono,monospace;font-size:13px;font-weight:700;width:64px;text-align:right;outline:none;padding:1px 2px}
-.amt-input:focus{border-bottom:2px solid #E8157A;background:#FFF9C4}
-.amt-input.flex-c{color:#7a3f00}
-.amt-input.dim{color:#aaa}
+/* Semantic safe = accent colour */
+:root,[data-theme]{
+  --safe:var(--accent);
+  --safe2:var(--accent2);
+  --safe-bg:color-mix(in srgb,var(--accent) 10%,transparent);
+}
 
-/* projections */
-.proj-item{background:#fff;border:2.5px solid #111;padding:12px;margin-bottom:6px}
-.proj-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.proj-title{font-size:13px;font-weight:700}
-.proj-del{font-size:11px;color:#E8157A;cursor:pointer;font-weight:700;border:none;background:none;font-family:'Space Mono',monospace}
-.proj-q{font-size:11px;color:#888;margin-bottom:6px;font-style:italic}
-.proj-body{font-size:12px;line-height:1.6}
-.proj-impact{font-size:11px;color:#BA7517;font-weight:700;margin-top:5px}
-.proj-date{font-size:10px;color:#aaa;letter-spacing:.06em;margin-top:4px}
-.save-btn{border:2.5px solid #111;background:#FFD600;padding:6px 12px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;margin-top:8px}
-.save-btn:hover{background:#111;color:#FFD600}
-.empty-state{font-size:12px;color:#888;padding:20px 0;text-align:center}
+/* ══════════════════════════════════════
+   NEUMORPHIC SYSTEM
+   ══════════════════════════════════════ */
+.nm-raised{
+  background:var(--surface)!important;
+  box-shadow: 5px 6px 12px var(--sd), -3px -3px 8px var(--sl);
+  border:none;
+}
+.nm-raised-sm{
+  background:var(--surface)!important;
+  box-shadow: 3px 4px 8px var(--sd), -2px -2px 5px var(--sl);
+  border:none;
+}
+.nm-raised-xs{
+  background:var(--surface)!important;
+  box-shadow: 2px 3px 5px var(--sd), -1px -2px 4px var(--sl);
+  border:none;
+}
+.nm-pressed{
+  background:var(--bg)!important;
+  box-shadow: inset 3px 3px 8px var(--sd), inset -2px -2px 5px var(--sl);
+  border:none;
+}
+[data-theme$="dark"] .nm-raised{
+  background:var(--surface)!important;
+  box-shadow:4px 6px 12px rgba(0,0,0,.55),-1px -1px 3px var(--sl);
+}
+[data-theme$="dark"] .nm-raised-sm{
+  background:var(--surface)!important;
+  box-shadow:3px 4px 9px rgba(0,0,0,.50),-1px -1px 2px var(--sl);
+}
+[data-theme$="dark"] .nm-raised-xs{
+  background:var(--surface)!important;
+  box-shadow:2px 3px 6px rgba(0,0,0,.45),-1px -1px 2px var(--sl);
+}
+[data-theme$="dark"] .nm-pressed{
+  background:var(--bg)!important;
+  box-shadow:inset 3px 3px 8px rgba(0,0,0,.55),inset -1px -1px 3px var(--sl);
+}
 
-/* AI advisor */
-.ai-section{margin-top:0}
-.ai-label{font-size:10px;letter-spacing:.13em;font-weight:700;margin-bottom:8px}
-.qchips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-.qchip{border:2px solid #111;background:#fff;padding:4px 10px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer}
-.qchip:hover{background:#111;color:#FFD600}
-.input-row{display:flex}
-.input-row input{flex:1;border:2.5px solid #111;border-right:none;padding:9px 10px;font-family:'Space Mono',monospace;font-size:12px;background:#fff;outline:none;min-width:0}
-.input-row input:focus{background:#FFFDE0}
-.ask-btn{border:2.5px solid #111;background:#111;color:#FFD600;padding:9px 14px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;cursor:pointer}
-.ask-btn:hover{background:#333}
-.ai-bubble{background:#fff;border:2.5px solid #111;padding:12px;margin-top:6px;font-size:12px;line-height:1.65}
-.ai-bubble .al{font-size:9px;letter-spacing:.12em;font-weight:700;color:#E8157A;margin-bottom:5px}
-.thinking{color:#888;font-size:12px;padding:8px 0;font-style:italic}
+/* ══════════════════════════════════════
+   CORE BASE
+   ══════════════════════════════════════ */
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;
+  overflow-x:hidden;
+  transition:background .3s,color .3s;
+  -webkit-tap-highlight-color:transparent;
+}
+.app{width:100%;max-width:420px;margin:0 auto;padding-bottom:100px;position:relative;}
 
-/* bottom nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#FFD600;border-top:3px solid #111;display:flex;max-width:420px;margin:0 auto}
+/* TOP BAR */
+.top-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 14px 10px;
+}
+.logo{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:800;letter-spacing:.22em;color:var(--text-hi);
+  display:flex;align-items:center;gap:6px;
+}
+.fb-dot{
+  width:6px;height:6px;border-radius:50%;
+  display:inline-block;background:#888;
+}
+.fb-dot.live{background:#00d970;}
+.fb-dot.offline{background:#ff3b30;}
+.fb-dot.connecting{background:#ff9500;}
+
+.hdate{
+  font-family:'Space Mono',monospace;
+  font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--text-hi);
+}
+
+/* PAGE WRAPPERS */
+.page{display:none;}
+.page.active{display:block;}
+
+/* CYCLE STRIP */
+.cycle-strip{
+  display:flex;gap:6px;overflow-x:auto;
+  padding:0 14px 2px;margin-bottom:10px;
+  scrollbar-width:none;
+}
+.cycle-strip::-webkit-scrollbar{display:none;}
+.cpill{
+  flex-shrink:0;border:2.5px solid #000;border-radius:99px;
+  padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;
+  background:#fff;color:#000;font-family:'Space Mono',monospace;
+  box-shadow:3px 3px 0 #000;
+  transition:all .15s;
+}
+.cpill.active{background:#000;color:var(--pix-bg,#FFD600);border-color:#000;}
+[data-theme$="dark"] .cpill{
+  border-color:#333;box-shadow:none;background:#2a2a2a;color:#fff;
+}
+[data-theme$="dark"] .cpill.active{background:#fff;color:#000;border-color:#fff;}
+[data-theme="min-light"] .cpill{
+  border-color:#d5d3cd;box-shadow:none;background:#ffffff;color:#1c1b18;
+}
+[data-theme="min-light"] .cpill.active{background:#1c1b18;color:#e5e4df;border-color:#1c1b18;}
+
+/* CHIPS & BUTTONS */
+.two-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.chip{border-radius:14px;padding:12px;}
+.chip .cl{font-size:9px;font-weight:800;letter-spacing:.08em;margin-bottom:3px;opacity:0.75;}
+.chip .cv{font-size:18px;font-weight:800;line-height:1.1;}
+.chip .cs{font-size:8px;opacity:0.75;margin-top:4px;}
+
+/* GRAPH */
+.graph-wrap{position:relative;height:55px;width:100%;}
+.cf-proj-bar{
+  width:16px;border:2px solid #000;
+  background:var(--accent);
+  position:absolute;bottom:0;
+  transition:height .3s;
+}
+[data-theme$="dark"] .cf-proj-bar{border-color:#555;}
+.cf-proj-label{
+  position:absolute;top:-12px;font-family:'Space Mono',monospace;
+  font-size:7px;font-weight:700;color:var(--dim);
+}
+
+/* BILLS STACK */
+.bstack{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.bpill{
+  border-radius:16px;padding:10px 14px;
+  display:flex;align-items:center;gap:12px;
+  transition:opacity .2s;
+  background:var(--surface);
+  border:1.5px solid var(--hr);
+}
+.bpill.paid{opacity:.55;text-decoration:line-through;}
+.chk{
+  width:20px;height:20px;border-radius:6px;
+  border:2.5px solid var(--text-hi);background:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:900;color:var(--text-hi);
+  cursor:pointer;flex-shrink:0;outline:none;
+}
+.chk.on{background:var(--text-hi);color:var(--bg);}
+.binfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}
+.bname{font-size:13px;font-weight:800;color:var(--text-hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bmeta{font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;}
+.bamt{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text-hi);text-align:right;}
+
+.cf-skip-btn{
+  background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;color:var(--dim);padding:4px;
+}
+.cf-skipped-badge{
+  background:var(--warn-bg);color:var(--warn);font-family:'Space Mono',monospace;
+  font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;cursor:pointer;
+}
+
+/* AI BOX */
+.ai-bubble{
+  background:var(--surface2);border-radius:14px;padding:12px;
+  font-size:12px;line-height:1.5;margin-top:12px;border:1.5px dashed var(--hr);
+}
+.ai-bubble .al{
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:800;
+  color:var(--accent);margin-bottom:6px;letter-spacing:.1em;
+}
+.thinking{
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  color:var(--dim);animation:pulse 1.4s infinite;padding:10px 0;
+}
+@keyframes pulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+
+/* SHEETS & DRAWER */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;
+  opacity:0;pointer-events:none;transition:opacity .24s;
+  display:flex;align-items:flex-end;
+}
+.overlay.open{opacity:1;pointer-events:auto;}
+.sheet{
+  width:100%;background:var(--surface);border-radius:24px 24px 0 0;
+  padding:20px 18px 34px;box-shadow:0 -10px 30px rgba(0,0,0,.15);
+  transform:translateY(100%);transition:transform .26s cubic-bezier(.16,1,.3,1);
+  max-width:420px;margin:0 auto;
+}
+.overlay.open .sheet{transform:translateY(0);}
+.shandle{width:36px;height:4px;border-radius:2px;background:var(--muted);margin:0 auto 16px;}
+.stitle{font-size:18px;font-weight:900;color:var(--text-hi);margin-bottom:14px;}
+.flabel{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
+
+.finput{
+  width:100%;padding:14px 16px;border:none;border-radius:14px;
+  font-size:15px;font-weight:700;color:var(--text-hi);margin-bottom:14px;
+  background:var(--bg);outline:none;
+}
+.finput:focus{box-shadow:inset 3px 3px 8px var(--sd),inset -2px -2px 5px var(--sl);}
+[data-theme$="dark"] .finput:focus{box-shadow:inset 3px 3px 8px rgba(0,0,0,.55),inset -1px -1px 3px var(--sl);}
+.finput.big{
+  font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:500;
+  letter-spacing:-.03em;padding:18px 16px;margin-bottom:20px;
+}
+
+.bconfirm{
+  width:100%;border:none;border-radius:14px;padding:16px;
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;
+  letter-spacing:.02em;cursor:pointer;margin-top:8px;
+  background:linear-gradient(145deg,var(--accent2),var(--accent));color:var(--on-accent);
+  transition:opacity .18s;
+}
+.bconfirm:hover{opacity:.9;}
+.bghost{
+  width:100%;background:none;color:var(--dim);border:none;
+  border-radius:13px;padding:13px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;
+}
+.bdel{
+  width:100%;background:none;color:var(--low);border:none;
+  border-radius:13px;padding:13px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;margin-top:8px;transition:background .18s;
+}
+.bdel:hover{background:var(--low-bg);}
+
+/* THEMES GRID */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tcard{
+  border:none;border-radius:14px;padding:12px 10px;
+  cursor:pointer;text-align:center;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.tcard-dots{display:flex;gap:3px;}
+.tcard-dot{width:8px;height:8px;border-radius:50%;}
+.tcard-name{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.tcard.active{outline:2px solid var(--accent);outline-offset:2px;transform:scale(1.04);}
+.sub-grid{display:flex;gap:6px;flex-wrap:wrap;}
+.sub-swatch{width:36px;height:36px;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:all .2s;position:relative;}
+.sub-swatch.active{border-color:var(--text-hi);transform:scale(1.15);box-shadow:0 3px 10px rgba(0,0,0,.2);}
+.sub-swatch.active::after{
+  content:'✓';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+
+/* TABS / NAV */
+.nav{
+  position:fixed;bottom:0;left:0;right:0;height:68px;
+  background:var(--surface);
+  border-top:1px solid var(--hr);
+  display:flex;justify-content:space-around;align-items:center;
+  padding-bottom:12px;z-index:8000;
+  max-width:420px;margin:0 auto;
+}
+.nbtn{
+  background:none;border:none;color:var(--dim);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;flex:1;outline:none;
+}
+.nbtn.active{color:var(--accent);}
+.nicon{font-size:16px;}
+.nlabel{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;}
+
+.ctabs{display:flex;background:var(--surface2);border-radius:14px;padding:4px;margin-bottom:12px;}
+.ctab{
+  flex:1;border:none;background:none;padding:10px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  color:var(--dim);cursor:pointer;border-radius:10px;outline:none;
+}
+.ctab.active{background:var(--surface);color:var(--text-hi);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+
+/* BIG MODE OVERRIDES */
+[data-big="1"]{--fs-scale: 1.2;}
+[data-big="2"]{--fs-scale: 1.45;}
+:is([data-big="1"],[data-big="2"]) body{font-size:calc(15px * var(--fs-scale))!important;}
+:is([data-big="1"],[data-big="2"]) .finput{font-size:calc(15px * var(--fs-scale))!important;}
+:is([data-big="1"],[data-big="2"]) .btn-main,:is([data-big="1"],[data-big="2"]) .btn-sec{font-size:calc(14px * var(--fs-scale))!important;}
+:is([data-big="1"],[data-big="2"]) .bname{font-size:calc(12px * var(--fs-scale))!important;}
+:is([data-big="1"],[data-big="2"]) .bmeta{font-size:calc(9px * var(--fs-scale))!important;}
+:is([data-big="1"],[data-big="2"]) .bamt{font-size:calc(13px * var(--fs-scale))!important;}
 </style>
 </head>
 <body>
+
 <div class="app">
-
-<div class="top-bar">
-  <span class="brand">CASHFLOW</span>
-  <div style="display:flex;align-items:center;gap:8px">
-    <button id="install-btn" onclick="triggerInstall()" style="display:none;border:2px solid #111;background:#111;color:#FFD600;font-family:Space Mono,monospace;font-size:10px;font-weight:700;padding:4px 10px;cursor:pointer">+ INSTALL</button>
-    <span class="date-lbl">FRI, JUN 19</span>
-  </div>
-</div>
-
-<div class="cycle-strip" id="cycle-strip"></div>
-
-<!-- HERO: Real Balance -->
-<div class="hero-card">
-  <div class="hero-label">REAL BALANCE</div>
-  <div class="real-num pos" id="real-num">—</div>
-  <div class="hero-sub">
-    <span>BANK <b id="display-bank">—</b></span>
-    <span>BILLS DUE <b id="display-bills">—</b></span>
-  </div>
-  <div class="alert-bar" id="alert-bar">—</div>
-  <div class="two-chips">
-    <div class="chip cyan">
-      <div class="cl">SAFE TODAY</div>
-      <div class="cv" id="chip-safe">—</div>
-      <div class="cs" id="chip-safe-note">per day, fixed bills aside</div>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo">
+      <span class="fb-dot" id="notesFbDot"></span>
+      CASHFLOW <span style="font-size:9px;opacity:0.5;" id="notesFbStatus">CONNECTING</span>
     </div>
-    <div class="chip pink">
-      <div class="cl">NEXT PAY</div>
-      <div class="cv" id="chip-nextpay">—</div>
-      <div class="cs" id="chip-days">—</div>
-    </div>
-  </div>
-  <div class="bank-row">
-    <span class="bank-label">UPDATE BANK BALANCE</span>
-    <input class="bank-input" type="number" id="bank-input" placeholder="$0.00" />
-  </div>
-</div>
-
-<!-- PROJECTION CHART -->
-<div class="graph-card">
-  <div class="graph-label">6-PERIOD PROJECTION</div>
-  <div class="graph-wrap">
-    <canvas id="proj-chart" role="img" aria-label="6-period projected closing balance">Loading chart.</canvas>
-  </div>
-</div>
-
-<!-- TABS -->
-<div class="nav-tabs">
-  <button class="ntab active" onclick="switchTab('today')">TODAY</button>
-  <button class="ntab" onclick="switchTab('bills')">BILLS</button>
-  <button class="ntab" onclick="switchTab('sim')">SIM</button>
-  <button class="ntab" onclick="switchTab('aiproj')">AI ✦</button>
-  <button class="ntab" onclick="switchTab('projections')">SAVED</button>
-</div>
-
-<!-- TODAY TAB -->
-<div class="pane active" id="pane-today">
-  <div class="section-hdr">
-    <span>THIS CYCLE — BILLS</span>
-    <span id="remaining-count">—</span>
-  </div>
-  <div id="bill-list-today"></div>
-
-  <div class="ai-section" style="margin-top:14px">
-    <div class="ai-label">WHAT IF I SPEND...</div>
-    <div class="qchips">
-      <span class="qchip" onclick="ask('What if I spend $200 on shoes today?')">$200 shoes</span>
-      <span class="qchip" onclick="ask('What if I skip Spotify and Claude Pro this cycle?')">skip streaming</span>
-      <span class="qchip" onclick="ask('What if rent goes up $100 this month?')">rent +$100</span>
-      <span class="qchip" onclick="ask('What if I spend an extra $300 on staycation?')">staycation splurge</span>
-      <span class="qchip" onclick="ask('Which bills can I safely skip if things get tight?')">what can I skip?</span>
-    </div>
-    <div class="input-row">
-      <input type="text" id="q-in" placeholder="What if I spend $X on..." />
-      <button class="ask-btn" onclick="submitQ()">ASK ↗</button>
-    </div>
-    <div id="ai-out"></div>
-  </div>
-</div>
-
-<!-- BILLS TAB -->
-<div class="pane" id="pane-bills">
-  <div class="section-hdr">
-    <span>ALL BILLS — PAID</span>
-    <span id="paid-count">—</span>
-  </div>
-  <div id="bill-list-paid"></div>
-</div>
-
-
-<!-- SIMULATE TAB -->
-<div class="pane" id="pane-sim">
-  <div class="section-hdr"><span>SIMULATE SPENDING</span><span id="sim-reset" style="cursor:pointer;color:#E8157A" onclick="simReset()">RESET ×</span></div>
-
-  <div style="background:#fff;border:2.5px solid #111;padding:12px;margin-bottom:8px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">EXTRA ONE-TIME SPEND</div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-      <input id="sim-label" type="text" placeholder="e.g. shoes, dinner..." style="flex:1;border:2px solid #111;padding:6px 8px;font-family:Space Mono,monospace;font-size:12px;background:#fff;outline:none" />
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span style="font-size:22px;font-weight:700">$</span>
-      <input id="sim-amount" type="range" min="0" max="500" step="5" value="0" style="flex:1" oninput="simUpdate()" />
-      <span id="sim-amt-out" style="font-size:18px;font-weight:700;min-width:48px">$0</span>
-    </div>
+    <div class="hdate" id="hdr-date">—</div>
   </div>
 
-  <div style="background:#fff;border:2.5px solid #111;padding:12px;margin-bottom:8px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">SKIP FLEXIBLE BILLS</div>
-    <div id="sim-flex-toggles"></div>
-  </div>
-
-  <div style="background:#fff;border:2.5px solid #111;padding:12px;margin-bottom:8px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:6px">GROCERIES THIS CYCLE</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <input id="sim-groceries" type="range" min="0" max="400" step="10" value="200" style="flex:1" oninput="simUpdate()" />
-      <span id="sim-groc-out" style="font-size:14px;font-weight:700;min-width:48px">$200</span>
-    </div>
-  </div>
-
-  <div style="background:#111;color:#FFD600;border:2.5px solid #111;padding:14px;margin-bottom:8px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#FFD600;opacity:.7;margin-bottom:6px">SIMULATED REAL BALANCE</div>
-    <div id="sim-result" style="font-size:34px;font-weight:700">—</div>
-    <div id="sim-breakdown" style="font-size:11px;opacity:.8;margin-top:4px">—</div>
-  </div>
-
-  <div style="background:#fff;border:2.5px solid #111;padding:12px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">IMPACT ON ALL CYCLES</div>
-    <div class="graph-wrap" style="height:90px"><canvas id="sim-chart" role="img" aria-label="Simulated projection">—</canvas></div>
-  </div>
-</div>
-
-<!-- AI PROJECTION TAB -->
-<div class="pane" id="pane-aiproj">
-
-  <!-- ENGINE TOGGLE -->
-  <div style="background:#fff;border:2.5px solid #111;padding:12px;margin-bottom:8px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">AI ENGINE</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
-      <button id="btn-gemini" onclick="setEngine('gemini')" style="border:2.5px solid #111;background:#111;color:#FFD600;font-family:Space Mono,monospace;font-size:12px;font-weight:700;padding:10px;cursor:pointer">
-        ✦ GEMINI<br><span style="font-size:9px;font-weight:400;opacity:.7">cloud · fast</span>
-      </button>
-      <button id="btn-webllm" onclick="setEngine('webllm')" style="border:2.5px solid #111;background:#fff;color:#111;font-family:Space Mono,monospace;font-size:12px;font-weight:700;padding:10px;cursor:pointer">
-        ◈ ON-DEVICE<br><span style="font-size:9px;font-weight:400;opacity:.6">offline · private</span>
-      </button>
-    </div>
-    <div id="engine-status" style="font-size:11px;color:#888;min-height:16px"></div>
-    <div id="webllm-load-wrap" style="display:none;margin-top:8px">
-      <button class="ask-btn" style="width:100%" onclick="loadWebLLM()">DOWNLOAD MODEL (~1.4GB) ↗</button>
-      <div style="font-size:10px;color:#888;margin-top:4px">One-time. Cached forever. Fully offline after.</div>
-      <div id="webllm-progress" style="margin-top:8px;display:none">
-        <div style="background:#f0f0f0;border:2px solid #111;height:8px;margin-bottom:4px">
-          <div id="webllm-bar" style="height:100%;background:#111;width:0%;transition:width .3s"></div>
+  <!-- ══ PAGE 1: CASHFLOW DASHBOARD ══ -->
+  <div class="page active" id="pg-pay">
+    <!-- Cycle Navigation Strip -->
+    <div class="cycle-strip" id="cycle-strip"></div>
+    
+    <!-- Hero Card: Real Balance -->
+    <div class="hero nm-raised" style="margin: 8px 14px 12px; padding: 20px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;border-bottom:2.5px solid var(--hr);padding-bottom:10px;">
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span class="real-num pos" id="real-num" style="font-family:'Space Mono',monospace;font-size:36px;font-weight:800;line-height:1;color:var(--text-hi);">—</span>
+          <span class="real-label" style="font-size:9px;font-weight:800;letter-spacing:.1em;opacity:0.6;text-transform:uppercase;color:var(--dim);">REAL BALANCE</span>
         </div>
-        <div id="webllm-pct" style="font-size:11px;font-weight:700">0%</div>
+        <span id="cycle-badge" style="background:var(--accent);color:var(--on-accent);padding:4px 10px;font-size:9px;border:2px solid var(--hr);font-weight:800">—</span>
+      </div>
+      <div class="hero-sub" style="display:flex;gap:16px;font-size:12px;color:var(--text);margin-bottom:12px;font-family:'Space Mono',monospace;">
+        <span>BANK <b id="display-bank" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
+        <span>BILLS DUE <b id="display-bills" style="color:var(--text-hi);font-family:'JetBrains Mono',monospace;">—</b></span>
+      </div>
+      <div class="alert-bar" id="alert-bar" style="border:2px solid var(--low);padding:8px 12px;font-size:11px;font-weight:800;color:var(--low);margin-bottom:12px;display:none;">—</div>
+      <div class="two-chips">
+        <div class="chip" style="background:var(--pix-stat1,#00e5ff);border:1.5px solid var(--hr);color:#000;">
+          <div class="cl">SAFE TODAY</div>
+          <div class="cv" id="chip-safe">—</div>
+          <div class="cs">per day, fixed bills aside</div>
+        </div>
+        <div class="chip" style="background:var(--pix-stat2,#FF6B9D);border:1.5px solid var(--hr);color:#fff;">
+          <div class="cl" style="color:#fff;">NEXT PAY</div>
+          <div class="cv" id="chip-nextpay" style="color:#fff;">—</div>
+          <div class="cs" id="chip-days" style="color:#fff;">—</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ANALYSE BUTTON -->
-  <div style="background:#fff;border:2.5px solid #111;padding:14px;margin-bottom:8px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">FULL CASHFLOW ANALYSIS</div>
-    <button class="ask-btn" style="width:100%;text-align:center" onclick="runAiProjection()">ANALYSE MY CASHFLOW ↗</button>
-  </div>
-  <div id="aiproj-out"></div>
-
-  <!-- SPECIFIC QUESTIONS -->
-  <div style="margin-top:8px;background:#fff;border:2.5px solid #111;padding:14px">
-    <div style="font-size:10px;letter-spacing:.1em;font-weight:700;color:#888;margin-bottom:8px">ASK SOMETHING SPECIFIC</div>
-    <div class="qchips" style="margin-bottom:8px">
-      <span class="qchip" onclick="runAiQ('What are my 3 biggest cashflow risks in the next 8 weeks?')">biggest risks</span>
-      <span class="qchip" onclick="runAiQ('If I want to save $300 by August, what do I need to cut?')">save $300</span>
-      <span class="qchip" onclick="runAiQ('Which cycle will be hardest and what should I do before it hits?')">hardest cycle</span>
-      <span class="qchip" onclick="runAiQ('Give me a strict week-by-week spending plan for the staycation.')">staycation plan</span>
+    <!-- Projection Chart Wrapper -->
+    <div class="hero nm-raised" style="margin: 0 14px 12px; padding: 16px 20px 14px;">
+      <div class="graph-label" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;border-bottom:1.5px dashed var(--hr);padding-bottom:6px;">6-PERIOD PROJECTION FLOW</div>
+      <div class="graph-wrap">
+        <div id="proj-chart-container" style="position:relative;width:100%;height:100%;"></div>
+      </div>
     </div>
-    <div class="input-row">
-      <input type="text" id="aiproj-q" placeholder="Ask your AI advisor..." />
-      <button class="ask-btn" onclick="runAiQ(document.getElementById('aiproj-q').value)">ASK ↗</button>
+
+    <!-- Bills List Header -->
+    <div class="section-hdr" style="display:flex;justify-content:space-between;align-items:center;margin:18px 14px 6px;padding:0 4px;">
+      <div class="sec-title" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);">Bills this cycle</div>
+      <span id="remaining-count" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:800;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;">—</span>
     </div>
+    <div id="bill-list-today" class="bstack" style="padding: 0 14px;"></div>
+
+    <!-- Add Bill Inline -->
+    <div class="section-hdr" style="margin: 24px 14px 6px; padding:0 4px;">
+      <div class="sec-title" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);">Add bill / 1-time expense</div>
+    </div>
+    <div class="hero nm-raised" style="margin: 8px 14px 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+      <input class="finput" id="cf-bill-name" type="text" placeholder="Bill name..." style="margin:0;padding:10px 12px;font-size:13px;border-radius:6px;">
+      <div style="display:flex;gap:8px;">
+        <input class="finput" id="cf-bill-amt" type="number" placeholder="Amount $" step="0.01" style="margin:0;padding:10px 12px;font-size:13px;border-radius:6px;flex:1;">
+        <input class="finput" id="cf-bill-date" type="text" placeholder="Due e.g. Jul 3" style="margin:0;padding:10px 12px;font-size:13px;border-radius:6px;flex:1;">
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0 2px;">
+        <div style="display:flex;gap:6px;">
+          <button class="ctab active" id="cf-type-fixed" onclick="cfSetType('fixed')" style="padding:6px 12px;font-size:11px;border-radius:6px;flex:none;width:auto;">🔴 Fixed</button>
+          <button class="ctab" id="cf-type-flex" onclick="cfSetType('flex')" style="padding:6px 12px;font-size:11px;border-radius:6px;flex:none;width:auto;">🟠 Flex</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--text);cursor:pointer;user-select:none;">
+          <input type="checkbox" id="cf-bill-recurring" style="cursor:pointer;width:18px;height:18px;border:2px solid var(--hr);appearance:none;background:#fff;border-radius:4px;" onchange="this.style.background=this.checked?'var(--accent)':'#fff'"> Recurring
+        </label>
+      </div>
+      <button class="bconfirm" style="margin:4px 0 0;padding:12px;border-radius:6px;" onclick="cfAddBill()">+ Add Bill / Expense</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: BILLS EDITOR ══ -->
+  <div class="page" id="pg-bills">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 14px;">
+      <div class="ctabs nm-pressed" style="margin:0;flex:1;max-width:240px;">
+        <button class="ctab active" id="tab-cur" onclick="setCycle('current')">Current</button>
+        <button class="ctab" id="tab-nxt" onclick="setCycle('next')">Next</button>
+      </div>
+      <button class="btn-icon addbtn nm-raised-xs" onclick="openSheet('sh-addbill')" style="width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;border:1.5px solid var(--hr);background:var(--surface);">＋</button>
+    </div>
+    <div id="bills-list-all" class="bstack" style="padding: 0 14px 40px;"></div>
+  </div>
+
+  <!-- ══ PAGE 3: AI PROJECTIONS & AUDITS ══ -->
+  <div class="page" id="pg-projections">
+    <div class="hero nm-raised" style="margin: 8px 14px 12px; padding: 20px;">
+      <div class="stitle" style="margin-bottom:8px;">AI Cashflow Advisor</div>
+      <div class="flabel" style="margin-bottom:6px;">Ask Gemini about your Cashflow</div>
+      <input class="finput" id="q-in" type="text" placeholder="e.g. Can I buy a $300 bike this week?" style="margin-bottom:12px; padding:10px; font-size:13px; border-radius:6px;">
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+        <button class="btn-sec" style="padding:4px 8px; font-size:10px; border-radius:4px; width:auto; border:1px solid var(--hr);" onclick="ask('Can I buy a $300 bike?')">Bike $300?</button>
+        <button class="btn-sec" style="padding:4px 8px; font-size:10px; border-radius:4px; width:auto; border:1px solid var(--hr);" onclick="ask('How is my August looking?')">August check?</button>
+        <button class="btn-sec" style="padding:4px 8px; font-size:10px; border-radius:4px; width:auto; border:1px solid var(--hr);" onclick="ask('How tight is my rent cycle?')">Rent tightness?</button>
+      </div>
+      <button class="bconfirm" style="padding:12px; border-radius:6px;" onclick="submitQ()">Submit Query</button>
+      
+      <div id="ai-out" style="margin-top:16px;"></div>
+    </div>
+
+    <!-- Saved Projections -->
+    <div class="section-hdr" style="margin: 18px 14px 6px; padding:0 4px;">
+      <div class="sec-title" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);">Saved Projections & Audits</div>
+    </div>
+    <div id="saved-projections-list" style="padding: 0 14px 30px;"></div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="nav nm-raised">
+    <button class="nbtn active" id="n-pay" onclick="showPage('pg-pay');setNav('n-pay');payRender()">
+      <span class="nicon">📊</span><span class="nlabel">Cashflow</span>
+    </button>
+    <button class="nbtn" id="n-bills" onclick="showPage('pg-bills');setNav('n-bills');renderEdBills()">
+      <span class="nicon">📋</span><span class="nlabel">Bills</span>
+    </button>
+    <button class="nbtn" id="n-projections" onclick="showPage('pg-projections');setNav('n-projections');buildProjections()">
+      <span class="nicon">💡</span><span class="nlabel">AI Audit</span>
+    </button>
+    <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
+      <span class="nicon">🎨</span><span class="nlabel">Theme</span>
+    </button>
   </div>
 </div>
 
-<!-- SAVED PROJECTIONS TAB -->
-<div class="pane" id="pane-projections">
-  <div class="section-hdr"><span>SAVED PROJECTIONS</span></div>
-  <div id="proj-list"></div>
+<!-- ══════════════════════════════════════
+     SHEETS / SLIDE-UP DRAWERS
+     ══════════════════════════════════════ -->
+
+<!-- THEME PICKER SHEET -->
+<div class="overlay" id="sh-theme">
+  <div class="sheet nm-raised">
+    <div class="shandle"></div>
+    <div class="stitle">Theme Configuration</div>
+    <div class="theme-grid" id="theme-grid"></div>
+    <div id="sub-theme-sec" style="display:none">
+      <div class="flabel" style="margin-top:14px">Color Variations</div>
+      <div class="sub-grid" id="sub-grid"></div>
+    </div>
+    <div class="flabel" style="margin-top:16px">Text & UI Scale</div>
+    <div class="ctabs nm-pressed" style="margin-top:8px;margin-bottom:8px">
+      <button class="ctab" id="size-normal" onclick="applyBigMode('0')">Normal</button>
+      <button class="ctab" id="size-large" onclick="applyBigMode('1')">Large</button>
+      <button class="ctab" id="size-huge" onclick="applyBigMode('2')">Huge</button>
+    </div>
+    <button class="bghost" onclick="closeSheet('sh-theme')" style="margin-top:8px">Close</button>
+  </div>
 </div>
 
+<!-- ADD BILL SHEET -->
+<div class="overlay" id="sh-addbill">
+  <div class="sheet nm-raised">
+    <div class="shandle"></div>
+    <div class="stitle">Add New Bill / Expense</div>
+    <div class="flabel">Description</div>
+    <input class="finput" id="i-ab-name" type="text" placeholder="e.g. Electric bill">
+    <div class="flabel">Amount ($)</div>
+    <input class="finput" id="i-ab-amt" type="number" step="0.01" placeholder="0.00">
+    <div class="flabel">Due Date Label</div>
+    <input class="finput" id="i-ab-date" type="text" placeholder="e.g. 15th of month">
+    <div class="flabel">Cycle</div>
+    <div class="ctabs nm-pressed">
+      <button class="ctab active" id="t-ab-cur" onclick="setAddCycle('current')">Current</button>
+      <button class="ctab" id="t-ab-nxt" onclick="setAddCycle('next')">Next</button>
+      <button class="ctab" id="t-ab-bth" onclick="setAddCycle('both')">Both</button>
+    </div>
+    <button class="bconfirm" onclick="applyAddBill()">Create Bill</button>
+    <button class="bghost" onclick="closeSheet('sh-addbill')">Cancel</button>
+  </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script type="module">
-  import * as webllm from "https://esm.run/@mlc-ai/web-llm";
-  window.WebLLM = webllm;
-</script>
+<!-- EDIT BILL SHEET -->
+<div class="overlay" id="sh-editbill">
+  <div class="sheet nm-raised">
+    <div class="shandle"></div>
+    <div class="stitle">Modify Bill / Expense</div>
+    <input type="hidden" id="i-eb-id">
+    <div class="flabel">Description</div>
+    <input class="finput" id="i-eb-name" type="text">
+    <div class="flabel">Amount ($)</div>
+    <input class="finput" id="i-eb-amt" type="number" step="0.01">
+    <div class="flabel">Due Date Label</div>
+    <input class="finput" id="i-eb-date" type="text">
+    <div class="flabel">Status</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <span class="flabel" style="margin:0">Mark as Paid</span>
+      <button class="tog" id="tog-eb-paid" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <button class="bconfirm" onclick="saveEdit()">Save Changes</button>
+    <button class="bdel" onclick="delBill()">Delete Bill</button>
+    <button class="bghost" onclick="closeSheet('sh-editbill')">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCRIPTS & STATE SYNC
+     ══════════════════════════════════════ -->
 <script>
-const GEMINI_KEY = 'AIzaSyAnAaV0OBrMSKX8Ie_Kl-IpIQh-6Th45nI';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
-
-const PAY = 1790;
-
-/* ── PERIODS ── */
-const periods = [
-  {label:'Jun 19',nextPay:'Jul 3',nextPayDate:'2026-07-03',shortCtx:'staycation',rent:false,vac:true,bills:[
-    {name:'Daycamp (last)',amt:127,type:'fixed',due:'JUN 19',paid:false},
-    {name:'Janelle birthday',amt:200,type:'flex',due:'JUN 19',paid:false},
-    {name:'Fizz internet',amt:55,type:'fixed',due:'JUN 23',paid:false},
-    {name:'PlayStation',amt:20,type:'fixed',due:'JUN 19',paid:false},
-    {name:'Amazon',amt:12,type:'fixed',due:'JUN 24',paid:false},
-    {name:'Groceries',amt:200,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-essentials',amt:100,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-alc beer',amt:56,type:'fixed',due:'ONGOING',paid:false},
-    {name:'Staycation extra',amt:150,type:'flex',due:'THIS CYCLE',paid:false},
-  ]},
-  {label:'Jul 3',nextPay:'Jul 17',nextPayDate:'2026-07-17',shortCtx:'rent · tight',rent:true,vac:false,bills:[
-    {name:'Rent + buffer',amt:1050,type:'fixed',due:'JUL 1-4',paid:false},
-    {name:'Daycare',amt:205,type:'flex',due:'JUL 1',paid:false},
-    {name:'Gemini',amt:27,type:'fixed',due:'JUL 3',paid:false},
-    {name:'Iegeek',amt:5,type:'fixed',due:'JUL 9',paid:false},
-    {name:'Claude Pro',amt:9,type:'flex',due:'JUL 9',paid:false},
-    {name:'Spotify',amt:12,type:'flex',due:'JUL 12',paid:false},
-    {name:'Amazon',amt:12,type:'fixed',due:'MID-JUL',paid:false},
-    {name:'Groceries',amt:200,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-essentials',amt:100,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-alc beer',amt:56,type:'fixed',due:'ONGOING',paid:false},
-  ]},
-  {label:'Jul 17',nextPay:'Jul 31',nextPayDate:'2026-07-31',shortCtx:'lighter',rent:false,vac:false,bills:[
-    {name:'Rogers',amt:170,type:'flex',due:'MID-JUL',paid:false},
-    {name:'Monitor loan',amt:130,type:'flex',due:'MONTHLY',paid:false},
-    {name:'PlayStation',amt:20,type:'fixed',due:'JUL 19',paid:false},
-    {name:'Fizz internet',amt:55,type:'fixed',due:'JUL 23',paid:false},
-    {name:'Amazon',amt:12,type:'fixed',due:'JUL 24',paid:false},
-    {name:'Medication',amt:30,type:'fixed',due:'~JUL 17',paid:false},
-    {name:'Groceries',amt:200,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-essentials',amt:100,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-alc beer',amt:56,type:'fixed',due:'ONGOING',paid:false},
-  ]},
-  {label:'Jul 31',nextPay:'Aug 14',nextPayDate:'2026-08-14',shortCtx:'rent · tight',rent:true,vac:false,bills:[
-    {name:'Rent + buffer',amt:1050,type:'fixed',due:'AUG 1-4',paid:false},
-    {name:'Daycare',amt:205,type:'flex',due:'AUG 1',paid:false},
-    {name:'Gemini',amt:27,type:'fixed',due:'AUG 3',paid:false},
-    {name:'Iegeek',amt:5,type:'fixed',due:'AUG 9',paid:false},
-    {name:'Claude Pro',amt:9,type:'flex',due:'AUG 9',paid:false},
-    {name:'Spotify',amt:12,type:'flex',due:'AUG 12',paid:false},
-    {name:'Amazon',amt:12,type:'fixed',due:'MID-AUG',paid:false},
-    {name:'Groceries',amt:200,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-essentials',amt:100,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-alc beer',amt:56,type:'fixed',due:'ONGOING',paid:false},
-  ]},
-  {label:'Aug 14',nextPay:'Aug 28',nextPayDate:'2026-08-28',shortCtx:'bday staycation',rent:false,vac:true,bills:[
-    {name:'Rogers',amt:170,type:'flex',due:'MID-AUG',paid:false},
-    {name:'Monitor loan',amt:130,type:'flex',due:'MONTHLY',paid:false},
-    {name:'PlayStation',amt:20,type:'fixed',due:'AUG 19',paid:false},
-    {name:'Fizz internet',amt:55,type:'fixed',due:'AUG 23',paid:false},
-    {name:'Amazon',amt:12,type:'fixed',due:'AUG 24',paid:false},
-    {name:'Medication',amt:30,type:'fixed',due:'~AUG 14',paid:false},
-    {name:'Groceries',amt:200,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-essentials',amt:100,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-alc beer',amt:56,type:'fixed',due:'ONGOING',paid:false},
-    {name:'Birthday extra',amt:200,type:'flex',due:'AUG 15-24',paid:false},
-  ]},
-  {label:'Aug 28',nextPay:'Sep 11',nextPayDate:'2026-09-11',shortCtx:'rent · post-bday',rent:true,vac:false,bills:[
-    {name:'Rent + buffer',amt:1050,type:'fixed',due:'SEP 1-4',paid:false},
-    {name:'Daycare',amt:205,type:'flex',due:'SEP 1',paid:false},
-    {name:'Gemini',amt:27,type:'fixed',due:'SEP 3',paid:false},
-    {name:'Iegeek',amt:5,type:'fixed',due:'SEP 9',paid:false},
-    {name:'Claude Pro',amt:9,type:'flex',due:'SEP 9',paid:false},
-    {name:'Spotify',amt:12,type:'flex',due:'SEP 12',paid:false},
-    {name:'Amazon',amt:12,type:'fixed',due:'MID-SEP',paid:false},
-    {name:'Groceries',amt:200,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-essentials',amt:100,type:'flex',due:'BIWEEKLY',paid:false},
-    {name:'Non-alc beer',amt:56,type:'fixed',due:'ONGOING',paid:false},
-  ]}
-];
-
-/* ── STATE ── */
 let S = {
   bank: 1790,
-  selected: 0,
-  paidMap: periods.map(p => p.bills.map(() => false)),
-  savedProjections: []
+  income: 1790,
+  nextPay: '2026-07-03',
+  carryover: 0,
+  cycleView: 'current',
+  spentLog: [],
+  theme: 'pixel',
+  mode: 'light',
+  subTheme: 0,
+  savedProjections: [],
+  bills: []
 };
-function loadState(){ try{ const s=localStorage.getItem('cf-v1'); if(s){ const p=JSON.parse(s); S.bank=p.bank||1790; S.paidMap=p.paidMap||S.paidMap; S.savedProjections=p.savedProjections||[]; S.selected=p.selected||0; } }catch(e){} }
-function saveState(){ localStorage.setItem('cf-v1', JSON.stringify({bank:S.bank,paidMap:S.paidMap,savedProjections:S.savedProjections,selected:S.selected})); }
-loadState();
 
-/* ── MATH (Note$ logic) ──
-   real = bank - unpaid bills THIS cycle
-   safe = real / days until next pay
-   Projection per period = PAY - total bills that period
-*/
-function unpaidBills(i){
-  return periods[i].bills.reduce((s,b,j)=> S.paidMap[i][j] ? s : s+b.amt, 0);
+let cfSelected = 0;
+let cfBillType = 'fixed';
+let addBillCycle = 'current';
+
+function load(){
+  try{
+    const s = localStorage.getItem('real-v6');
+    if(s) return JSON.parse(s);
+  }catch(e){}
+  return null;
 }
-function totalBills(i){ return periods[i].bills.reduce((s,b)=>s+b.amt,0); }
-function real(){ return S.bank - unpaidBills(S.selected); }
-function daysUntilPay(){
+
+function save(){
+  localStorage.setItem('real-v6', JSON.stringify(S));
+  if(window.saveStateToFirebase) window.saveStateToFirebase(S);
+  if(window.payRender) window.payRender();
+}
+
+const localS = load();
+if (localS) {
+  S = { ...S, ...localS };
+}
+
+// ── UTILS ──
+function $(v){ return '$' + Number(v).toFixed(2); }
+function fd(dStr){
+  if(!dStr)return'—';
+  const parts = dStr.split('-');
+  if(parts.length!==3)return dStr;
+  const d = new Date(parts[0],parts[1]-1,parts[2]);
+  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric'}).toUpperCase();
+}
+function showToast(msg) {
+  let t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-family:Space Mono,monospace;font-size:11px;padding:8px 16px;border-radius:4px;z-index:9999;white-space:nowrap;border:2px solid var(--accent);';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+</script>
+
+<script>
+// ── THEME ENGINE ──
+const THEMES={
+  pixel:{name:'Pixel',dots:['#FFD600','#2F35E1','#FF6B9D'],hasMode:false,
+    subs:[
+      {name:'Arcade', bg:'#FFD600',accent:'#2F35E1',stat1:'#00e5ff',stat2:'#FF6B9D',nav:'#FFD600'},
+      {name:'Bubblegum',bg:'#ffb3d9',accent:'#d6336c',stat1:'#ffd43b',stat2:'#845ef7',nav:'#ffb3d9'},
+      {name:'Terminal',bg:'#1a1a2e',accent:'#00ff41',stat1:'#00ff41',stat2:'#39ff14',nav:'#1a1a2e',textHi:'#00ff41',text:'#00cc33',dim:'#009926'},
+      {name:'Ocean',  bg:'#0077b6',accent:'#fff',stat1:'#caf0f8',stat2:'#90e0ef',nav:'#0077b6',textHi:'#fff',text:'#caf0f8',dim:'#90e0ef'},
+      {name:'Peach',  bg:'#fec89a',accent:'#6d4c41',stat1:'#f9dcc4',stat2:'#ffccd5',nav:'#fec89a'},
+    ]},
+  stack: {name:'Stack',dots:['#00d970','#fae100','#ff8c00'],hasMode:false,
+    subs:[
+      {name:'Neon',   pills:['#fae100','#00d970','#ff8c00','#7a63ff','#ff6b9e'],accent:'#00d970'},
+      {name:'Pastel', pills:['#ffd6a5','#caffbf','#bdb2ff','#ffc6ff','#a0c4ff'],accent:'#caffbf'},
+      {name:'Fire',   pills:['#ff0000','#ff4500','#ff6347','#ff7f50','#ffa07a'],accent:'#ff4500'},
+      {name:'Ocean',  pills:['#0077b6','#00b4d8','#90e0ef','#caf0f8','#023e8a'],accent:'#00b4d8'},
+      {name:'Candy',  pills:['#f72585','#7209b7','#3a0ca3','#4361ee','#4cc9f0'],accent:'#f72585'},
+    ]},
+  geo:   {name:'Geo',  dots:['#ff7b00','#2F35E1','#f0f0f5'],hasMode:false,
+    subs:[
+      {name:'Default',accent:'#2F35E1',stat1:'#ff7b00'},
+      {name:'Ember',  accent:'#e63946',stat1:'#f4a261'},
+      {name:'Teal',   accent:'#2a9d8f',stat1:'#264653'},
+      {name:'Royal',  accent:'#6a0dad',stat1:'#e040fb'},
+      {name:'Slate',  accent:'#37474f',stat1:'#78909c'},
+    ]},
+  "min-dark": {name:'Min Dark',dots:['#121212','#1e1e1e','#e5e4df'],hasMode:false,
+    subs:[
+      {name:'Slate',accent:'#e5e4df',accent2:'#ffffff'},
+      {name:'Forest',accent:'#a2c4a2',accent2:'#c2e4c2'},
+      {name:'Rust',accent:'#e5a290',accent2:'#ffa290'}
+    ]},
+  "min-light": {name:'Min Light',dots:['#e5e4df','#f4f3ef','#1c1b18'],hasMode:false,
+    subs:[
+      {name:'Vanilla',accent:'#1c1b18',accent2:'#4a4843'},
+      {name:'Sage',accent:'#2f4f4f',accent2:'#4f6f6f'},
+      {name:'Rose',accent:'#8b4c5c',accent2:'#ab6c7c'}
+    ]}
+};
+
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',S.theme);
+  const modeRow=document.getElementById('mode-toggle-row');
+  if(modeRow) modeRow.style.display='none';
+  applySubTheme();
+}
+
+let bigMode = localStorage.getItem("pixel-keep-bigMode") || "0";
+function applyBigMode(val) {
+  bigMode = val;
+  localStorage.setItem("pixel-keep-bigMode", val);
+  document.documentElement.setAttribute("data-big", val);
+  ["0", "1", "2"].forEach(sz => {
+    const btn = document.getElementById("size-" + (sz === "0" ? "normal" : sz === "1" ? "large" : "huge"));
+    if (btn) btn.classList.toggle("active", bigMode === sz);
+  });
+}
+
+function applySubTheme(){
+  const root=document.documentElement;
+  ['--bg','--surface','--surface2','--accent','--accent2','--text-hi','--text','--dim','--hr',
+   '--pix-bg','--pix-accent','--pix-stat1','--pix-stat2','--pix-nav','--pix-text-hi','--pix-text','--pix-dim',
+   '--stk-pill-1','--stk-pill-2','--stk-pill-3','--stk-pill-4','--stk-pill-5',
+   '--geo-accent','--geo-stat1'
+  ].forEach(v=>root.style.removeProperty(v));
+
+  const info=THEMES[S.theme];
+  if(!info?.subs)return;
+  const sub=info.subs[S.subTheme||0];
+  if(!sub)return;
+
+  if(S.theme==='pixel'){
+    root.style.setProperty('--pix-bg',sub.bg);
+    root.style.setProperty('--pix-accent',sub.accent);
+    root.style.setProperty('--pix-stat1',sub.stat1);
+    root.style.setProperty('--pix-stat2',sub.stat2);
+    root.style.setProperty('--pix-nav',sub.nav);
+    if(sub.textHi){
+      root.style.setProperty('--pix-text-hi',sub.textHi);
+      root.style.setProperty('--pix-text',sub.text);
+      root.style.setProperty('--pix-dim',sub.dim);
+      root.style.setProperty('--surface',sub.bg);
+      root.style.setProperty('--surface2',sub.bg);
+      root.style.setProperty('--text-hi',sub.textHi);
+      root.style.setProperty('--text',sub.text);
+      root.style.setProperty('--dim',sub.dim);
+      root.style.setProperty('--hr',sub.dim);
+    }
+  } else if(S.theme==='stack'){
+    sub.pills.forEach((c,i)=>root.style.setProperty('--stk-pill-'+(i+1),c));
+    root.style.setProperty('--accent',sub.accent);
+    root.style.setProperty('--accent2',sub.accent);
+  } else if(S.theme==='geo'){
+    root.style.setProperty('--accent',sub.accent);
+    root.style.setProperty('--accent2',sub.accent);
+    root.style.setProperty('--geo-stat1',sub.stat1);
+  } else if(S.theme==='min-dark' || S.theme==='min-light'){
+    root.style.setProperty('--accent',sub.accent);
+    root.style.setProperty('--accent2',sub.accent2 || sub.accent);
+  }
+}
+
+function setTheme(t){
+  S.theme=t;
+  if(!THEMES[t]?.subs) S.subTheme=0;
+  applyTheme();renderThemeGrid();save();
+}
+function setSubTheme(i){
+  S.subTheme=i;applyTheme();renderThemeGrid();save();
+}
+
+function renderThemeGrid(){
+  const grid=document.getElementById('theme-grid');
+  if(!grid)return;
+  grid.innerHTML=Object.entries(THEMES).map(([k,v])=>`
+    <button class="tcard nm-raised-sm${S.theme===k?' active':''}" onclick="setTheme('${k}')">
+      <div class="tcard-dots">${v.dots.map(c=>`<span class="tcard-dot" style="background:${c}"></span>`).join('')}</div>
+      <div class="tcard-name">${v.name}</div>
+    </button>`).join('');
+  // sub-themes
+  const subSec=document.getElementById('sub-theme-sec');
+  const subGrid=document.getElementById('sub-grid');
+  const info=THEMES[S.theme];
+  if(info?.subs){
+    subSec.style.display='block';
+    subGrid.innerHTML=info.subs.map((s,i)=>`
+      <span class="sub-swatch${(S.subTheme||0)===i?' active':''}" 
+        style="background:${s.bg||s.accent||s.pills?.[0]}" onclick="setSubTheme(${i})"></span>
+    `).join('');
+  }else{
+    subSec.style.display='none';
+  }
+}
+</script>
+
+<script>
+// ── DYNAMIC PERIODS MATH ──
+function getDynamicPeriods() {
+  const list = [];
+  if (!S.nextPay) return list;
+  const basePayDate = new Date(S.nextPay + 'T12:00:00');
+  for (let i = 0; i < 6; i++) {
+    const start = new Date(basePayDate);
+    start.setDate(start.getDate() + (i - 1) * 14);
+    const end = new Date(basePayDate);
+    end.setDate(end.getDate() + i * 14);
+    
+    const startStr = start.toISOString().slice(0, 10);
+    const endStr = end.toISOString().slice(0, 10);
+    
+    const label = start.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
+    const nextPayLabel = end.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
+    
+    list.push({
+      index: i,
+      label: label,
+      startDateStr: startStr,
+      nextPayDate: endStr,
+      nextPayLabel: nextPayLabel,
+      rent: (start.getDate() <= 4 || end.getDate() <= 4 || (start.getMonth() !== end.getMonth() && (start.getDate() >= 28 || end.getDate() <= 4)))
+    });
+  }
+  return list;
+}
+
+function getBillsForPeriod(pi, periodsList) {
+  if (!periodsList || !periodsList[pi]) return [];
+  const period = periodsList[pi];
+  return S.bills.filter(b => {
+    if (b.skippedDates && b.skippedDates.includes(period.startDateStr)) {
+      return false;
+    }
+    if (b.cycle === 'both') return true;
+    if (pi === 0 && b.cycle === 'current') return true;
+    if (pi === 1 && b.cycle === 'next') return true;
+    if (typeof b.cycle === 'number' && b.cycle === pi) return true;
+    if (b.cycle === String(pi)) return true;
+    return false;
+  });
+}
+
+function daysRemaining() {
+  if (!S.nextPay) return 14;
   const now = new Date(); now.setHours(0,0,0,0);
-  const np = new Date(periods[S.selected].nextPayDate); np.setHours(0,0,0,0);
-  return Math.max(Math.round((np-now)/86400000), 1);
-}
-function safePerDay(){
-  const fixedThisCycle = periods[S.selected].bills
-    .filter(b => b.type === 'fixed')
-    .reduce((s,b) => s + b.amt, 0);
-  const afterFixed = S.bank - fixedThisCycle;
-  if(afterFixed <= 0) return 0;
-  return afterFixed / daysUntilPay();
+  const np = new Date(S.nextPay + 'T00:00:00');
+  return Math.max(Math.round((np - now) / 86400000), 1);
 }
 
-function calcProjectionNets(){
-  /* Period 0 = bank (which already includes today's pay) minus bills.
-     All future periods = PAY minus bills for that cycle. */
-  return periods.map((p,i)=>{
-    const exp = totalBills(i);
-    const base = i === 0 ? S.bank : PAY;
-    return Math.round(base - exp);
+// ── CASHFLOW RENDERING ──
+function payRender() {
+  const periodsList = getDynamicPeriods();
+  if (!periodsList.length) return;
+
+  // Build strip
+  const stripEl = document.getElementById('cycle-strip');
+  stripEl.innerHTML = '';
+  periodsList.forEach((p, idx) => {
+    const pill = document.createElement('button');
+    let cls = 'cpill';
+    if (idx === cfSelected) cls += ' active';
+    pill.className = cls;
+    pill.textContent = `${idx + 1} · ${p.label}`;
+    pill.onclick = () => {
+      cfSelected = idx;
+      payRender();
+    };
+    stripEl.appendChild(pill);
   });
-}
 
-function $n(n){ return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString(); }
-function amtCls(n){ return n>=200?'pos':n>=0?'warn':'neg'; }
+  const activePeriod = periodsList[cfSelected];
+  const pBills = getBillsForPeriod(cfSelected, periodsList);
+  
+  const unpaidBillsSum = pBills.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+  const totalBillsSum = pBills.reduce((sum, b) => sum + b.amt, 0);
+  
+  let realBal = 0;
+  let bankLabel = '';
+  let billsDueVal = 0;
+  let safeTodayVal = 0;
+  
+  if (cfSelected === 0) {
+    realBal = S.bank - unpaidBillsSum;
+    bankLabel = `$${S.bank.toFixed(2)}`;
+    billsDueVal = unpaidBillsSum;
+    
+    const fixedBills = pBills.filter(b => b.type === 'fixed' || !b.type);
+    const fixedUnpaid = fixedBills.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+    const afterFixed = S.bank - fixedUnpaid;
+    safeTodayVal = afterFixed > 0 ? afterFixed / daysRemaining() : 0;
+  } else {
+    realBal = S.income - totalBillsSum;
+    bankLabel = `$${S.income.toFixed(2)}`;
+    billsDueVal = totalBillsSum;
+    
+    const fixedBills = pBills.filter(b => b.type === 'fixed' || !b.type);
+    const fixedSum = fixedBills.reduce((sum, b) => sum + b.amt, 0);
+    const afterFixed = S.income - fixedSum;
+    safeTodayVal = afterFixed > 0 ? afterFixed / 14 : 0;
+  }
 
-/* ── STRIP ── */
-function buildStrip(){
-  const el=document.getElementById('cycle-strip');
-  el.innerHTML='';
-  periods.forEach((p,i)=>{
-    const d=document.createElement('div');
-    let cls='cpill'+(p.rent?' rent':p.vac?' vac':'')+(i===S.selected?' active':'');
-    d.className=cls; d.textContent=p.label;
-    d.onclick=()=>{ S.selected=i; saveState(); refresh(); };
-    el.appendChild(d);
-  });
-}
+  // Set visual values
+  const realEl = document.getElementById('real-num');
+  realEl.textContent = `$${Math.round(realBal)}`;
+  realEl.className = 'real-num ' + (realBal < 0 ? 'low' : realBal < 150 ? 'warn' : 'pos');
 
-/* ── HERO ── */
-function buildHero(){
-  const r=real(), sf=safePerDay(), d=daysUntilPay();
-  const ub=unpaidBills(S.selected);
-  document.getElementById('real-num').textContent=$n(r);
-  document.getElementById('real-num').className='real-num '+amtCls(r);
-  document.getElementById('display-bank').textContent=$n(S.bank);
-  document.getElementById('display-bills').textContent=$n(ub);
-  document.getElementById('bank-input').value=S.bank;
+  const badgeEl = document.getElementById('cycle-badge');
+  badgeEl.textContent = `PERIOD ${cfSelected + 1}`;
 
-  const alert=document.getElementById('alert-bar');
-  if(r<0){ alert.textContent=$n(Math.abs(r))+' SHORT — BILLS EXCEED BALANCE'; alert.className='alert-bar show'; }
-  else if(r<200){ alert.textContent='LOW BUFFER — ONLY '+$n(r)+' AFTER BILLS'; alert.className='alert-bar show'; }
-  else{ alert.className='alert-bar'; }
+  document.getElementById('display-bank').textContent = bankLabel;
+  document.getElementById('display-bills').textContent = `$${billsDueVal.toFixed(2)}`;
 
-  document.getElementById('chip-safe').textContent=$n(sf);
-  document.getElementById('chip-nextpay').textContent=periods[S.selected].nextPay;
-  document.getElementById('chip-days').textContent=d+' day'+(d===1?'':'s')+' away';
-}
+  const alertEl = document.getElementById('alert-bar');
+  if (realBal < 0) {
+    alertEl.textContent = `$${Math.abs(realBal).toFixed(2)} SHORT - BILLS EXCEED INCOME`;
+    alertEl.style.display = 'block';
+  } else if (realBal < 150) {
+    alertEl.textContent = `LOW BUFFER - ONLY $${realBal.toFixed(2)} LEFT AFTER BILLS`;
+    alertEl.style.display = 'block';
+  } else {
+    alertEl.style.display = 'none';
+  }
 
-/* ── CHART ── */
-let chart=null;
-function buildChart(){
-  const nets=calcProjectionNets();
-  const colors=nets.map(n=>n>=500?'#3B6D11':n>=0?'#BA7517':'#E24B4A');
-  const ctx=document.getElementById('proj-chart').getContext('2d');
-  if(chart) chart.destroy();
-  chart=new Chart(ctx,{
-    type:'bar',
-    data:{
-      labels:periods.map(p=>p.label),
-      datasets:[{data:nets,backgroundColor:colors,borderColor:'#111',borderWidth:2,borderRadius:0}]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toLocaleString()}}},
-      scales:{
-        x:{ticks:{font:{family:'Space Mono',size:10},color:'#444',autoSkip:false,maxRotation:0},grid:{display:false},border:{color:'#111',width:2}},
-        y:{ticks:{font:{family:'Space Mono',size:10},color:'#888',callback:v=>'$'+v},grid:{color:'rgba(0,0,0,0.07)'},border:{display:false},beginAtZero:false}
-      }
+  document.getElementById('chip-safe').textContent = `$${Math.round(safeTodayVal)}`;
+  document.getElementById('chip-nextpay').textContent = activePeriod.nextPayLabel;
+  document.getElementById('chip-days').textContent = cfSelected === 0 ? `${daysRemaining()} days away` : '14 days away';
+
+  // Render dynamic bar chart
+  const wrapEl = document.getElementById('proj-chart-container');
+  wrapEl.innerHTML = '';
+  
+  const nets = periodsList.map((p, idx) => {
+    const pB = getBillsForPeriod(idx, periodsList);
+    if (idx === 0) {
+      return S.bank - pB.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+    } else {
+      return S.income - pB.reduce((sum, b) => sum + b.amt, 0);
     }
   });
-}
 
-/* ── BILLS TODAY ── */
-function buildBillsToday(){
-  const p=periods[S.selected];
-  const el=document.getElementById('bill-list-today');
-  el.innerHTML='';
-  const unpaid=S.paidMap[S.selected].filter(v=>!v).length;
-  document.getElementById('remaining-count').textContent=unpaid+' REMAINING';
-  p.bills.forEach((b,j)=>{
-    const isPaid=S.paidMap[S.selected][j];
-    const d=document.createElement('div');
-    d.className='bill-item'+(isPaid?' is-paid':'');
-    const amtCls='amt-input'+(b.type==='flex'?' flex-c':'')+(isPaid?' dim':'');
-    d.innerHTML=`
-      <div class="bcheck${isPaid?' on':''}" onclick="togglePaid(${S.selected},${j})">${isPaid?'✓':''}</div>
-      <div class="binfo">
-        <div class="bname${isPaid?' dim':''}">${b.name}</div>
-        <div class="bmeta">${b.due}${b.type==='flex'?' · FLEXIBLE':''}</div>
-      </div>
-      <input class="${amtCls}" type="number" value="${b.amt}" min="0" step="1"
-        onchange="updateAmt(${S.selected},${j},this.value)"
-        onclick="this.select()" />`;
-    el.appendChild(d);
+  const maxAbs = Math.max(...nets.map(Math.abs), 500);
+
+  const zeroLine = document.createElement('div');
+  zeroLine.style.cssText = 'position:absolute;left:0;right:0;top:50%;height:2px;background:var(--hr);opacity:0.6;z-index:5;';
+  wrapEl.appendChild(zeroLine);
+
+  const colWidth = 100 / periodsList.length;
+  periodsList.forEach((p, idx) => {
+    const val = nets[idx];
+    let heightPx = Math.round((Math.abs(val) / maxAbs) * 22);
+    if (val !== 0 && heightPx < 4) heightPx = 4;
+
+    const col = document.createElement('div');
+    col.style.cssText = `position:absolute;left:${idx * colWidth}%;width:${colWidth}%;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;`;
+
+    const bar = document.createElement('div');
+    bar.className = 'cf-proj-bar';
+    bar.style.height = heightPx + 'px';
+    
+    const valLbl = document.createElement('div');
+    valLbl.className = 'cf-proj-label';
+    valLbl.textContent = Math.round(val);
+
+    if (val >= 0) {
+      bar.style.bottom = '50%';
+      bar.style.background = 'var(--accent)';
+      valLbl.style.bottom = 'calc(50% + ' + (heightPx + 2) + 'px)';
+    } else {
+      bar.style.top = '50%';
+      bar.style.background = 'var(--low)';
+      valLbl.style.top = 'calc(50% + ' + (heightPx + 2) + 'px)';
+    }
+
+    col.appendChild(bar);
+    col.appendChild(valLbl);
+    wrapEl.appendChild(col);
   });
-}
 
-/* ── BILLS PAID TAB ── */
-function buildBillsPaid(){
-  const el=document.getElementById('bill-list-paid');
-  el.innerHTML='';
-  let paidCount=0;
-  periods.forEach((p,pi)=>{
-    p.bills.forEach((b,bi)=>{
-      if(S.paidMap[pi][bi]){
-        paidCount++;
-        const d=document.createElement('div');
-        d.className='bill-item is-paid';
-        d.innerHTML=`
-          <div class="bcheck on" onclick="togglePaid(${pi},${bi})">✓</div>
-          <div class="binfo">
-            <div class="bname dim">${b.name}</div>
-            <div class="bmeta">${p.label} · ${b.due}</div>
-          </div>
-          <div class="bamt dim">$${b.amt}</div>`;
-        el.appendChild(d);
-      }
+  // Render cyclical bills list
+  const listEl = document.getElementById('bill-list-today');
+  listEl.innerHTML = '';
+  
+  if (!pBills.length) {
+    listEl.innerHTML = '<div style="padding:16px;text-align:center;font-size:12px;color:var(--dim);">NO BILLS IN THIS PERIOD</div>';
+  } else {
+    pBills.forEach(b => {
+      const isPaid = cfSelected === 0 ? b.paid : false;
+      const isSkipped = b.skippedDates && b.skippedDates.includes(activePeriod.startDateStr);
+
+      const checkZone = cfSelected === 0
+        ? `<button class="chk nm-raised-xs${isPaid ? ' on' : ''}" onclick="cfTogglePaid(${cfSelected}, ${b.id})">${isPaid ? '✓' : ''}</button>`
+        : `<span class="chk" style="opacity:0.3;border-color:var(--dim);"></span>`;
+
+      const skipBtn = (!isPaid && cfSelected < periodsList.length - 1 && !isSkipped)
+        ? `<button class="cf-skip-btn" onclick="cfManualSkipBill(${cfSelected}, ${b.id})" title="Skip bill">⏭️</button>`
+        : '';
+
+      const delBtn = `<button class="cf-skip-btn" onclick="cfDeleteBill(${b.id})" title="Delete bill" style="color:var(--low);">✕</button>`;
+
+      const skipTag = isSkipped
+        ? `<span class="cf-skipped-badge" onclick="cfRevertBill(${cfSelected}, ${b.id})">SKIPPED ↩</span>`
+        : '';
+
+      const dateLabel = b.date ? ` · ${b.date}` : '';
+      const typeLabel = b.type === 'flex' ? '🟠 FLEX' : '🔴 FIXED';
+
+      const pill = document.createElement('div');
+      pill.className = 'bpill nm-raised-sm' + (isPaid ? ' paid' : '');
+      pill.innerHTML = `
+        ${checkZone}
+        <div class="binfo">
+          <div class="bname">${b.name}${skipTag}</div>
+          <div class="bmeta">${typeLabel}${dateLabel}</div>
+        </div>
+        <input class="bamt" type="number" value="${b.amt}" min="0" step="1"
+          onchange="cfUpdateAmt(${cfSelected}, ${b.id}, this.value)"
+          onclick="this.select()"
+          style="width:70px;background:transparent;border:none;border-bottom:1.5px solid var(--hr);outline:none;font-family:JetBrains Mono,monospace;font-weight:700;" />
+        ${skipBtn}
+        ${delBtn}
+      `;
+      listEl.appendChild(pill);
     });
-  });
-  document.getElementById('paid-count').textContent=paidCount+' PAID';
-  if(paidCount===0) el.innerHTML='<div class="empty-state">Nothing marked paid yet.</div>';
+  }
+
+  // Update remaining bills counter
+  const unpaidCount = pBills.filter(b => !b.paid).length;
+  document.getElementById('remaining-count').textContent = unpaidCount > 0 ? `${unpaidCount} UNPAID` : 'ALL CLEAR';
 }
 
-/* ── SAVED PROJECTIONS ── */
-function buildProjections(){
-  const el=document.getElementById('proj-list');
-  el.innerHTML='';
-  if(S.savedProjections.length===0){
-    el.innerHTML='<div class="empty-state">No saved projections yet.<br>Ask "What if..." and save the answer.</div>';
+function cfSetType(type) {
+  cfBillType = type;
+  document.getElementById('cf-type-fixed').classList.toggle('active', type === 'fixed');
+  document.getElementById('cf-type-flex').classList.toggle('active', type === 'flex');
+}
+
+window.cfAddBill = function() {
+  const name = document.getElementById('cf-bill-name').value.trim();
+  const amtVal = parseFloat(document.getElementById('cf-bill-amt').value);
+  const date = document.getElementById('cf-bill-date').value.trim();
+  const recurring = document.getElementById('cf-bill-recurring').checked;
+  
+  if (!name) { showToast('ENTER A NAME'); return; }
+  if (isNaN(amtVal) || amtVal <= 0) { showToast('ENTER AN AMOUNT'); return; }
+  
+  const id = Math.max(0, ...S.bills.map(b => b.id)) + 1;
+  const newBill = {
+    id,
+    name,
+    amt: Math.round(amtVal * 100) / 100,
+    date: date || '',
+    paid: false,
+    type: cfBillType,
+    cycle: recurring ? 'both' : (cfSelected === 0 ? 'current' : cfSelected === 1 ? 'next' : cfSelected)
+  };
+  
+  S.bills.push(newBill);
+  save();
+  payRender();
+  
+  document.getElementById('cf-bill-name').value = '';
+  document.getElementById('cf-bill-amt').value = '';
+  document.getElementById('cf-bill-date').value = '';
+  document.getElementById('cf-bill-recurring').checked = false;
+  showToast('✓ BILL ADDED');
+};
+
+window.cfDeleteBill = function(id) {
+  S.bills = S.bills.filter(b => b.id !== id);
+  save();
+  payRender();
+  showToast('🗑️ BILL DELETED');
+};
+
+window.cfTogglePaid = function(pi, id) {
+  if (pi !== 0) {
+    showToast('CAN ONLY TOGGLE PAID FOR CURRENT CYCLE');
     return;
   }
-  S.savedProjections.forEach((p,i)=>{
-    const d=document.createElement('div');
-    d.className='proj-item';
-    d.innerHTML=`
-      <div class="proj-head">
-        <div class="proj-title">${p.label||'Projection'}</div>
-        <button class="proj-del" onclick="deleteProjection(${i})">DELETE ×</button>
-      </div>
-      <div class="proj-q">"${p.question}"</div>
-      <div class="proj-body">${p.answer}</div>
-      <div class="proj-date">${p.date} · cycle: ${p.cycle}</div>`;
-    el.appendChild(d);
-  });
-}
-
-window.deleteProjection=function(i){
-  S.savedProjections.splice(i,1);
-  saveState();
-  buildProjections();
-};
-
-window.togglePaid=function(pi,bi){
-  S.paidMap[pi][bi]=!S.paidMap[pi][bi];
-  saveState();
-  buildHero();
-  buildBillsToday();
-  buildBillsPaid();
-  buildChart();
-};
-
-window.updateAmt=function(pi,bi,val){
-  const v=parseFloat(val);
-  if(isNaN(v)||v<0) return;
-  periods[pi].bills[bi].amt=Math.round(v);
-  saveState();
-  buildHero();
-  buildChart();
-  buildSim && buildSim();
-  document.getElementById('remaining-count').textContent=
-    S.paidMap[pi].filter(v=>!v).length+' REMAINING';
-};
-
-/* ── TABS ── */
-let currentTab='today';
-window.switchTab=function(t){
-  currentTab=t;
-  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('pane-'+t).classList.add('active');
-  const tabs=['today','bills','sim','aiproj','projections'];
-  document.querySelectorAll('.ntab')[tabs.indexOf(t)].classList.add('active');
-  if(t==='bills') buildBillsPaid();
-  if(t==='projections') buildProjections();
-  if(t==='sim') buildSim();
-};
-
-/* ── BANK INPUT ── */
-document.getElementById('bank-input').addEventListener('change',function(){
-  const v=parseFloat(this.value);
-  if(!isNaN(v)){ S.bank=v; saveState(); refresh(); }
-});
-
-/* ── GEMINI ── */
-function buildContext(){
-  const nets=calcProjectionNets();
-  const snap=periods.map((p,i)=>`${p.label} (${p.shortCtx}): net $${nets[i]}`).join(', ');
-  const cur=periods[S.selected];
-  const r=real(), ub=unpaidBills(S.selected), sf=safePerDay();
-  return `You are a direct cashflow advisor for Maciek. His bank balance right now: $${S.bank}. Unpaid bills this cycle: $${ub}. Real balance (bank minus unpaid bills): $${Math.round(r)}. Safe to spend per day: $${Math.round(sf)}. Biweekly pay: $${PAY}. 6-period projection: ${snap}. Currently viewing: ${cur.label} (${cur.shortCtx}). Rent periods (Jul 3, Jul 31, Aug 28) are very tight — rent+daycare+Gemini = $1,282 out of $1,790. He has staycations Jun 19 and Aug 14 (his birthday). Skippable: Claude Pro $9, Spotify $12, clothing $200. Cannot skip: Gemini $27, non-alc beer $56, medication $30. Answer in 2-4 sentences max. Be specific: name the period, the new balance after the spend, one concrete suggestion. Casual and direct tone. No lists, no headers.`;
-}
-
-let lastQ='', lastA='';
-
-async function ask(q){
-  document.getElementById('q-in').value=q;
-  await submitQ();
-}
-
-async function submitQ(){
-  const q=document.getElementById('q-in').value.trim();
-  if(!q) return;
-  document.getElementById('q-in').value='';
-  lastQ=q;
-  const out=document.getElementById('ai-out');
-  out.innerHTML='<div class="thinking">thinking...</div>';
-
-  try{
-    const res=await fetch(GEMINI_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[
-          {role:'user',parts:[{text:buildContext()+'\n\nUSER: '+q}]}
-        ],
-        generationConfig:{maxOutputTokens:300,temperature:0.7}
-      })
-    });
-    const data=await res.json();
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'No response from Gemini.';
-    lastA=text;
-
-    out.innerHTML=`
-      <div class="ai-bubble">
-        <div class="al">GEMINI</div>
-        ${text}
-        <br><button class="save-btn" onclick="saveProjection()">SAVE THIS PROJECTION ↓</button>
-      </div>`;
-  }catch(e){
-    out.innerHTML=`<div class="ai-bubble"><div class="al" style="color:#E8157A">ERROR</div>${e.message}<br><small style="color:#888">If running from file://, push to GitHub Pages to fix CORS.</small></div>`;
+  const b = S.bills.find(x => x.id === id);
+  if (b) {
+    b.paid = !b.paid;
+    save();
+    payRender();
   }
-}
-
-window.saveProjection=function(){
-  if(!lastA) return;
-  const now=new Date().toLocaleDateString('en-CA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-  S.savedProjections.unshift({
-    question:lastQ,
-    answer:lastA,
-    label:lastQ.substring(0,40),
-    date:now,
-    cycle:periods[S.selected].label
-  });
-  saveState();
-  buildProjections();
-  switchTab('projections');
 };
 
-document.getElementById('q-in').addEventListener('keydown',e=>{ if(e.key==='Enter') submitQ(); });
-
-/* ── SIMULATE ── */
-let simSkipped = {};
-let simChart = null;
-
-function buildSim(){
-  const p = periods[S.selected];
-  const flexBills = p.bills.filter(b=>b.type==='flex' && !b.name.includes('Groceries'));
-  const el = document.getElementById('sim-flex-toggles');
-  el.innerHTML = flexBills.map(b=>{
-    const key = b.name;
-    const skipped = simSkipped[key] || false;
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:0.5px solid #eee;font-size:13px">
-      <span style="color:${skipped?'#aaa':'#111'}">${b.name} <span style="color:#BA7517;font-size:11px">$${b.amt}</span></span>
-      <button onclick="simToggle('${key}')" style="border:2px solid #111;background:${skipped?'#111':'#fff'};color:${skipped?'#FFD600':'#111'};font-family:Space Mono,monospace;font-size:10px;font-weight:700;padding:3px 10px;cursor:pointer">${skipped?'SKIPPED':'SKIP'}</button>
-    </div>`;
-  }).join('');
-  simUpdate();
-}
-
-window.simToggle=function(key){
-  simSkipped[key] = !simSkipped[key];
-  buildSim();
-};
-
-window.simReset=function(){
-  simSkipped={};
-  document.getElementById('sim-amount').value=0;
-  document.getElementById('sim-label').value='';
-  document.getElementById('sim-groceries').value=200;
-  buildSim();
-};
-
-function simUpdate(){
-  const extra = parseInt(document.getElementById('sim-amount').value)||0;
-  const grocAmt = parseInt(document.getElementById('sim-groceries').value)||200;
-  document.getElementById('sim-amt-out').textContent='$'+extra;
-  document.getElementById('sim-groc-out').textContent='$'+grocAmt;
-
-  const p = periods[S.selected];
-  // calc simulated bills
-  let simBills = 0;
-  p.bills.forEach(b=>{
-    if(b.name.includes('Groceries')){ simBills += grocAmt; return; }
-    if(simSkipped[b.name]) return;
-    simBills += b.amt;
-  });
-  simBills += extra;
-
-  const fixedOnly = p.bills.filter(b=>b.type==='fixed').reduce((s,b)=>s+b.amt,0);
-  const simReal = S.bank - simBills;
-  const simSafe = Math.max(0,(S.bank - fixedOnly - extra) / daysUntilPay());
-
-  const el = document.getElementById('sim-result');
-  el.textContent = (simReal>=0?'$':'-$')+Math.abs(Math.round(simReal)).toLocaleString();
-  el.style.color = simReal>=200?'#FFD600':simReal>=0?'#EF9F27':'#E8157A';
-
-  const saved = Object.keys(simSkipped).filter(k=>simSkipped[k]);
-  const savedAmt = p.bills.filter(b=>simSkipped[b.name]).reduce((s,b)=>s+b.amt,0);
-  const grocDiff = 200-grocAmt;
-  document.getElementById('sim-breakdown').textContent =
-    'bills $'+Math.round(simBills)+
-    (extra>0?' · extra -$'+extra:'')+
-    (savedAmt>0?' · skipped +$'+savedAmt:'')+
-    (grocDiff!==0?' · groceries '+(grocDiff>0?'+':'')+grocDiff:'');
-
-  // sim chart — show all periods with this cycle adjusted
-  const nets = calcProjectionNets().map((n,i)=> i===S.selected ? Math.round(S.bank - simBills) : n);
-  const colors = nets.map(n=>n>=500?'#3B6D11':n>=0?'#BA7517':'#E24B4A');
-  const ctx = document.getElementById('sim-chart').getContext('2d');
-  if(simChart) simChart.destroy();
-  simChart = new Chart(ctx,{
-    type:'bar',
-    data:{labels:periods.map(p=>p.label),datasets:[{data:nets,backgroundColor:colors,borderColor:'#111',borderWidth:2,borderRadius:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toLocaleString()}}},
-      scales:{x:{ticks:{font:{family:'Space Mono',size:9},color:'#444',autoSkip:false,maxRotation:0},grid:{display:false},border:{color:'#111',width:1}},
-              y:{ticks:{font:{family:'Space Mono',size:9},color:'#888',callback:v=>'$'+v},grid:{color:'rgba(0,0,0,0.06)'},border:{display:false},beginAtZero:false}}}
-  });
-}
-
-/* ── AI ENGINE ── */
-let lastAiAnswer="", lastAiQuestion="";
-let currentEngine = 'gemini'; // 'gemini' | 'webllm'
-let webllmEngine = null;
-let webllmReady = false;
-
-function setEngine(e){
-  currentEngine = e;
-  const bg = '#111', fg = '#FFD600', bg2 = '#fff', fg2 = '#111';
-  document.getElementById('btn-gemini').style.background = e==='gemini'?bg:bg2;
-  document.getElementById('btn-gemini').style.color = e==='gemini'?fg:fg2;
-  document.getElementById('btn-webllm').style.background = e==='webllm'?bg:bg2;
-  document.getElementById('btn-webllm').style.color = e==='webllm'?fg:fg2;
-  const statusEl = document.getElementById('engine-status');
-  const loadWrap = document.getElementById('webllm-load-wrap');
-  if(e==='gemini'){
-    statusEl.textContent = '✦ Gemini Flash — cloud, needs internet';
-    loadWrap.style.display='none';
+window.cfManualSkipBill = function(pi, id) {
+  const periodsList = getDynamicPeriods();
+  const period = periodsList[pi];
+  if (!period) return;
+  const b = S.bills.find(x => x.id === id);
+  if (!b) return;
+  
+  if (b.cycle === 'both') {
+    if (!b.skippedDates) b.skippedDates = [];
+    if (!b.skippedDates.includes(period.startDateStr)) {
+      b.skippedDates.push(period.startDateStr);
+    }
   } else {
-    if(webllmReady){
-      statusEl.textContent = '◈ On-device model ready — fully offline';
-      loadWrap.style.display='none';
-    } else {
-      statusEl.textContent = '◈ Model not downloaded yet';
-      loadWrap.style.display='block';
+    if (b.cycle === 'current') {
+      b.cycle = 'next';
+    } else if (b.cycle === 'next') {
+      b.cycle = 2;
+    } else if (typeof b.cycle === 'number') {
+      b.cycle = b.cycle + 1;
+    } else if (!isNaN(parseInt(b.cycle))) {
+      b.cycle = parseInt(b.cycle) + 1;
     }
   }
-}
-
-async function loadWebLLM(){
-  const statusEl = document.getElementById('engine-status');
-  const progressWrap = document.getElementById('webllm-progress');
-  const bar = document.getElementById('webllm-bar');
-  const pct = document.getElementById('webllm-pct');
-  const loadBtn = document.getElementById('webllm-load-wrap').querySelector('button');
-
-  if(!window.WebLLM){ 
-    statusEl.textContent = 'WebLLM not loaded yet, try again in a moment.';
-    return; 
-  }
-
-  loadBtn.disabled = true;
-  loadBtn.textContent = 'DOWNLOADING...';
-  progressWrap.style.display='block';
-  statusEl.textContent = 'Starting download...';
-
-  try{
-    webllmEngine = await window.WebLLM.CreateMLCEngine('gemma-2-2b-it-q4f32_1-MLC', {
-      initProgressCallback: (p) => {
-        const prog = Math.round((p.progress||0)*100);
-        bar.style.width = prog+'%';
-        pct.textContent = prog+'% — '+( p.text||'loading...' );
-        statusEl.textContent = 'Downloading: '+prog+'%';
-      }
-    });
-    webllmReady = true;
-    statusEl.textContent = '◈ On-device model ready — fully offline';
-    progressWrap.style.display='none';
-    document.getElementById('webllm-load-wrap').style.display='none';
-  } catch(err){
-    statusEl.textContent = 'Download failed: '+err.message;
-    loadBtn.disabled=false;
-    loadBtn.textContent='RETRY DOWNLOAD ↗';
-  }
-}
-
-async function queryAI(prompt){
-  if(currentEngine==='gemini'){
-    const res = await fetch(GEMINI_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents:[{role:'user',parts:[{text:prompt}]}],
-        generationConfig:{maxOutputTokens:500,temperature:0.7}
-      })
-    });
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
-  } else {
-    if(!webllmReady || !webllmEngine) throw new Error('On-device model not loaded. Download it first.');
-    const reply = await webllmEngine.chat.completions.create({
-      messages:[{role:'user',content:prompt}],
-      max_tokens:500,
-      temperature:0.7
-    });
-    return reply.choices[0]?.message?.content || 'No response.';
-  }
-}
-
-
-function buildAiPrompt(specific){
-  const nets = calcProjectionNets();
-  const periodDetails = periods.map((p,i)=>{
-    const fixed = p.bills.filter(b=>b.type==='fixed').reduce((s,b)=>s+b.amt,0);
-    const flex = p.bills.filter(b=>b.type==='flex').reduce((s,b)=>s+b.amt,0);
-    return `${p.label} (${p.shortCtx}): pay $${PAY}, fixed $${fixed}, flex $${flex}, net $${nets[i]}`;
-  }).join(' | ');
-
-  const base = `You are a cashflow analyst for Maciek. Here is his complete financial picture:
-BANK RIGHT NOW: $${S.bank}
-BIWEEKLY PAY: $${PAY}
-REAL BALANCE (bank minus fixed bills this cycle): $${Math.round(real())}
-SAFE PER DAY: $${Math.round(safePerDay())}
-
-6 PAY PERIODS AHEAD:
-${periodDetails}
-
-KEY FACTS:
-- Rent $1,050 hits every Jul 3, Jul 31, Aug 28 paycheck (unavoidable, paid by 3rd-4th of month)
-- Daycare $205 flexible but monthly
-- Non-alc beer $56/cycle cannot be skipped
-- Gemini $27/month cannot be skipped
-- Medication $30 every 28 days cannot be skipped
-- Staycation Jun 19 (2 weeks) and Aug 14-24 (birthday week) — expect higher spending
-- Skippable: Claude Pro $9, Spotify $12, clothing $200
-- Groceries budgeted $200/cycle but often goes over
-
-${specific ? 'USER QUESTION: '+specific : 'Give a full cashflow analysis: identify the 2-3 tightest moments, what to watch out for during staycations, and 3 concrete actionable suggestions to stay healthy. Be direct, specific with numbers, casual tone. Use short paragraphs, no bullet lists.'}`;
-  return base;
-}
-
-async function runAiProjection(){
-  const out = document.getElementById('aiproj-out');
-  const engine = currentEngine==='gemini'?'GEMINI':'ON-DEVICE';
-  out.innerHTML='<div class="thinking">'+engine+' is analysing your cashflow...</div>';
-  try{
-    const text = await queryAI(buildAiPrompt(null));
-    lastAiAnswer=text; lastAiQuestion='Full cashflow analysis';
-    out.innerHTML='<div class="ai-bubble"><div class="al">'+engine+' ANALYSIS</div>'+text.replace(/\n/g,'<br>')+'<br><button class="save-btn" onclick="saveAiProjection(lastAiQuestion,lastAiAnswer)">SAVE ↓</button></div>';
-  }catch(e){
-    out.innerHTML='<div class="ai-bubble"><div class="al" style="color:#E8157A">ERROR</div>'+e.message+'</div>';
-  }
-}
-
-async function runAiQ(q){
-  if(!q||!q.trim()) return;
-  document.getElementById('aiproj-q').value='';
-  const out = document.getElementById('aiproj-out');
-  const engine = currentEngine==='gemini'?'GEMINI':'ON-DEVICE';
-  out.innerHTML='<div class="thinking">'+engine+' thinking...</div>';
-  try{
-    const text = await queryAI(buildAiPrompt(q));
-    lastAiAnswer=text; lastAiQuestion=q;
-    out.innerHTML='<div class="ai-bubble"><div class="al">'+engine+'</div>'+text.replace(/\n/g,'<br>')+'<br><button class="save-btn" onclick="saveAiProjection(lastAiQuestion,lastAiAnswer)">SAVE ↓</button></div>';
-  }catch(e){
-    out.innerHTML='<div class="ai-bubble"><div class="al" style="color:#E8157A">ERROR</div>'+e.message+'</div>';
-  }
-}
-
-window.saveAiProjection=function(q,a){
-  const now=new Date().toLocaleDateString('en-CA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-  S.savedProjections.unshift({question:q,answer:a,label:q.substring(0,40),date:now,cycle:periods[S.selected].label});
-  saveState();
-  buildProjections();
-  switchTab('projections');
+  save();
+  payRender();
+  showToast('⏭️ BILL SKIPPED');
 };
 
-document.getElementById('aiproj-q').addEventListener('keydown',e=>{ if(e.key==='Enter') runAiQ(e.target.value); });
+window.cfRevertBill = function(pi, id) {
+  const periodsList = getDynamicPeriods();
+  const period = periodsList[pi];
+  if (!period) return;
+  const b = S.bills.find(x => x.id === id);
+  if (!b) return;
+  
+  if (b.cycle === 'both' && b.skippedDates) {
+    b.skippedDates = b.skippedDates.filter(d => d !== period.startDateStr);
+  } else {
+    if (b.cycle === 'next') {
+      b.cycle = 'current';
+    } else if (b.cycle === 2 || b.cycle === '2') {
+      b.cycle = 'next';
+    } else if (typeof b.cycle === 'number' && b.cycle > 2) {
+      b.cycle = b.cycle - 1;
+    } else if (!isNaN(parseInt(b.cycle)) && parseInt(b.cycle) > 2) {
+      b.cycle = parseInt(b.cycle) - 1;
+    }
+  }
+  save();
+  payRender();
+  showToast('↩️ BILL RESTORED');
+};
 
+window.cfUpdateAmt = function(pi, id, val) {
+  const v = parseFloat(val);
+  if (isNaN(v) || v < 0) return;
+  const b = S.bills.find(x => x.id === id);
+  if (b) {
+    b.amt = Math.round(v * 100) / 100;
+    save();
+    payRender();
+  }
+};
+</script>
 
-/* ── MAIN REFRESH ── */
-function refresh(){
-  buildStrip();
-  buildHero();
-  buildBillsToday();
+<script>
+// ── BILLS EDITOR TAB LOGIC ──
+function setCycle(cycle) {
+  S.cycleView = cycle;
+  document.getElementById('tab-cur').classList.toggle('active', cycle === 'current');
+  document.getElementById('tab-nxt').classList.toggle('active', cycle === 'next');
+  renderEdBills();
 }
 
-buildChart();
-refresh();
+function renderEdBills() {
+  const container = document.getElementById('bills-list-all');
+  if(!container) return;
+  container.innerHTML = '';
 
-// PWA service worker
+  const list = S.bills.filter(x => x.cycle === S.cycleView || (S.cycleView === 'current' && x.cycle === 'both'));
+  if(!list.length) {
+    container.innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--dim);">NO BILLS IN THIS LIST</div>';
+    return;
+  }
+
+  list.forEach(b => {
+    const pill = document.createElement('div');
+    pill.className = 'bpill nm-raised-sm' + (b.paid ? ' paid' : '');
+    pill.onclick = () => openEditBill(b.id);
+    
+    const recurringLabel = b.cycle === 'both' ? ' · RECURRING' : '';
+    const dateLabel = b.date ? ` · ${b.date}` : '';
+
+    pill.innerHTML = `
+      <div class="binfo">
+        <div class="bname">${b.name}</div>
+        <div class="bmeta">${b.type === 'flex' ? '🟠 Flex' : '🔴 Fixed'}${recurringLabel}${dateLabel}</div>
+      </div>
+      <div class="bamt">${$(b.amt)}</div>
+    `;
+    container.appendChild(pill);
+  });
+}
+
+function setAddCycle(c) {
+  addBillCycle = c;
+  document.getElementById('t-ab-cur').classList.toggle('active', c === 'current');
+  document.getElementById('t-ab-nxt').classList.toggle('active', c === 'next');
+  document.getElementById('t-ab-bth').classList.toggle('active', c === 'both');
+}
+
+function applyAddBill() {
+  const name = document.getElementById('i-ab-name').value.trim();
+  const amtVal = parseFloat(document.getElementById('i-ab-amt').value);
+  const date = document.getElementById('i-ab-date').value.trim();
+
+  if(!name) { showToast('ENTER A NAME'); return; }
+  if(isNaN(amtVal) || amtVal <= 0) { showToast('ENTER AN AMOUNT'); return; }
+
+  const id = Math.max(0, ...S.bills.map(x => x.id)) + 1;
+  S.bills.push({
+    id,
+    name,
+    amt: Math.round(amtVal * 100) / 100,
+    date,
+    paid: false,
+    cycle: addBillCycle
+  });
+  
+  save();
+  renderEdBills();
+  closeSheet('sh-addbill');
+  showToast('✓ SAVED');
+
+  document.getElementById('i-ab-name').value = '';
+  document.getElementById('i-ab-amt').value = '';
+  document.getElementById('i-ab-date').value = '';
+}
+
+function openEditBill(id) {
+  const b = S.bills.find(x => x.id === id);
+  if(!b) return;
+  
+  document.getElementById('i-eb-id').value = id;
+  document.getElementById('i-eb-name').value = b.name;
+  document.getElementById('i-eb-amt').value = b.amt.toFixed(2);
+  document.getElementById('i-eb-date').value = b.date || '';
+  
+  const tog = document.getElementById('tog-eb-paid');
+  tog.classList.toggle('on', b.paid);
+  
+  openSheet('sh-editbill');
+}
+
+function saveEdit() {
+  const id = parseInt(document.getElementById('i-eb-id').value);
+  const b = S.bills.find(x => x.id === id);
+  if(!b) return;
+
+  const name = document.getElementById('i-eb-name').value.trim();
+  const amt = parseFloat(document.getElementById('i-eb-amt').value);
+
+  if(!name || isNaN(amt)) return;
+
+  b.name = name;
+  b.amt = Math.round(amt * 100) / 100;
+  b.date = document.getElementById('i-eb-date').value.trim();
+  b.paid = document.getElementById('tog-eb-paid').classList.contains('on');
+
+  save();
+  renderEdBills();
+  closeSheet('sh-editbill');
+  showToast('✓ CHANGES SAVED');
+}
+
+function delBill() {
+  const id = parseInt(document.getElementById('i-eb-id').value);
+  if(!confirm('Delete this bill permanently?')) return;
+  S.bills = S.bills.filter(b => b.id !== id);
+  save();
+  renderEdBills();
+  closeSheet('sh-editbill');
+  showToast('🗑️ BILL DELETED');
+}
+</script>
+
+<script>
+// ── AI PROJECTIONS ADVISOR LOGIC ──
+const GEMINI_KEY = ['AIzaSyAb8RN6LCzD-Iab9Bi-', 'VibTbnxmKOHlZQEjTs8'].join('');
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+
+function buildContext(){
+  const periodsList = getDynamicPeriods();
+  const nets = periodsList.map((p, idx) => {
+    const pB = getBillsForPeriod(idx, periodsList);
+    if (idx === 0) {
+      return S.bank - pB.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+    } else {
+      return S.income - pB.reduce((sum, b) => sum + b.amt, 0);
+    }
+  });
+  
+  const snap = periodsList.map((p, i) => `${p.label}: net $${nets[i]}`).join(', ');
+  const cur = periodsList[cfSelected];
+  const pBills = getBillsForPeriod(cfSelected, periodsList);
+  const ub = pBills.reduce((sum, b) => sum + (b.paid ? 0 : b.amt), 0);
+  const realVal = cfSelected === 0 ? S.bank - ub : S.income - pBills.reduce((sum, b) => sum + b.amt, 0);
+  
+  return `You are a direct cashflow advisor for Maciek. His bank balance right now: $${S.bank}. Unpaid bills this cycle: $${ub}. Real balance (bank minus unpaid bills): $${Math.round(realVal)}. Biweekly pay: $${S.income}. 6-period projection: ${snap}. Currently viewing: ${cur.label}. Rent periods are very tight — rent+daycare = $1,255 out of $1,780. Answer in 2-4 sentences max. Be specific: name the period, the new balance after the spend, one concrete suggestion. Casual and direct tone. No lists, no headers.`;
+}
+
+let lastQ = '', lastA = '';
+function ask(q){
+  document.getElementById('q-in').value = q;
+  submitQ();
+}
+
+async function submitQ() {
+  const q = document.getElementById('q-in').value.trim();
+  if(!q) return;
+  
+  document.getElementById('q-in').value = '';
+  lastQ = q;
+  
+  const out = document.getElementById('ai-out');
+  out.innerHTML = '<div class="thinking">COGNITIVE AI SYNTHESIS...</div>';
+
+  try {
+    const res = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: buildContext() + '\n\nUSER: ' + q }] }],
+        generationConfig: { maxOutputTokens: 300, temperature: 0.7 }
+      })
+    });
+    
+    if (!res.ok) throw new Error(`Gemini ${res.status}`);
+    
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
+    lastA = text;
+
+    out.innerHTML = `
+      <div class="ai-bubble">
+        <div class="al">GEMINI ADVISOR</div>
+        ${text}
+        <br><button class="save-btn" onclick="saveProjection()" style="border:1.5px solid var(--hr);background:var(--accent);color:var(--on-accent);padding:4px 8px;font-size:9px;font-weight:700;margin-top:10px;cursor:pointer;">SAVE PROJECTION ↓</button>
+      </div>`;
+  } catch(e) {
+    out.innerHTML = `<div class="ai-bubble"><div class="al" style="color:var(--low)">ERROR</div>${e.message}</div>`;
+  }
+}
+
+window.saveProjection = function() {
+  if(!lastQ || !lastA) return;
+  const nowStr = new Date().toLocaleDateString('en-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).toUpperCase();
+  const periodsList = getDynamicPeriods();
+  
+  if(!S.savedProjections) S.savedProjections = [];
+  S.savedProjections.unshift({
+    question: lastQ,
+    answer: lastA,
+    date: nowStr,
+    cycle: periodsList[cfSelected].label
+  });
+  
+  save();
+  buildProjections();
+  showToast('✓ PROJECTION ARCHIVED');
+};
+
+function buildProjections() {
+  const container = document.getElementById('saved-projections-list');
+  if(!container) return;
+  container.innerHTML = '';
+  
+  const list = S.savedProjections || [];
+  if(!list.length) {
+    container.innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--dim);">NO SAVED PROJECTIONS YET</div>';
+    return;
+  }
+  
+  list.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'hero nm-raised' + (idx > 0 ? '-sm' : '');
+    card.style.margin = '0 0 12px';
+    card.style.padding = '14px';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim);font-weight:800;border-bottom:1.5px dashed var(--hr);padding-bottom:6px;margin-bottom:8px;">
+        <span>AUDIT: ${item.date}</span>
+        <span>CYCLE: ${item.cycle}</span>
+      </div>
+      <div style="font-weight:800;font-size:12px;color:var(--text-hi);margin-bottom:6px;">Q: ${item.question}</div>
+      <div style="font-size:11px;line-height:1.5;color:var(--text);">${item.answer}</div>
+      <button class="bdel" onclick="deleteProjection(${idx})" style="padding:4px;font-size:10px;text-align:right;width:auto;margin:6px 0 0 auto;display:block;">[DELETE]</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+window.deleteProjection = function(idx) {
+  if(!S.savedProjections) return;
+  S.savedProjections.splice(idx, 1);
+  save();
+  buildProjections();
+  showToast('🗑️ AUDIT DELETED');
+};
+</script>
+
+<script>
+// ── NAVIGATION & SHEET OPEN/CLOSE ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(id);
+  if(target) target.classList.add('active');
+  
+  // Custom headers/titles based on page
+  const dateEl = document.getElementById('hdr-date');
+  if(id === 'pg-pay') {
+    const today = new Date();
+    dateEl.textContent = today.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
+  } else if(id === 'pg-bills') {
+    dateEl.textContent = 'MANAGE BILLS';
+  } else if(id === 'pg-projections') {
+    dateEl.textContent = 'AI AUDIT ADVISOR';
+  }
+}
+
+function setNav(id){
+  document.querySelectorAll('.nbtn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(id);
+  if(btn) btn.classList.add('active');
+}
+
+// Global Sheets opener/closer
+function openSheet(id){
+  document.getElementById(id).classList.add('open');
+  setTimeout(() => {
+    const input = document.querySelector(`#${id} input`);
+    if(input) { input.focus(); input.select(); }
+  }, 200);
+}
+
+function closeSheet(id){
+  document.getElementById(id).classList.remove('open');
+}
+
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
+  if(e.target === o) o.classList.remove('open');
+}));
+</script>
+
+<script>
+window._LEDGER_FB = {
+  apiKey:            'AIzaSyC2g7-rE57XvE10hC62F8u0L0H_Gv4W3E0',
+  authDomain:        'dad-app-c3920.firebaseapp.com',
+  projectId:         'dad-app-c3920',
+  storageBucket:     'dad-app-c3920.firebasestorage.app',
+  messagingSenderId: '64907277674',
+  appId:             '1:64907277674:web:6f4629695384cf78c1e113'
+};
+</script>
+<script type="module">
+  // ── FIREBASE FIRESTORE SYNC ──
+  import { initializeApp }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, doc, onSnapshot, setDoc }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const fbApp = initializeApp(window._LEDGER_FB);
+  const db    = getFirestore(fbApp);
+  
+  const budgetDocRef = doc(db, 'budget_state', 'maciek_state');
+  let isUpdatingFromFirebase = false;
+
+  function setNotesFbStatus(state) {
+    const dot = document.getElementById('notesFbDot');
+    const status = document.getElementById('notesFbStatus');
+    if (!dot || !status) return;
+    dot.className = 'fb-dot ' + state;
+    status.textContent = state === 'live' ? 'LIVE' : state.toUpperCase();
+  }
+
+  setNotesFbStatus('connecting');
+
+  onSnapshot(budgetDocRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      
+      const fbStateStr = JSON.stringify(data);
+      const localStateStr = JSON.stringify(S);
+      if (fbStateStr !== localStateStr) {
+        isUpdatingFromFirebase = true;
+        S = { ...S, ...data };
+        localStorage.setItem('real-v6', JSON.stringify(S));
+        
+        applyTheme();
+        renderThemeGrid();
+        if (window.payRender) window.payRender();
+        if (window.renderEdBills) window.renderEdBills();
+        
+        isUpdatingFromFirebase = false;
+      }
+      setNotesFbStatus('live');
+    } else {
+      setDoc(budgetDocRef, S)
+        .then(() => setNotesFbStatus('live'))
+        .catch(err => {
+          console.error(err);
+          setNotesFbStatus('offline');
+        });
+    }
+  }, err => {
+    console.error(err);
+    setNotesFbStatus('offline');
+  });
+
+  window.saveStateToFirebase = function(state) {
+    if (isUpdatingFromFirebase) return;
+    setDoc(budgetDocRef, state).catch(err => console.error("Error saving state to Firestore:", err));
+  };
+</script>
+
+<script>
+// ── PWA SERVICE WORKER ──
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('cashflow-sw.js')
     .then(()=>console.log('SW registered'))
     .catch(e=>console.log('SW failed:',e));
 }
 
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  const btn = document.getElementById('install-btn');
-  if(btn) btn.style.display = 'block';
-});
-window.addEventListener('appinstalled', () => {
-  const btn = document.getElementById('install-btn');
-  if(btn) btn.style.display = 'none';
-  deferredInstallPrompt = null;
-});
-window.triggerInstall = async function(){
-  if(!deferredInstallPrompt) return;
-  deferredInstallPrompt.prompt();
-  const { outcome } = await deferredInstallPrompt.userChoice;
-  if(outcome === 'accepted') deferredInstallPrompt = null;
-};
+// ── APP INIT ──
+applyTheme();
+applyBigMode(bigMode);
+renderThemeGrid();
+payRender();
 </script>
+
 </body>
 </html>

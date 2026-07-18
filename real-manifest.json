@@ -1,0 +1,39 @@
+{
+  "id": "/Budget-/real-budget",
+  "name": "Real Budget",
+  "short_name": "REAL",
+  "description": "Dynamic daily budget tracker",
+  "start_url": "/Budget-/real-budget.html",
+  "scope": "/Budget-/real-budget.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFD600",
+  "theme_color": "#FFD600",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/Budget-/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/Budget-/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/Budget-/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/Budget-/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

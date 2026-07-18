@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>REAL</title>
+<link rel="manifest" href="real-manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<meta name="theme-color" content="#FFD600"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="REAL"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Mono:wght@400;700&family=Outfit:wght@400;700;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -113,6 +120,56 @@
 [data-theme="geo"] .ctab.active{background:#2F35E1!important;color:#fff;}
 [data-theme="geo"] .sheet{background:#fff!important;}
 [data-theme="geo"] .bconfirm{background:#2F35E1!important;}
+
+/* MIN-DARK — flat dark theme */
+[data-theme="min-dark"]{
+  --bg:#121212;--surface:#1e1e1e;--surface2:#2a2a2a;
+  --sd:transparent;--sl:transparent;
+  --text-hi:#ffffff;--text:#e0e0e0;--dim:#a0a0a0;--muted:#555;
+  --hr:#333;
+  --accent:#e5e4df;--accent2:#ffffff;--on-accent:#121212;
+  --warn:#ffb74d;--warn-bg:rgba(255,183,77,0.12);
+  --low:#e57373;--low-bg:rgba(229,115,115,0.12);
+}
+[data-theme="min-dark"] *{font-family:'Space Mono',monospace!important;}
+[data-theme="min-dark"] .hero{background:#1e1e1e!important;border:1px solid #333!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-dark"] .stat{background:#2a2a2a!important;border:none!important;border-radius:6px;}
+[data-theme="min-dark"] .stat+.stat{background:#2a2a2a!important;border:none!important;}
+[data-theme="min-dark"] .bpill{background:#1e1e1e!important;border:1px solid #333!important;border-radius:6px;box-shadow:none!important;}
+[data-theme="min-dark"] .bpill.paid{background:#181818!important;border-color:#2a2a2a!important;opacity:0.6;}
+[data-theme="min-dark"] .btn-main{background:#e5e4df!important;color:#121212!important;border:none!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-dark"] .btn-sec{background:#2a2a2a!important;color:#ffffff!important;border:none!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-dark"] .chk{border:1px solid #555!important;border-radius:3px;box-shadow:none!important;}
+[data-theme="min-dark"] .nav{background:#121212!important;border-top:1px solid #333!important;box-shadow:none;}
+[data-theme="min-dark"] .ctab.active{background:#e5e4df!important;color:#121212!important;border-radius:6px;}
+[data-theme="min-dark"] .sheet{background:#1e1e1e!important;border-radius:12px 12px 0 0!important;}
+[data-theme="min-dark"] .finput{border:1px solid #333!important;border-radius:6px;background:#121212!important;}
+[data-theme="min-dark"] .bconfirm{background:#e5e4df!important;color:#121212!important;border:none!important;box-shadow:none!important;border-radius:6px;}
+
+/* MIN-LIGHT — warm grey theme */
+[data-theme="min-light"]{
+  --bg:#e5e4df;--surface:#f4f3ef;--surface2:#ffffff;
+  --sd:transparent;--sl:transparent;
+  --text-hi:#1c1b18;--text:#4a4843;--dim:#7d7b74;--muted:#b5b3ad;
+  --hr:#d5d3cd;
+  --accent:#1c1b18;--accent2:#4a4843;--on-accent:#e5e4df;
+  --warn:#d97706;--warn-bg:rgba(217,119,6,0.08);
+  --low:#dc2626;--low-bg:rgba(220,38,38,0.08);
+}
+[data-theme="min-light"] *{font-family:'Space Mono',monospace!important;}
+[data-theme="min-light"] .hero{background:#f4f3ef!important;border:1px solid #d5d3cd!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-light"] .stat{background:#ffffff!important;border:1px solid #e5e4df!important;border-radius:6px;}
+[data-theme="min-light"] .stat+.stat{background:#ffffff!important;border:1px solid #e5e4df!important;}
+[data-theme="min-light"] .bpill{background:#f4f3ef!important;border:1px solid #d5d3cd!important;border-radius:6px;box-shadow:none!important;}
+[data-theme="min-light"] .bpill.paid{background:#deddd8!important;border-color:#c8c7c1!important;opacity:0.6;}
+[data-theme="min-light"] .btn-main{background:#1c1b18!important;color:#e5e4df!important;border:none!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-light"] .btn-sec{background:#ffffff!important;color:#1c1b18!important;border:1px solid #d5d3cd!important;box-shadow:none!important;border-radius:6px;}
+[data-theme="min-light"] .chk{border:1px solid #b5b3ad!important;border-radius:3px;box-shadow:none!important;}
+[data-theme="min-light"] .nav{background:#e5e4df!important;border-top:1px solid #d5d3cd!important;box-shadow:none;}
+[data-theme="min-light"] .ctab.active{background:#1c1b18!important;color:#e5e4df!important;border-radius:6px;}
+[data-theme="min-light"] .sheet{background:#f4f3ef!important;border-radius:12px 12px 0 0!important;}
+[data-theme="min-light"] .finput{border:1px solid #d5d3cd!important;border-radius:6px;background:#ffffff!important;}
+[data-theme="min-light"] .bconfirm{background:#1c1b18!important;color:#e5e4df!important;border:none!important;box-shadow:none!important;border-radius:6px;}
 
 /* Semantic safe = accent colour */
 :root,[data-theme]{
@@ -1054,7 +1111,10 @@ const DEF={
   ]
 };
 function load(){try{const s=localStorage.getItem('real-v6');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
-function save(){localStorage.setItem('real-v6',JSON.stringify(S));}
+function save(){
+  localStorage.setItem('real-v6',JSON.stringify(S));
+  if(window.saveStateToFirebase) window.saveStateToFirebase(S);
+}
 let S=load();
 // migrate removed themes
 if(!THEMES[S.theme]){S.theme='pixel';S.subTheme=0;save();}
@@ -1085,6 +1145,18 @@ const THEMES={
       {name:'Royal',  accent:'#6a0dad',stat1:'#e040fb'},
       {name:'Slate',  accent:'#37474f',stat1:'#78909c'},
     ]},
+  "min-dark": {name:'Min Dark',dots:['#121212','#1e1e1e','#e5e4df'],hasMode:false,
+    subs:[
+      {name:'Slate',accent:'#e5e4df',accent2:'#ffffff'},
+      {name:'Forest',accent:'#a2c4a2',accent2:'#c2e4c2'},
+      {name:'Rust',accent:'#e5a290',accent2:'#ffa290'}
+    ]},
+  "min-light": {name:'Min Light',dots:['#e5e4df','#f4f3ef','#1c1b18'],hasMode:false,
+    subs:[
+      {name:'Vanilla',accent:'#1c1b18',accent2:'#4a4843'},
+      {name:'Sage',accent:'#2f4f4f',accent2:'#4f6f6f'},
+      {name:'Rose',accent:'#8b4c5c',accent2:'#ab6c7c'}
+    ]}
 };
 
 function applyTheme(){
@@ -1143,6 +1215,9 @@ function applySubTheme(){
     root.style.setProperty('--accent',sub.accent);
     root.style.setProperty('--accent2',sub.accent);
     root.style.setProperty('--geo-stat1',sub.stat1);
+  } else if(S.theme==='min-dark' || S.theme==='min-light'){
+    root.style.setProperty('--accent',sub.accent);
+    root.style.setProperty('--accent2',sub.accent2 || sub.accent);
   }
 }
 
@@ -1530,6 +1605,59 @@ applyTheme();
 applyBigMode(bigMode);
 renderThemeGrid();
 render();
+</script>
+
+<script>
+window._LEDGER_FB = {
+  apiKey:            'AIzaSyC2g7-rE57XvE10hC62F8u0L0H_Gv4W3E0',
+  authDomain:        'dad-app-c3920.firebaseapp.com',
+  projectId:         'dad-app-c3920',
+  storageBucket:     'dad-app-c3920.firebasestorage.app',
+  messagingSenderId: '64907277674',
+  appId:             '1:64907277674:web:6f4629695384cf78c1e113'
+};
+</script>
+<script type="module">
+  import { initializeApp }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, doc, onSnapshot, setDoc }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const fbApp = initializeApp(window._LEDGER_FB);
+  const db    = getFirestore(fbApp);
+  
+  const budgetDocRef = doc(db, 'budget_state', 'maciek_state');
+  let isUpdatingFromFirebase = false;
+
+  onSnapshot(budgetDocRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      
+      const fbStateStr = JSON.stringify(data);
+      const localStateStr = JSON.stringify(S);
+      if (fbStateStr !== localStateStr) {
+        isUpdatingFromFirebase = true;
+        S = data;
+        localStorage.setItem('real-v6', JSON.stringify(S));
+        if (window.render) window.render();
+        isUpdatingFromFirebase = false;
+      }
+    } else {
+      setDoc(budgetDocRef, S).catch(err => console.error("Error initializing budget state in Firestore:", err));
+    }
+  });
+
+  window.saveStateToFirebase = function(state) {
+    if (isUpdatingFromFirebase) return;
+    setDoc(budgetDocRef, state).catch(err => console.error("Error saving state to Firestore:", err));
+  };
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('real-sw.js')
+    .then(()=>console.log('SW registered'))
+    .catch(e=>console.log('SW failed:',e));
+}
 </script>
 </body>
 </html>
