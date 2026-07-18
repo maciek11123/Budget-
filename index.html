@@ -1434,13 +1434,66 @@ let S=load();
 if(!S.subTheme)S.subTheme=0;
 
 // Migration: Push Cashflow bills if we detect outdated/missing data
-const oldBillsDetector = S.bills.find(b => b.name === 'Rent Allocation Jul 1' || b.name === 'Rent (Jul 1 remaining)');
-const newBillsDetector = S.bills.find(b => b.name === 'Rent + buffer');
-if (oldBillsDetector || !newBillsDetector) {
-  S.bills = JSON.parse(JSON.stringify(DEF.bills));
-  S.bank = DEF.bank;
-  S.income = DEF.income;
-  S.nextPay = DEF.nextPay;
+const oldBillsDetector = S.bills && S.bills.find(b => b.name === 'Rent Allocation Jul 1' || b.name === 'Rent (Jul 1 remaining)');
+const newBillsDetector = S.bills && S.bills.find(b => b.name === 'Rent + buffer');
+if (!S.bills || S.bills.length === 0 || oldBillsDetector || !newBillsDetector) {
+  let billsSource = JSON.parse(JSON.stringify(DEF.bills));
+  let bankSource = DEF.bank;
+  let incomeSource = DEF.income;
+  let nextPaySource = DEF.nextPay;
+  
+  const cfDataStr = localStorage.getItem('cf-v1');
+  if (cfDataStr) {
+    try {
+      const cfData = JSON.parse(cfDataStr);
+      if (cfData && cfData.periods) {
+        const newBills = [];
+        let nextId = 1;
+        cfData.periods.forEach((period, pi) => {
+          period.bills.forEach(bill => {
+            let cycleVal = 'current';
+            if (pi === 0) cycleVal = 'current';
+            else if (pi === 1) cycleVal = 'next';
+            else cycleVal = pi;
+            
+            const isBiweekly = bill.due === 'BIWEEKLY' || bill.due === 'ONGOING';
+            if (isBiweekly) {
+              if (!newBills.find(nb => nb.name === bill.name && nb.cycle === 'both')) {
+                newBills.push({
+                  id: nextId++,
+                  name: bill.name,
+                  amt: bill.amt,
+                  date: bill.due || '',
+                  paid: bill.paid || false,
+                  cycle: 'both'
+                });
+              }
+            } else {
+              newBills.push({
+                id: nextId++,
+                name: bill.name,
+                amt: bill.amt,
+                date: bill.due || '',
+                paid: bill.paid || false,
+                cycle: cycleVal
+              });
+            }
+          });
+        });
+        if (newBills.length > 0) {
+          billsSource = newBills;
+          if (cfData.bank !== undefined) bankSource = cfData.bank;
+        }
+      }
+    } catch (e) {
+      console.error("Error parsing cf-v1 on load:", e);
+    }
+  }
+  
+  S.bills = billsSource;
+  S.bank = bankSource;
+  S.income = incomeSource;
+  S.nextPay = nextPaySource;
   save();
 }
 
@@ -2723,6 +2776,76 @@ window._LEDGER_FB = {
   onSnapshot(budgetDocRef, (docSnap) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
+      
+      // Migration check inside Firebase snapshot
+      const oldBillsDetector = data.bills && data.bills.find(b => b.name === 'Rent Allocation Jul 1' || b.name === 'Rent (Jul 1 remaining)');
+      const newBillsDetector = data.bills && data.bills.find(b => b.name === 'Rent + buffer');
+      
+      if (!data.bills || data.bills.length === 0 || oldBillsDetector || !newBillsDetector) {
+        console.log("Firestore state is empty or outdated. Migrating with Cashflow bills...");
+        
+        let billsSource = JSON.parse(JSON.stringify(DEF.bills));
+        let bankSource = DEF.bank;
+        let incomeSource = DEF.income;
+        let nextPaySource = DEF.nextPay;
+        
+        const cfDataStr = localStorage.getItem('cf-v1');
+        if (cfDataStr) {
+          try {
+            const cfData = JSON.parse(cfDataStr);
+            if (cfData && cfData.periods) {
+              const newBills = [];
+              let nextId = 1;
+              cfData.periods.forEach((period, pi) => {
+                period.bills.forEach(bill => {
+                  let cycleVal = 'current';
+                  if (pi === 0) cycleVal = 'current';
+                  else if (pi === 1) cycleVal = 'next';
+                  else cycleVal = pi;
+                  
+                  const isBiweekly = bill.due === 'BIWEEKLY' || bill.due === 'ONGOING';
+                  if (isBiweekly) {
+                    if (!newBills.find(nb => nb.name === bill.name && nb.cycle === 'both')) {
+                      newBills.push({
+                        id: nextId++,
+                        name: bill.name,
+                        amt: bill.amt,
+                        date: bill.due || '',
+                        paid: bill.paid || false,
+                        cycle: 'both'
+                      });
+                    }
+                  } else {
+                    newBills.push({
+                      id: nextId++,
+                      name: bill.name,
+                      amt: bill.amt,
+                      date: bill.due || '',
+                      paid: bill.paid || false,
+                      cycle: cycleVal
+                    });
+                  }
+                });
+              });
+              if (newBills.length > 0) {
+                billsSource = newBills;
+                if (cfData.bank !== undefined) bankSource = cfData.bank;
+              }
+            }
+          } catch (e) {
+            console.error("Error parsing cf-v1 for Firebase migration:", e);
+          }
+        }
+        
+        data.bills = billsSource;
+        data.bank = bankSource;
+        data.income = incomeSource;
+        data.nextPay = nextPaySource;
+        
+        // Write the migrated data back to Firestore
+        setDoc(budgetDocRef, data).catch(err => console.error("Error migrating Firestore state:", err));
+      }
+      
       const fbStateStr = JSON.stringify(data);
       const localStateStr = JSON.stringify(S);
       if (fbStateStr !== localStateStr) {
