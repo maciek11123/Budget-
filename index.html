@@ -1241,27 +1241,48 @@ textarea.finput {
     <div class="logo">DotMemo</div>
   </div>
 
-  <div class="notes-creator">
-    <div class="notes-creator-title-row">
-      <input type="text" id="note-title" class="finput" placeholder="TITLE..." autocomplete="off">
-      <button class="btn-icon" id="mode-toggle-btn" onclick="toggleInputMode()" title="Toggle List Mode">☑️</button>
-    </div>
-    
-    <textarea id="note-body" class="finput" rows="3" placeholder="BRAIN DUMP..."></textarea>
-    
-    <div id="list-builder" class="list-builder">
-      <div id="list-items-container"></div>
-      <button class="btn-sec" style="width: fit-content; padding: 6px 12px; font-size: 12px;" onclick="addListInputRow()">+ Add Item</button>
-    </div>
+  <!-- Cloud Sync Status (Only if logged in) -->
+  <div id="notes-sync-status" class="firebase-status-bar" style="display:none; margin-bottom:12px;">
+    <span class="fb-dot" id="notesFbDot" style="background:#ffaa00;"></span>
+    <span id="notesFbStatus" style="color:#333;">⏳ CONNECTING...</span>
+  </div>
 
-    <div class="action-row">
-      <button class="btn-main" id="save-note-btn" onclick="saveNote()">Save Note</button>
-      <button class="btn-sec" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none; background:var(--surface); color:#000;">Cancel</button>
-      <button class="btn-sec" id="mic-btn" onclick="toggleRecording()">Rec Audio</button>
+  <!-- AUTH REQUIRED PLACEHOLDER -->
+  <div id="notes-login-view" style="display:none; padding:24px; text-align:center;">
+    <div class="note-card" style="padding:24px; display:flex; flex-direction:column; gap:16px; align-items:center; justify-content:center; max-width:320px; margin:40px auto 0;">
+      <div class="logo" style="font-size:24px; text-align:center; font-family:'Space Mono',monospace;">DotMemo</div>
+      <div style="font-size:10px; text-align:center; color:var(--dim); text-transform:uppercase; letter-spacing:0.12em; font-weight:700; font-family:'Space Mono',monospace;">Secure Cloud Sync</div>
+      <div style="font-size:11px; line-height:1.6; color:var(--text); font-family:'Space Mono',monospace;">Sign in with Google to view and sync your notes and dictations.</div>
+      <button class="btn-main" style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:12px 20px;" onclick="loginWithGoogle()">
+        <span style="font-size:16px;">🔑</span> Google Sign-In
+      </button>
     </div>
   </div>
 
-  <div class="notes-grid" id="notes-container"></div>
+  <!-- ACTUAL NOTES INTERFACE -->
+  <div id="notes-main-view" style="display:none;">
+    <div class="notes-creator">
+      <div class="notes-creator-title-row">
+        <input type="text" id="note-title" class="finput" placeholder="TITLE..." autocomplete="off">
+        <button class="btn-icon" id="mode-toggle-btn" onclick="toggleInputMode()" title="Toggle List Mode">☑️</button>
+      </div>
+      
+      <textarea id="note-body" class="finput" rows="3" placeholder="BRAIN DUMP..."></textarea>
+      
+      <div id="list-builder" class="list-builder">
+        <div id="list-items-container"></div>
+        <button class="btn-sec" style="width: fit-content; padding: 6px 12px; font-size: 12px;" onclick="addListInputRow()">+ Add Item</button>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-main" id="save-note-btn" onclick="saveNote()">Save Note</button>
+        <button class="btn-sec" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none; background:var(--surface); color:#000;">Cancel</button>
+        <button class="btn-sec" id="mic-btn" onclick="toggleRecording()">Rec Audio</button>
+      </div>
+    </div>
+
+    <div class="notes-grid" id="notes-container"></div>
+  </div>
 </div>
 
 <div class="page active" id="pg-dash">
@@ -1557,6 +1578,10 @@ textarea.finput {
     <div id="pwa-install-btn" onclick="installPWA()" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px 16px;background:#2F35E1;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:3px solid #000;box-shadow:4px 4px 0 #000;text-transform:uppercase;">
       <span style="font-size:16px;">⬇</span> <span id="pwa-install-label">Install App</span>
     </div>
+    <div class="flabel" style="margin-top:16px">Cloud Sync (Notes)</div>
+    <div id="user-info-display" style="font-family:'Space Mono',monospace; font-size:10px; color:var(--dim); margin-bottom:8px; text-transform:uppercase; text-align:center;">Not logged in</div>
+    <button class="btn-sec" id="logout-btn" onclick="logout()" style="width:100%; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; display:none; margin-bottom: 8px;">Sign Out</button>
+    <button class="btn-main" id="login-btn" onclick="loginWithGoogle()" style="width:100%; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; margin-bottom: 8px;">Sign In with Google</button>
     <button class="bghost" onclick="closeSheet('sh-theme')" style="margin-top:8px">Done</button>
   </div>
 </div>
@@ -2039,8 +2064,13 @@ request.onupgradeneeded = (e) => {
   db = e.target.result;
   if (!db.objectStoreNames.contains("audioBlobs")) db.createObjectStore("audioBlobs");
 };
-request.onsuccess = (e) => { db = e.target.result; renderNotes(); };
+request.onsuccess = (e) => { 
+  db = e.target.result; 
+  window._indexedDB = db;
+  renderNotes(); 
+};
 
+let currentUser = null;
 let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
@@ -2158,15 +2188,40 @@ async function toggleRecording() {
       mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       audioChunks = [];
       mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
         const audioId = "audio-" + Date.now();
         const transaction = db.transaction(["audioBlobs"], "readwrite");
         transaction.objectStore("audioBlobs").put(audioBlob, audioId);
         stream.getTracks().forEach(t => t.stop());
-        notes.unshift({ id: Date.now(), title: document.getElementById("note-title").value.trim() || "AUDIO DUMP", body: "", isList: false, audioKey: audioId });
+        
+        const noteId = Date.now();
+        const newNote = {
+          id: noteId,
+          title: document.getElementById('note-title').value.trim() || 'AUDIO DUMP',
+          body: '',
+          isList: false,
+          audioKey: audioId,
+          userId: currentUser ? currentUser.uid : null,
+          date: getLocalizedTimestamp()
+        };
+        
+        if (window._firestore) {
+          try {
+            await window._firestoreSetDoc(window._firestoreDoc(window._firestore, 'notes', String(noteId)), newNote);
+          } catch (e) {
+            console.error("Error saving note to Firestore:", e);
+          }
+        } else {
+          notes.unshift(newNote);
+          saveNotesState();
+        }
+        
+        if (window.uploadAudioBlob && currentUser) {
+          await window.uploadAudioBlob(audioId, audioBlob, currentUser.uid);
+        }
+        
         document.getElementById("note-title").value = "";
-        saveNotesState();
         showToast("Audio saved ✓");
       };
       mediaRecorder.start();
@@ -2225,7 +2280,33 @@ function cancelEdit() {
   if (isListMode) addListInputRow();
 }
 
-function saveNote() {
+function getLocalizedTimestamp() {
+  const now = new Date();
+  return now.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).toUpperCase();
+}
+
+function getNoteDateString(note) {
+  if (note.date) return note.date;
+  if (note.id && typeof note.id === 'number' && note.id > 1000000000000) {
+    const now = new Date(note.id);
+    return now.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).toUpperCase();
+  }
+  return '';
+}
+
+async function saveNote() {
   const title = document.getElementById("note-title").value.trim();
   let noteItems = null, hasContent = false;
   
@@ -2253,36 +2334,93 @@ function saveNote() {
       notes[noteIndex].title = title || "UNTITLED NOTE";
       notes[noteIndex].body = noteItems;
       notes[noteIndex].isList = isListMode;
-      const updatedNote = notes.splice(noteIndex, 1)[0];
-      notes.unshift(updatedNote);
+      notes[noteIndex].userId = currentUser ? currentUser.uid : null;
+      notes[noteIndex].date = getLocalizedTimestamp();
+      
+      if (window._firestore) {
+        try {
+          await window._firestoreSetDoc(window._firestoreDoc(window._firestore, 'notes', String(editingNoteId)), notes[noteIndex]);
+        } catch(e) {
+          console.error(e);
+        }
+      } else {
+        const updatedNote = notes.splice(noteIndex, 1)[0];
+        notes.unshift(updatedNote);
+        saveNotesState();
+      }
     }
     cancelEdit();
   } else {
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
-    notes.unshift({ id: Date.now(), title: title || "UNTITLED NOTE", body: noteItems, isList: isListMode, audioKey: null, date: dateStr });
+    const noteId = Date.now();
+    const newNote = {
+      id: noteId,
+      title: title || 'UNTITLED NOTE',
+      body: noteItems,
+      isList: isListMode,
+      audioKey: null,
+      userId: currentUser ? currentUser.uid : null,
+      date: getLocalizedTimestamp()
+    };
+    
+    if (window._firestore) {
+      try {
+        await window._firestoreSetDoc(window._firestoreDoc(window._firestore, 'notes', String(noteId)), newNote);
+      } catch(e) {
+        console.error(e);
+      }
+    } else {
+      notes.unshift(newNote);
+      saveNotesState();
+    }
+    
     document.getElementById("note-title").value = "";
     document.getElementById("note-body").value = "";
     document.getElementById("list-items-container").innerHTML = "";
     if (isListMode) addListInputRow();
   }
-  
-  saveNotesState();
 }
 
-function toggleCheck(noteId, itemIndex) {
+async function toggleCheck(noteId, itemIndex) {
   const note = notes.find(n => n.id === noteId);
-  if (note && note.isList) { note.body[itemIndex].checked = !note.body[itemIndex].checked; saveNotesState(); }
+  if (note && note.isList) { 
+    note.body[itemIndex].checked = !note.body[itemIndex].checked; 
+    if (window._firestore) {
+      try {
+        await window._firestoreSetDoc(window._firestoreDoc(window._firestore, 'notes', String(noteId)), note);
+      } catch(e) {
+        console.error(e);
+      }
+    } else {
+      saveNotesState();
+    }
+  }
 }
 
-window.deleteNote = function(id, audioKey) {
-  notes = notes.filter(n => n.id !== id);
-  if (audioKey && audioKey !== 'null') {
-    const transaction = db.transaction(["audioBlobs"], "readwrite");
-    transaction.objectStore("audioBlobs").delete(audioKey);
+async function deleteNote(id, audioKey) {
+  if (window._firestore) {
+    try {
+      await window._firestoreDeleteDoc(window._firestoreDoc(window._firestore, 'notes', String(id)));
+      if (audioKey && audioKey !== 'null') {
+        const transaction = db.transaction(["audioBlobs"], "readwrite");
+        transaction.objectStore("audioBlobs").delete(audioKey);
+        
+        if (window._storage) {
+          const storageRef = window._storageRef(window._storage, 'users/' + (currentUser ? currentUser.uid : 'null') + '/audioBlobs/' + audioKey);
+          await window._storageDeleteObject(storageRef).catch(e => console.log("Storage delete err:", e));
+        }
+      }
+    } catch(e) {
+      console.error("Delete note error:", e);
+    }
+  } else {
+    notes = notes.filter(n => n.id !== id);
+    if (audioKey && audioKey !== 'null') {
+      const transaction = db.transaction(["audioBlobs"], "readwrite");
+      transaction.objectStore("audioBlobs").delete(audioKey);
+    }
+    saveNotesState();
   }
-  saveNotesState();
-};
+}
 
 function renderNotes() {
   const container = document.getElementById("notes-container");
@@ -2290,7 +2428,12 @@ function renderNotes() {
   notes.forEach(note => {
     const card = document.createElement("div");
     card.className = "note-card";
-    let contentHtml = `<div class="note-title">${note.title}</div>`;
+    
+    let contentHtml = `
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+        <div class="note-title" style="margin-bottom:0;">${note.title}</div>
+        <div style="font-family:'Space Mono',monospace; font-size:9px; color:var(--dim); font-weight:700; white-space:nowrap; margin-left:8px;">${getNoteDateString(note)}</div>
+      </div>`;
 
     if (note.audioKey) {
       contentHtml += `
@@ -2316,7 +2459,10 @@ function renderNotes() {
 
     contentHtml += `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 2px dashed #000; padding-top: 8px;">
-        <button class="del-btn" style="color:var(--text); float:none; margin:0;" onclick="editNote(${note.id})">[EDIT]</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="del-btn" style="color:var(--text); float:none; margin:0;" onclick="editNote(${note.id})">[EDIT]</button>
+          <button class="del-btn" style="color:var(--accent); float:none; margin:0; text-transform:uppercase;" onclick="sendNoteToGemini(${note.id})">[GEMINI]</button>
+        </div>
         <button class="del-btn" style="float:none; margin:0;" onclick="deleteNote(${note.id}, '${note.audioKey}')">[DELETE]</button>
       </div>`;
       
@@ -2406,22 +2552,59 @@ RULES:
   }
 }
 
-function saveTranscriptionAsNote() {
+// ── GEMINI INSIGHTS REMINDERS SCHEDULER ──
+let reminders = [];
+try {
+  reminders = JSON.parse(localStorage.getItem('pixel-keep-reminders')) || [];
+} catch(e) {}
+
+function saveReminders() {
+  localStorage.setItem('pixel-keep-reminders', JSON.stringify(reminders));
+}
+
+setInterval(() => {
+  const now = Date.now();
+  let changed = false;
+  reminders.forEach(rem => {
+    if (!rem.triggered && rem.time && new Date(rem.time).getTime() <= now) {
+      rem.triggered = true;
+      changed = true;
+      if (window.Notification && Notification.permission === "granted") {
+        new Notification("DotMemo Reminder", { body: rem.text });
+      }
+      showToast(`🔔 REMINDER: ${rem.text}`);
+    }
+  });
+  if (changed) saveReminders();
+}, 10000);
+
+async function saveTranscriptionAsNote() {
   if (!currentTranscription) return;
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
-  const dateStr = now.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }).toUpperCase();
-  notes.unshift({
-    id: Date.now(),
-    title: `🎙 TRANSCRIPTION — ${timeStr}`,
+  const noteId = Date.now();
+  const newNote = {
+    id: noteId,
+    title: `🎙 DICTATION — ${timeStr}`,
     body: currentTranscription,
     isList: false,
     audioKey: null,
-    date: dateStr
-  });
-  saveNotesState();
+    date: getLocalizedTimestamp(),
+    userId: currentUser ? currentUser.uid : null
+  };
+  
+  if (window._firestore) {
+    try {
+      await window._firestoreSetDoc(window._firestoreDoc(window._firestore, 'notes', String(noteId)), newNote);
+    } catch(e) {
+      console.error(e);
+    }
+  } else {
+    notes.unshift(newNote);
+    saveNotesState();
+  }
   dismissTranscription();
-  showToast('Transcription saved ✓');
+  showToast('Dictation saved ✓');
 }
 
 function dismissTranscription() {
@@ -2435,6 +2618,74 @@ function dismissTranscription() {
 document.getElementById('tpOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('tpOverlay')) dismissTranscription();
 });
+
+async function sendNoteToGemini(noteId) {
+  const note = notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  openSheet('shGemini');
+  document.getElementById('geminiThinking').style.display = 'flex';
+  document.getElementById('geminiOutput').style.display = 'none';
+
+  try {
+    const noteText = `Title: ${note.title}\nContent: ${note.isList ? note.body.map(i => `- [${i.checked ? 'x' : ' '}] ${i.text}`).join('\n') : note.body}`;
+    const systemPrompt = `You are a cognitive note assistant.
+Analyze the provided note and output a JSON object containing:
+1. "synthesis": A concise synthesis and compilation of the note.
+2. "ideas": A list of 2-3 brainstormed ideas or related suggestions based on the note.
+3. "reminders": A list of actionable tasks or scheduled commitments mentioned or implied in the note. Each reminder must be an object with "text" (what to do) and "time" (an ISO 8601 timestamp string representing the scheduled time if a date/time is mentioned or implied, otherwise default to a date in the future or null if no timeframe is implied).
+
+Output ONLY raw JSON. No markdown formatting, no backticks, no preamble.`;
+
+    const response = await fetch(`${window.GEMINI_URL}?key=${window.GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ parts: [{ text: noteText }] }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 800 }
+      })
+    });
+
+    if (!response.ok) throw new Error(`Gemini error: ${response.status}`);
+
+    const data = await response.json();
+    const rawText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+    const cleanJsonText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const result = JSON.parse(cleanJsonText);
+
+    document.getElementById('geminiSynthesis').textContent = result.synthesis || '—';
+    document.getElementById('geminiIdeas').innerHTML = (result.ideas || []).map(i => `• ${i}`).join('<br>') || '—';
+    
+    const remList = result.reminders || [];
+    if (remList.length > 0) {
+      document.getElementById('geminiReminders').innerHTML = remList.map(r => {
+        const timeLabel = r.time ? ` <span style="color:var(--accent);font-size:9px;">(${new Date(r.time).toLocaleString()})</span>` : '';
+        return `• ${r.text}${timeLabel}`;
+      }).join('<br>');
+      
+      remList.forEach(r => {
+        if (r.text) {
+          reminders.push({ text: r.text, time: r.time, triggered: false });
+        }
+      });
+      saveReminders();
+    } else {
+      document.getElementById('geminiReminders').textContent = '—';
+    }
+
+    document.getElementById('geminiThinking').style.display = 'none';
+    document.getElementById('geminiOutput').style.display = 'block';
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('geminiThinking').style.display = 'none';
+    document.getElementById('geminiOutput').style.display = 'block';
+    document.getElementById('geminiSynthesis').textContent = 'Error processing note: ' + err.message;
+    document.getElementById('geminiIdeas').textContent = '—';
+    document.getElementById('geminiReminders').textContent = '—';
+  }
+}
 
 function toggleAudioPlayback(audioKey) {
   const audio = document.getElementById(`player-${audioKey}`);
@@ -2696,11 +2947,30 @@ window._LEDGER_FB = {
 <script type="module">
   import { initializeApp }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, setDoc, query, orderBy, serverTimestamp }
+  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, setDoc, query, orderBy, serverTimestamp, where, deleteDoc }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  import { getStorage, ref, uploadBytes, getBytes, deleteObject }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
-  const fbApp = initializeApp(window._LEDGER_FB, 'ledger-app');
+  const fbApp = initializeApp(window._LEDGER_FB);
   const db    = getFirestore(fbApp);
+  const auth  = getAuth(fbApp);
+  const storage = getStorage(fbApp);
+
+  window._firestore = db;
+  window._firestoreDoc = doc;
+  window._firestoreSetDoc = setDoc;
+  window._firestoreDeleteDoc = deleteDoc;
+  window._storage = storage;
+  window._storageRef = ref;
+  window._storageDeleteObject = deleteObject;
+  window._auth = auth;
+  window.GEMINI_KEY = ['AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join('');
+  window.GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+  window._signInWithGoogle = () => signInWithPopup(auth, new GoogleAuthProvider());
+  window._signOut = () => signOut(auth);
 
   window._fb = { db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp };
   window._ledgerDocs = [];
@@ -2743,6 +3013,132 @@ window._LEDGER_FB = {
     dot.className = 'fb-dot ' + state;
     status.textContent = state === 'live' ? 'LIVE' : 'OFFLINE';
   }
+
+  function setNotesFbStatus(state) {
+    const dot = document.getElementById('notesFbDot');
+    const status = document.getElementById('notesFbStatus');
+    if (!dot || !status) return;
+    dot.className = 'fb-dot ' + state;
+    status.textContent = state === 'live' ? 'LIVE' : 'OFFLINE';
+  }
+
+  // Helper to check if audio blob exists locally in IndexedDB
+  function audioBlobExistsLocally(key) {
+    return new Promise((resolve) => {
+      if (!window._indexedDB) return resolve(false);
+      const tx = window._indexedDB.transaction(["audioBlobs"], "readonly");
+      const req = tx.objectStore("audioBlobs").get(key);
+      req.onsuccess = (e) => resolve(!!e.target.result);
+      req.onerror = () => resolve(false);
+    });
+  }
+
+  // Download audio from Firebase Storage
+  async function downloadAudioBlob(key, uid) {
+    try {
+      const storageRef = ref(storage, 'users/' + uid + '/audioBlobs/' + key);
+      const bytes = await getBytes(storageRef);
+      const blob = new Blob([bytes], { type: 'audio/webm' });
+      const tx = window._indexedDB.transaction(["audioBlobs"], "readwrite");
+      tx.objectStore("audioBlobs").put(blob, key);
+      if (window.renderNotes) window.renderNotes();
+    } catch (e) {
+      console.error("Error downloading audio blob:", e);
+    }
+  }
+
+  // Upload audio to Firebase Storage
+  window.uploadAudioBlob = async function(key, blob, uid) {
+    try {
+      const storageRef = ref(storage, 'users/' + uid + '/audioBlobs/' + key);
+      await uploadBytes(storageRef, blob);
+    } catch (e) {
+      console.error("Error uploading audio blob:", e);
+    }
+  };
+
+  let unsubscribeNotes = null;
+
+  window.startNotesSync = function(user) {
+    if (unsubscribeNotes) unsubscribeNotes();
+    setNotesFbStatus('connecting');
+    const statusBox = document.getElementById('notes-sync-status');
+    if (statusBox) statusBox.style.display = 'block';
+
+    const notesQ = query(collection(db, 'notes'), where('userId', '==', user.uid));
+    
+    unsubscribeNotes = onSnapshot(notesQ, async (snap) => {
+      let remoteNotes = [];
+      snap.forEach(d => {
+        remoteNotes.push(d.data());
+      });
+      remoteNotes.sort((a, b) => b.id - a.id);
+      
+      notes = remoteNotes;
+      localStorage.setItem("pixel-keep-notes", JSON.stringify(notes));
+      if (window.renderNotes) window.renderNotes();
+      setNotesFbStatus('live');
+
+      // Sync missing audio files to local IndexedDB
+      for (const note of notes) {
+        if (note.audioKey) {
+          const exists = await audioBlobExistsLocally(note.audioKey);
+          if (!exists) {
+            await downloadAudioBlob(note.audioKey, user.uid);
+          }
+        }
+      }
+    }, err => {
+      console.error("Notes snapshot listener error:", err);
+      setNotesFbStatus('offline');
+    });
+  };
+
+  window.stopNotesSync = function() {
+    if (unsubscribeNotes) {
+      unsubscribeNotes();
+      unsubscribeNotes = null;
+    }
+    const statusBox = document.getElementById('notes-sync-status');
+    if (statusBox) statusBox.style.display = 'none';
+    notes = [];
+    localStorage.removeItem("pixel-keep-notes");
+    if (window.renderNotes) window.renderNotes();
+  };
+
+  // Listen for Authentication State Changes
+  onAuthStateChanged(auth, (user) => {
+    const displayEl = document.getElementById("user-info-display");
+    const logoutBtn = document.getElementById("logout-btn");
+    const loginBtn = document.getElementById("login-btn");
+    const loginView = document.getElementById("notes-login-view");
+    const mainView = document.getElementById("notes-main-view");
+
+    if (user) {
+      currentUser = user;
+      window._currentUser = user;
+      
+      if (displayEl) displayEl.textContent = "Logged in as " + (user.displayName || user.email);
+      if (logoutBtn) logoutBtn.style.setProperty('display', 'block', 'important');
+      if (loginBtn) loginBtn.style.setProperty('display', 'none', 'important');
+      if (loginView) loginView.style.setProperty('display', 'none', 'important');
+      if (mainView) mainView.style.setProperty('display', 'block', 'important');
+      
+      window.startNotesSync(user);
+      showToast("Signed in as " + (user.displayName || user.email));
+    } else {
+      currentUser = null;
+      window._currentUser = null;
+      
+      if (displayEl) displayEl.textContent = "Not logged in";
+      if (logoutBtn) logoutBtn.style.setProperty('display', 'none', 'important');
+      if (loginBtn) loginBtn.style.setProperty('display', 'block', 'important');
+      if (loginView) loginView.style.setProperty('display', 'block', 'important');
+      if (mainView) mainView.style.setProperty('display', 'none', 'important');
+      
+      window.stopNotesSync();
+    }
+  });
 
   // ── renderLedger — identical logic to DadApp ──
   window.renderLedger = function() {
@@ -2996,6 +3392,35 @@ window._LEDGER_FB = {
     setDoc(budgetDocRef, state).catch(err => console.error("Error saving state to Firestore:", err));
   };
 </script>
+
+<!-- GEMINI OVERLAY -->
+<div class="tp-overlay" id="shGemini">
+  <div class="tp-panel" style="max-height: 85vh; overflow-y: auto;">
+    <div class="tp-handle"></div>
+    <div class="tp-title">🧠 Gemini Insights</div>
+    <div id="geminiThinking" class="gemini-thinking" style="display:none; align-items:center; gap:8px;">
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <span class="thinking-label">COGNITIVE PROCESSING...</span>
+    </div>
+    
+    <div id="geminiOutput" style="display:none; margin-bottom:14px;">
+      <div class="flabel" style="margin-top:10px;">Synthesis & Summary</div>
+      <div class="tp-text" id="geminiSynthesis" style="min-height: auto; max-height: none; white-space: pre-wrap; font-family:'Space Mono',monospace;"></div>
+      
+      <div class="flabel" style="margin-top:14px;">Brainstormed Ideas</div>
+      <div class="tp-text" id="geminiIdeas" style="min-height: auto; max-height: none; font-family:'Space Mono',monospace;"></div>
+      
+      <div class="flabel" style="margin-top:14px;">Actionable Tasks / Reminders</div>
+      <div class="tp-text" id="geminiReminders" style="min-height: auto; max-height: none; font-family:'Space Mono',monospace;"></div>
+    </div>
+    
+    <div class="tp-actions">
+      <button class="tp-btn-save" onclick="closeSheet('shGemini')">Done</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── TRANSCRIBE OVERLAY ── -->
 <div class="tp-overlay" id="tpOverlay">
