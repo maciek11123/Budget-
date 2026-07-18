@@ -1230,6 +1230,20 @@ textarea.finput {
   box-shadow: none !important;
   animation: none !important;
 }
+.strict-allowance-mode {
+  background: #00e5ff !important;
+  color: #000000 !important;
+}
+.strict-allowance-mode * {
+  color: #000000 !important;
+}
+.flexible-allowance-mode {
+  background: #ff7b00 !important;
+  color: #ffffff !important;
+}
+.flexible-allowance-mode * {
+  color: #ffffff !important;
+}
 </style>
 </head>
 <body>
@@ -1303,9 +1317,10 @@ textarea.finput {
     </div>
     <div class="hero-rule"></div>
     <div class="hero-stats">
-      <div class="stat">
+      <div class="stat strict-allowance-mode" style="border-radius: 8px; padding: 10px;">
         <div class="slabel">Safe today</div>
         <div class="sval" id="s-safe">$0</div>
+        <div class="snote" style="font-size: 8px; opacity: 0.75; margin-top: 2px;">per day, all bills locked</div>
         <div class="snote" id="s-days"></div>
       </div>
       <div class="stat">
@@ -1427,7 +1442,7 @@ textarea.finput {
     </div>
     <div class="alert-bar" id="alert-bar" style="border:3.5px solid var(--low);border-radius:0;padding:8px 12px;font-size:11px;font-weight:700;color:var(--low);margin-bottom:12px;display:none;">—</div>
     <div class="two-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div class="chip" style="background:var(--pix-stat1,#00e5ff);border:2.5px solid #000;border-radius:0;padding:10px;color:#000;">
+      <div class="chip flexible-allowance-mode" style="border:2.5px solid #000;border-radius:8px;padding:10px;">
         <div class="cl" style="font-size:9px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;">SAFE TODAY</div>
         <div class="cv" id="chip-safe" style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
         <div class="cs" id="chip-safe-note" style="font-size:8px;opacity:.75;margin-top:2px;">per day, fixed bills aside</div>
@@ -1477,6 +1492,92 @@ textarea.finput {
     <button class="bconfirm" style="margin:4px 0 0;padding:12px;border-radius:0;border:3px solid #000;box-shadow:3px 3px 0 #000;" onclick="cfAddBill()">+ Add Bill / Expense</button>
   </div>
 </div>
+
+<!-- ══ SIM TAB (Simulation view) ══════════════════════════════════════════════ -->
+<div class="page" id="pg-sim">
+  <div class="header">
+    <div class="logo">Simulation</div>
+  </div>
+  
+  <div class="hero nm-raised" style="margin: 8px 14px 12px; padding: 24px 20px;">
+    <div style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;border-bottom:3px solid #000;padding-bottom:10px;">Simulation Allowance</div>
+    <div class="two-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="chip" style="background:#ffd43b;border:2.5px solid #000;border-radius:8px;padding:10px;color:#000;">
+        <div class="cl" style="font-size:9px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;">SIMULATED BALANCE</div>
+        <div class="cv" id="sim-bal-val" style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+      </div>
+      <div class="chip" style="background:#845ef7;border:2.5px solid #000;border-radius:8px;padding:10px;color:#fff;">
+        <div class="cl" style="font-size:9px;letter-spacing:.08em;font-weight:700;margin-bottom:2px;color:#fff;">SIMULATED SAFE</div>
+        <div class="cv" id="sim-safe-val" style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;">—</div>
+      </div>
+    </div>
+    <div id="sim-status-desc" style="font-size:10px;margin-top:12px;color:var(--dim);font-family:'Space Mono',monospace;">Adjust sliders below to simulate spending.</div>
+  </div>
+
+  <!-- SIM PROJECTION CHART -->
+  <div class="hero nm-raised" style="margin: 0 14px 12px; padding: 20px 20px 14px;">
+    <div class="graph-label" style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;border-bottom:2px dashed #000;padding-bottom:6px;">SIMULATED PROJECTION</div>
+    <div class="graph-wrap" style="position:relative;height:55px;margin-bottom:4px;">
+      <div id="sim-chart-container" style="position:relative;width:100%;height:100%;"></div>
+    </div>
+  </div>
+
+  <!-- SLIDER CONTROLS -->
+  <div class="section" style="margin-top:20px;">
+    <div class="sec-head"><div class="sec-title">Adjust Discretionary Cost</div></div>
+    <div class="notes-creator" style="margin:8px 0 20px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:4px;font-family:'Space Mono',monospace;">
+          <span>Extra Splurge This Cycle</span>
+          <span id="slider-splurge-val">$0</span>
+        </div>
+        <input type="range" id="slider-splurge" min="0" max="500" value="0" step="10" style="width:100%;cursor:pointer;" oninput="simUpdate()">
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:4px;font-family:'Space Mono',monospace;">
+          <span>Groceries Budget / Cycle</span>
+          <span id="slider-groc-val">$200</span>
+        </div>
+        <input type="range" id="slider-groc" min="100" max="400" value="200" step="10" style="width:100%;cursor:pointer;" oninput="simUpdate()">
+      </div>
+      <button class="btn-sec" onclick="simReset()" style="border:2px solid #000;box-shadow:2px 2px 0 #000;padding:8px 12px;font-size:11px;width:100%;text-transform:uppercase;font-weight:700;">Reset Simulation</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AI TAB (AI Budget Analysis) ════════════════════════════════════════════ -->
+<div class="page" id="pg-ai">
+  <div class="header">
+    <div class="logo">AI Assistant</div>
+  </div>
+
+  <div class="notes-creator" style="margin: 12px 14px 16px; padding: 16px;">
+    <div class="tp-title">Macro Queries</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="ctab" style="padding:6px 10px;font-size:10px;border-radius:4px;width:auto;flex:none;" onclick="runMacroPrompt('skip')">What can I skip?</button>
+      <button class="ctab" style="padding:6px 10px;font-size:10px;border-radius:4px;width:auto;flex:none;" onclick="runMacroPrompt('splurge')">Staycation splurge</button>
+      <button class="ctab" style="padding:6px 10px;font-size:10px;border-radius:4px;width:auto;flex:none;" onclick="runMacroPrompt('rent')">Rent +$100</button>
+    </div>
+
+    <div class="tp-title">Natural Language What-If</div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <input type="text" id="ai-user-query" class="finput" placeholder="What if I spend $200 on..." style="margin-bottom:0;flex:1;height:44px;padding:8px 12px;font-size:13px;" onkeydown="if(event.key==='Enter')askAiBudget()">
+      <button class="btn-main" style="padding:0 16px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:2px 2px 0 #000;" onclick="askAiBudget()">ASK ↗</button>
+    </div>
+  </div>
+
+  <!-- AI Arena response -->
+  <div class="section">
+    <div class="sec-head"><div class="sec-title">Streamed Response Arena</div></div>
+    <div class="notes-creator" style="margin:8px 14px 20px;padding:16px;min-height:120px;background:#fff;">
+      <div class="gemini-thinking" id="ai-thinking" style="align-items:center;gap:10px;display:none;">
+        <div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div>
+        <div class="thinking-label">ANALYZING...</div>
+      </div>
+      <div id="ai-response-arena" style="font-size:12px;line-height:1.6;font-family:'Space Mono',monospace;white-space:pre-wrap;word-break:break-word;"></div>
+    </div>
+  </div>
+</div>
 <!-- NAV REORDERED TO MATCH -->
 <!-- NAV REORDERED TO MATCH -->
 <div class="nav nm-raised">
@@ -1485,6 +1586,12 @@ textarea.finput {
   </button>
   <button class="nbtn" id="n-pay" onclick="showPage('pg-pay');setNav('n-pay');payRender()">
     <span class="nicon">💸</span><span class="nlabel">Cashflow</span>
+  </button>
+  <button class="nbtn" id="n-sim" onclick="showPage('pg-sim');setNav('n-sim');simRender()">
+    <span class="nicon">🎛️</span><span class="nlabel">SIM</span>
+  </button>
+  <button class="nbtn" id="n-ai" onclick="showPage('pg-ai');setNav('n-ai');aiRender()">
+    <span class="nicon">✦</span><span class="nlabel">AI ✦</span>
   </button>
   <button class="nbtn" id="n-bills" onclick="showPage('pg-bills');setNav('n-bills')">
     <span class="nicon">▤</span><span class="nlabel">Bills</span>
@@ -1822,10 +1929,20 @@ function renderThemeGrid(){
   }
 }
 
+const getDaysRemaining = () => {
+  if (!S.nextPay) return 14;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const np = new Date(S.nextPay + 'T00:00:00');
+  return Math.max(Math.round((np - now) / 86400000), 0);
+};
+const getSafeDivisor = () => {
+  const dVal = getDaysRemaining();
+  return dVal === 0 ? 1 : dVal;
+};
 const com=()=>S.bills.filter(b=>!b.paid&&(b.cycle==='current'||b.cycle==='both')).reduce((t,b)=>t+b.amt,0);
 const real=()=>Math.round((S.bank-com())*100)/100;
-const days=()=>{const n=new Date();n.setHours(0,0,0,0);const p=new Date(S.nextPay);p.setHours(0,0,0,0);return Math.max(Math.round((p-n)/86400000),0);};
-const safe=()=>{const r=real();if(r<=0)return 0;return Math.max((r+S.carryover)/days(),0);};
+const days=()=>getDaysRemaining();
+const safe=()=>{const r=real();if(r<=0)return 0;return Math.max((r+S.carryover)/getSafeDivisor(),0);};
 const $=(n)=>(n<0?'-':'')+'$'+Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const fd=d=>new Date(d+'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric'});
 
@@ -2051,7 +2168,12 @@ function applyPay(){const v=document.getElementById('i-pay').value;if(!v)return;
 function applyInc(){const v=parseFloat(document.getElementById('i-inc').value);if(isNaN(v)||v<=0)return;S.income=Math.round(v*100)/100;closeSheet('sh-income');save();render();}
 
 // ── NAV & SHEETS ───────────────────────────────────────────────────────────
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  S.activeView = id === 'pg-dash' ? 'today' : id === 'pg-pay' ? 'cashflow' : id;
+  save();
+}
 function setNav(id){document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function openSheet(id){document.getElementById(id).classList.add('open');setTimeout(()=>{const i=document.querySelector(`#${id} input`);if(i){i.focus();i.select();}},200);}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
@@ -3662,10 +3784,7 @@ window.cfUpdateAmt = function(pi, id, val) {
 };
 
 function daysRemaining() {
-  if (!S.nextPay) return 14;
-  const now = new Date(); now.setHours(0,0,0,0);
-  const np = new Date(S.nextPay + 'T00:00:00');
-  return Math.max(Math.round((np - now) / 86400000), 1);
+  return getSafeDivisor();
 }
 
 window.payRender = function() {
@@ -3954,6 +4073,239 @@ function autoSweepUnpaidBills() {
     save();
   }
 }
+
+window.simReset = function() {
+  document.getElementById('slider-splurge').value = 0;
+  document.getElementById('slider-groc').value = 200;
+  simUpdate();
+};
+
+window.simRender = function() {
+  simUpdate();
+};
+
+window.simUpdate = function() {
+  const splurge = parseFloat(document.getElementById('slider-splurge').value) || 0;
+  const grocVal = parseFloat(document.getElementById('slider-groc').value) || 200;
+  
+  document.getElementById('slider-splurge-val').textContent = $(splurge);
+  document.getElementById('slider-groc-val').textContent = $(grocVal);
+  
+  const periodsList = getDynamicPeriods();
+  if (!periodsList.length) return;
+  
+  const pBills = getBillsForPeriod(0, periodsList);
+  
+  let simUnpaidBillsSum = 0;
+  let simFixedUnpaid = 0;
+  
+  pBills.forEach(b => {
+    let amt = b.amt;
+    if (b.name.toLowerCase().includes('groceries')) {
+      amt = grocVal;
+    }
+    if (!b.paid) {
+      simUnpaidBillsSum += amt;
+      if (b.type === 'fixed' || !b.type) {
+        simFixedUnpaid += amt;
+      }
+    }
+  });
+  
+  const simRealBal = S.bank - simUnpaidBillsSum - splurge;
+  const afterFixed = S.bank - simFixedUnpaid - splurge;
+  const simSafeVal = afterFixed > 0 ? afterFixed / getSafeDivisor() : 0;
+  
+  document.getElementById('sim-bal-val').textContent = $(simRealBal);
+  document.getElementById('sim-safe-val').textContent = $(simSafeVal);
+  
+  const wrapEl = document.getElementById('sim-chart-container');
+  if (wrapEl) {
+    wrapEl.innerHTML = '';
+    
+    const nets = periodsList.map((p, idx) => {
+      const pB = getBillsForPeriod(idx, periodsList);
+      
+      let simulatedTotal = 0;
+      let simulatedUnpaid = 0;
+      pB.forEach(b => {
+        let amt = b.amt;
+        if (b.name.toLowerCase().includes('groceries')) {
+          amt = grocVal;
+        }
+        simulatedTotal += amt;
+        if (!b.paid) {
+          simulatedUnpaid += amt;
+        }
+      });
+      
+      if (idx === 0) {
+        return S.bank - simulatedUnpaid - splurge;
+      } else {
+        return S.income - simulatedTotal;
+      }
+    });
+    
+    const maxAbs = Math.max(...nets.map(Math.abs), 500);
+    
+    const zeroLine = document.createElement('div');
+    zeroLine.style.position = 'absolute';
+    zeroLine.style.left = '0';
+    zeroLine.style.right = '0';
+    zeroLine.style.top = '50%';
+    zeroLine.style.height = '2px';
+    zeroLine.style.background = 'var(--text)';
+    zeroLine.style.opacity = '0.5';
+    zeroLine.style.zIndex = '5';
+    wrapEl.appendChild(zeroLine);
+    
+    const colWidth = 100 / periodsList.length;
+    
+    periodsList.forEach((p, idx) => {
+      const val = nets[idx];
+      let heightPx = Math.round((Math.abs(val) / maxAbs) * 22);
+      if (val !== 0 && heightPx < 4) heightPx = 4;
+      
+      const col = document.createElement('div');
+      col.style.position = 'absolute';
+      col.style.left = (idx * colWidth) + '%';
+      col.style.width = colWidth + '%';
+      col.style.top = '0';
+      col.style.bottom = '0';
+      col.style.display = 'flex';
+      col.style.flexDirection = 'column';
+      col.style.alignItems = 'center';
+      
+      const bar = document.createElement('div');
+      bar.className = 'cf-proj-bar';
+      bar.style.height = heightPx + 'px';
+      
+      const valLbl = document.createElement('div');
+      valLbl.className = 'cf-proj-label';
+      valLbl.textContent = (val < 0 ? '-$' : '$') + Math.abs(Math.round(val)).toLocaleString();
+      
+      if (val >= 0) {
+        bar.style.bottom = '50%';
+        valLbl.style.bottom = '100%';
+        valLbl.style.marginBottom = '2px';
+        bar.style.background = 'var(--safe, #27ae60)';
+        bar.style.borderColor = 'var(--safe, #27ae60)';
+      } else {
+        bar.style.top = '50%';
+        valLbl.style.top = '100%';
+        valLbl.style.marginTop = '2px';
+        bar.style.background = 'var(--low, #c0392b)';
+        bar.style.borderColor = 'var(--low, #c0392b)';
+      }
+      
+      bar.appendChild(valLbl);
+      col.appendChild(bar);
+      
+      const dateLbl = document.createElement('div');
+      dateLbl.className = 'cf-proj-date';
+      dateLbl.textContent = p.label;
+      col.appendChild(dateLbl);
+      
+      wrapEl.appendChild(col);
+    });
+  }
+};
+
+window.aiRender = function() {
+  document.getElementById('ai-user-query').value = '';
+  document.getElementById('ai-response-arena').innerHTML = '<div style="color:var(--dim);text-align:center;padding:20px;font-style:italic;">Choose a macro query above or type a custom query to start...</div>';
+  document.getElementById('ai-thinking').style.display = 'none';
+};
+
+window.runMacroPrompt = function(type) {
+  let q = '';
+  if (type === 'skip') {
+    q = 'What can I skip?';
+  } else if (type === 'splurge') {
+    q = 'If I staycation splurge an extra $150-$300, how does that impact the next 3 cycles?';
+  } else if (type === 'rent') {
+    q = 'How does a permanent rent increase of $100 affect my 6-Period Projection?';
+  }
+  document.getElementById('ai-user-query').value = q;
+  window.askAiBudget(q);
+};
+
+window.askAiBudget = async function(customPrompt) {
+  const queryInput = document.getElementById('ai-user-query');
+  const promptText = customPrompt || queryInput.value;
+  if (!promptText || !promptText.trim()) return;
+  
+  queryInput.value = promptText;
+  
+  const thinkingEl = document.getElementById('ai-thinking');
+  const arenaEl = document.getElementById('ai-response-arena');
+  
+  thinkingEl.style.display = 'flex';
+  arenaEl.innerHTML = '';
+  
+  try {
+    const periodsList = getDynamicPeriods();
+    const context = {
+      current_date: document.getElementById('hdr-date').textContent || new Date().toDateString(),
+      days_left_in_cycle: getDaysRemaining(),
+      bank_balance: S.bank,
+      real_balance: real(),
+      active_view_mode: S.activeView || 'today',
+      bills_ledger: S.bills.map(b => ({
+        name: b.name,
+        amount: b.amt,
+        type: b.type || 'fixed',
+        paid: b.paid
+      }))
+    };
+    
+    const systemPrompt = `You are a direct, hyper-pragmatic, and protective financial guardrail for Maciek. No fluff, no generic saving advice. Speak purely in the numbers of the active cycle.
+RULES:
+1. Every discretionary spend request must be deducted from the Real Balance ($${context.real_balance.toFixed(2)}), never the raw Bank Balance.
+2. If active_view_mode is 'today', evaluate the impact on their strict daily allowance (Safe Today: $${safe().toFixed(2)}). If in 'cashflow', warn them if their splurge threatens variable necessities like groceries.
+3. No hallucinated math. Calculate exact mathematical impact:
+   New Real Balance = Real Balance - Splurge
+   New Safe Today = New Real Balance / Days Left
+   (or for Cashflow: New Safe Today = (Bank Balance - Unpaid Fixed Bills - Splurge) / Days Left)
+
+Here is the current financial state:
+${JSON.stringify(context, null, 2)}
+
+USER QUESTION: ${promptText}`;
+
+    const key = window.GEMINI_KEY || GEMINI_KEY;
+    const url = window.GEMINI_URL || GEMINI_URL;
+    
+    const response = await fetch(`${url}?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+        generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
+      })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
+    
+    thinkingEl.style.display = 'none';
+    
+    // Parse simple markdown highlights
+    arenaEl.innerHTML = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\n/g, '<br>');
+      
+  } catch (err) {
+    thinkingEl.style.display = 'none';
+    arenaEl.innerHTML = `<div style="color:var(--low);font-weight:700;">⚠️ Error analyzing budget: ${err.message}</div>`;
+  }
+};
 
 autoSweepUnpaidBills();
 payRender();
