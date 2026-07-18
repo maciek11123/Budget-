@@ -1110,7 +1110,7 @@ const DEF={
     {id:15,name:'Amazon Subscription',    amt:12, date:'',      paid:false,cycle:'next'},
   ]
 };
-function load(){try{const s=localStorage.getItem('real-v6');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
+function load(){try{const s=localStorage.getItem('real-v6');if(s){return Object.assign({},DEF,JSON.parse(s));}}catch(e){}return JSON.parse(JSON.stringify(DEF));}
 function save(){
   localStorage.setItem('real-v6',JSON.stringify(S));
   if(window.saveStateToFirebase) window.saveStateToFirebase(S);
@@ -1638,7 +1638,7 @@ window._LEDGER_FB = {
       const localStateStr = JSON.stringify(S);
       if (fbStateStr !== localStateStr) {
         isUpdatingFromFirebase = true;
-        S = data;
+        S = Object.assign({}, DEF, data);
         localStorage.setItem('real-v6', JSON.stringify(S));
         if (window.render) window.render();
         isUpdatingFromFirebase = false;
