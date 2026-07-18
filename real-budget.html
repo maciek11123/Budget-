@@ -960,6 +960,42 @@ body{
   </div>
 </div>
 
+<!-- ══ AI TAB (AI Budget Analysis) ════════════════════════════════════════════ -->
+<div class="page" id="pg-ai">
+  <div class="header">
+    <div class="logo">AI Assistant</div>
+  </div>
+
+  <div class="notes-creator" style="margin: 12px 14px 16px; padding: 16px; border: 3px solid #000; box-shadow: 4px 4px 0 #000;">
+    <div class="tp-title" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;">Macro Queries</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="ctab" style="padding:6px 10px;font-size:10px;border-radius:4px;width:auto;flex:none;border:1px solid var(--hr);box-shadow:2px 2px 0 var(--hr);background:var(--surface);" onclick="runMacroPrompt('skip')">What can I skip?</button>
+      <button class="ctab" style="padding:6px 10px;font-size:10px;border-radius:4px;width:auto;flex:none;border:1px solid var(--hr);box-shadow:2px 2px 0 var(--hr);background:var(--surface);" onclick="runMacroPrompt('splurge')">Staycation splurge</button>
+      <button class="ctab" style="padding:6px 10px;font-size:10px;border-radius:4px;width:auto;flex:none;border:1px solid var(--hr);box-shadow:2px 2px 0 var(--hr);background:var(--surface);" onclick="runMacroPrompt('rent')">Rent +$100</button>
+    </div>
+
+    <div class="tp-title" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;">Natural Language What-If</div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <input type="text" id="ai-user-query" class="finput" placeholder="What if I spend $200 on..." style="margin-bottom:0;flex:1;height:44px;padding:8px 12px;font-size:13px;border:1px solid var(--hr);" onkeydown="if(event.key==='Enter')askAiBudget()">
+      <button class="btn-main" style="padding:0 16px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:2px 2px 0 #000;border:1px solid var(--hr);background:var(--accent);color:var(--on-accent);font-weight:800;" onclick="askAiBudget()">ASK ↗</button>
+    </div>
+  </div>
+
+  <!-- AI Arena response -->
+  <div class="section">
+    <div class="sec-head"><div class="sec-title" style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);">Streamed Response Arena</div></div>
+    <div class="notes-creator" style="margin:8px 14px 20px;padding:16px;min-height:120px;background:#fff;border:3px solid #000;box-shadow:4px 4px 0 #000;">
+      <div class="gemini-thinking" id="ai-thinking" style="align-items:center;gap:10px;display:none;">
+        <div class="thinking-dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent);animation:tdot 1.2s ease-in-out infinite;"></div>
+        <div class="thinking-dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent);animation:tdot 1.2s ease-in-out infinite;animation-delay:0.2s;"></div>
+        <div class="thinking-dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent);animation:tdot 1.2s ease-in-out infinite;animation-delay:0.4s;"></div>
+        <div class="thinking-label" style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--dim);">ANALYZING...</div>
+      </div>
+      <div id="ai-response-arena" style="font-size:12px;line-height:1.6;font-family:'Space Mono',monospace;white-space:pre-wrap;word-break:break-word;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- NAV -->
 <div class="nav nm-raised">
   <button class="nbtn active" id="n-today" onclick="showPage('pg-dash');setNav('n-today')">
@@ -973,6 +1009,9 @@ body{
   </button>
   <button class="nbtn" id="n-hist" onclick="showPage('pg-hist');setNav('n-hist');renderHist()">
     <span class="nicon">◴</span><span class="nlabel">History</span>
+  </button>
+  <button class="nbtn" id="n-ai" onclick="showPage('pg-ai');setNav('n-ai');aiRender()">
+    <span class="nicon">✦</span><span class="nlabel">AI ✦</span>
   </button>
   <button class="nbtn" id="n-theme" onclick="openSheet('sh-theme');renderThemeGrid()">
     <span class="nicon">◐</span><span class="nlabel">Theme</span>
@@ -1588,7 +1627,12 @@ function setCycle(view){
 }
 
 // ── NAV & SHEETS ───────────────────────────────────────────────────────────
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  S.activeView = id === 'pg-dash' ? 'today' : id;
+  save();
+}
 function setNav(id){document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function openSheet(id){
   if(id==='sh-bal')   document.getElementById('i-bal').value=S.bank.toFixed(2);
@@ -1606,6 +1650,107 @@ applyBigMode(bigMode);
 renderThemeGrid();
 window.render = render;
 render();
+
+const GEMINI_KEY = ['AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join('');
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+
+window.aiRender = function() {
+  document.getElementById('ai-user-query').value = '';
+  document.getElementById('ai-response-arena').innerHTML = '<div style="color:var(--dim);text-align:center;padding:20px;font-style:italic;">Choose a macro query above or type a custom query to start...</div>';
+  document.getElementById('ai-thinking').style.display = 'none';
+};
+
+window.runMacroPrompt = function(type) {
+  let q = '';
+  if (type === 'skip') {
+    q = 'What can I skip?';
+  } else if (type === 'splurge') {
+    q = 'If I staycation splurge an extra $150-$300, how does that impact the next 3 cycles?';
+  } else if (type === 'rent') {
+    q = 'How does a permanent rent increase of $100 affect my 6-Period Projection?';
+  }
+  document.getElementById('ai-user-query').value = q;
+  window.askAiBudget(q);
+};
+
+window.askAiBudget = async function(customPrompt) {
+  const queryInput = document.getElementById('ai-user-query');
+  const promptText = customPrompt || queryInput.value;
+  if (!promptText || !promptText.trim()) return;
+  
+  queryInput.value = promptText;
+  
+  const thinkingEl = document.getElementById('ai-thinking');
+  const arenaEl = document.getElementById('ai-response-arena');
+  
+  thinkingEl.style.display = 'flex';
+  arenaEl.innerHTML = '';
+  
+  try {
+    const daysRemaining = () => {
+      if (!S.nextPay) return 14;
+      const now = new Date(); now.setHours(0,0,0,0);
+      const np = new Date(S.nextPay + 'T00:00:00');
+      const diff = Math.round((np - now) / 86400000);
+      return Math.max(diff, 1);
+    };
+
+    const context = {
+      current_date: document.getElementById('hdr-date')?.textContent || new Date().toDateString(),
+      days_left_in_cycle: daysRemaining(),
+      bank_balance: S.bank,
+      real_balance: real(),
+      active_view_mode: 'today',
+      bills_ledger: S.bills.map(b => ({
+        name: b.name,
+        amount: b.amt,
+        type: b.type || 'fixed',
+        paid: b.paid
+      }))
+    };
+    
+    const systemPrompt = `You are a direct, hyper-pragmatic, and protective financial guardrail for Maciek. No fluff, no generic saving advice. Speak purely in the numbers of the active cycle.
+RULES:
+1. Every discretionary spend request must be deducted from the Real Balance ($${context.real_balance.toFixed(2)}), never the raw Bank Balance.
+2. Evaluate the impact on their strict daily allowance (Safe Today: $${safe().toFixed(2)}).
+3. No hallucinated math. Calculate exact mathematical impact:
+   New Real Balance = Real Balance - Splurge
+   New Safe Today = New Real Balance / Days Left
+
+Here is the current financial state:
+${JSON.stringify(context, null, 2)}
+
+USER QUESTION: ${promptText}`;
+    
+    const response = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+        generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
+      })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
+    
+    thinkingEl.style.display = 'none';
+    
+    arenaEl.innerHTML = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\n/g, '<br>');
+      
+  } catch (err) {
+    thinkingEl.style.display = 'none';
+    arenaEl.innerHTML = `<div style="color:var(--low);font-weight:700;">⚠️ Error analyzing budget: ${err.message}</div>`;
+  }
+};
 </script>
 
 <script>
