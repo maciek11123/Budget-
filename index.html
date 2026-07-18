@@ -1146,6 +1146,7 @@ textarea.finput {
     <div class="ctabs nm-pressed">
       <button class="ctab active" id="tab-cur" onclick="setCycle('current')">This cycle</button>
       <button class="ctab" id="tab-nxt" onclick="setCycle('next')">Next cycle</button>
+      <button class="ctab" id="tab-all" onclick="setCycle('all')">All bills</button>
     </div>
     <div class="bstack" id="ed-bills"></div>
     <button class="addbtn" onclick="openSheet('sh-addbill')">+ Add bill</button>
@@ -1374,49 +1375,55 @@ textarea.finput {
 <script>
 // ── BUDGET LOGIC & STATE ──────────────────────────────────────────────────
 const DEF={
-  bank:1790, income:1780, nextPay:'2026-06-19', carryover:0, cycleView:'current', spentLog:[],
+  bank:1790, income:1780, nextPay:'2026-07-17', carryover:0, cycleView:'current', spentLog:[],
   theme:'pixel', customColors:null, bills:[
     // Cycle 'both' (recurring every cycle)
-    {id:1, name:'PlayStation',            amt:20,  date:'',      paid:false, cycle:'both'},
-    {id:2, name:'Amazon',                 amt:12,  date:'',      paid:false, cycle:'both'},
-    {id:3, name:'Groceries',              amt:200, date:'',      paid:false, cycle:'both'},
-    {id:4, name:'Non-essentials',         amt:100, date:'',      paid:false, cycle:'both'},
-    {id:5, name:'Non-alc beer',           amt:56,  date:'',      paid:false, cycle:'both'},
-    {id:6, name:'Fizz internet',          amt:55,  date:'',      paid:false, cycle:'both'},
+    {id:1, name:'Amazon',                 amt:12,  date:'Biweekly', paid:false, cycle:'both'},
+    {id:2, name:'Groceries',              amt:200, date:'Biweekly', paid:false, cycle:'both'},
+    {id:3, name:'Buffer',                 amt:100, date:'Biweekly', paid:false, cycle:'both'},
+    {id:4, name:'NA beer',                amt:56,  date:'Ongoing',  paid:false, cycle:'both'},
 
-    // Cycle 'next' (Period 1: Jul 3)
-    {id:7, name:'Rent + buffer',          amt:1050,date:'Jul 1', paid:false, cycle:'next'},
-    {id:8, name:'Daycare',                amt:205, date:'Jul 1', paid:false, cycle:'next'},
-    {id:9, name:'Gemini',                 amt:27,  date:'Jul 3', paid:false, cycle:'next'},
-    {id:10,name:'Iegeek',                 amt:5,   date:'Jul 9', paid:false, cycle:'next'},
-    {id:11,name:'Claude Pro',             amt:9,   date:'Jul 9', paid:false, cycle:'next'},
-    {id:12,name:'Spotify',                amt:12,  date:'Jul 12',paid:false, cycle:'next'},
+    // Cycle 'current' (Period 0: Jul 17)
+    {id:5, name:'Rogers',                 amt:170, date:'Mid-month',paid:false, cycle:'current'},
+    {id:6, name:'Monitor loan',           amt:130, date:'Monthly',  paid:false, cycle:'current'},
+    {id:7, name:'PlayStation',            amt:20,  date:'19th of month',paid:false, cycle:'current'},
+    {id:8, name:'Fizz internet',          amt:55,  date:'23rd of month',paid:false, cycle:'current'},
+    {id:9, name:'Medication',             amt:30,  date:'Mid-month',paid:false, cycle:'current'},
 
-    // Cycle 2 (Period 2: Jul 17)
-    {id:13,name:'Rogers',                 amt:170, date:'Jul 17',paid:false, cycle:2},
-    {id:14,name:'Monitor loan',           amt:130, date:'Jul 17',paid:false, cycle:2},
-    {id:15,name:'Medication',             amt:30,  date:'Jul 17',paid:false, cycle:2},
+    // Cycle 'next' (Period 1: Jul 31)
+    {id:10,name:'Rent + buffer',          amt:1050,date:'Early month',paid:false, cycle:'next'},
+    {id:11,name:'Daycare',                amt:205, date:'1st of month',paid:false, cycle:'next'},
+    {id:12,name:'Iegeek',                 amt:5,   date:'9th of month',paid:false, cycle:'next'},
+    {id:13,name:'Claude Pro',             amt:30,  date:'9th of month',paid:false, cycle:'next'},
+    {id:14,name:'Spotify',                amt:2,   date:'12th of month',paid:false, cycle:'next'},
 
-    // Cycle 3 (Period 3: Jul 31)
-    {id:16,name:'Rent + buffer',          amt:1050,date:'Aug 1', paid:false, cycle:3},
-    {id:17,name:'Daycare',                amt:205, date:'Aug 1', paid:false, cycle:3},
-    {id:18,name:'Gemini',                 amt:27,  date:'Aug 3', paid:false, cycle:3},
-    {id:19,name:'Iegeek',                 amt:5,   date:'Aug 9', paid:false, cycle:3},
-    {id:20,name:'Claude Pro',             amt:9,   date:'Aug 9', paid:false, cycle:3},
-    {id:21,name:'Spotify',                amt:12,  date:'Aug 12',paid:false, cycle:3},
+    // Cycle 2 (Period 2: Aug 14)
+    {id:15,name:'Rogers',                 amt:170, date:'Mid-month',paid:false, cycle:2},
+    {id:16,name:'Monitor loan',           amt:130, date:'Monthly',  paid:false, cycle:2},
+    {id:17,name:'PlayStation',            amt:20,  date:'19th of month',paid:false, cycle:2},
+    {id:18,name:'Fizz internet',          amt:55,  date:'23rd of month',paid:false, cycle:2},
+    {id:19,name:'Medication',             amt:30,  date:'Mid-month',paid:false, cycle:2},
 
-    // Cycle 4 (Period 4: Aug 14)
-    {id:22,name:'Rogers',                 amt:170, date:'Aug 14',paid:false, cycle:4},
-    {id:23,name:'Monitor loan',           amt:130, date:'Aug 14',paid:false, cycle:4},
-    {id:24,name:'Medication',             amt:30,  date:'Aug 14',paid:false, cycle:4},
+    // Cycle 3 (Period 3: Aug 28)
+    {id:20,name:'Rent + buffer',          amt:1050,date:'Early month',paid:false, cycle:3},
+    {id:21,name:'Daycare',                amt:205, date:'1st of month',paid:false, cycle:3},
+    {id:22,name:'Iegeek',                 amt:5,   date:'9th of month',paid:false, cycle:3},
+    {id:23,name:'Claude Pro',             amt:30,  date:'9th of month',paid:false, cycle:3},
+    {id:24,name:'Spotify',                amt:2,   date:'12th of month',paid:false, cycle:3},
 
-    // Cycle 5 (Period 5: Aug 28)
-    {id:25,name:'Rent + buffer',          amt:1050,date:'Sep 1', paid:false, cycle:5},
-    {id:26,name:'Daycare',                amt:205, date:'Sep 1', paid:false, cycle:5},
-    {id:27,name:'Gemini',                 amt:27,  date:'Sep 3', paid:false, cycle:5},
-    {id:28,name:'Iegeek',                 amt:5,   date:'Sep 9', paid:false, cycle:5},
-    {id:29,name:'Claude Pro',             amt:9,   date:'Sep 9', paid:false, cycle:5},
-    {id:30,name:'Spotify',                amt:12,  date:'Sep 12',paid:false, cycle:5}
+    // Cycle 4 (Period 4: Sep 11)
+    {id:25,name:'Rogers',                 amt:170, date:'Mid-month',paid:false, cycle:4},
+    {id:26,name:'Monitor loan',           amt:130, date:'Monthly',  paid:false, cycle:4},
+    {id:27,name:'PlayStation',            amt:20,  date:'19th of month',paid:false, cycle:4},
+    {id:28,name:'Fizz internet',          amt:55,  date:'23rd of month',paid:false, cycle:4},
+    {id:29,name:'Medication',             amt:30,  date:'Mid-month',paid:false, cycle:4},
+
+    // Cycle 5 (Period 5: Sep 25)
+    {id:30,name:'Rent + buffer',          amt:1050,date:'Early month',paid:false, cycle:5},
+    {id:31,name:'Daycare',                amt:205, date:'1st of month',paid:false, cycle:5},
+    {id:32,name:'Iegeek',                 amt:5,   date:'9th of month',paid:false, cycle:5},
+    {id:33,name:'Claude Pro',             amt:30,  date:'9th of month',paid:false, cycle:5},
+    {id:34,name:'Spotify',                amt:2,   date:'12th of month',paid:false, cycle:5}
   ]
 };
 function load(){try{const s=localStorage.getItem('real-v6');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEF));}
@@ -1425,71 +1432,16 @@ function save(){
   if(window.saveStateToFirebase) window.saveStateToFirebase(S);
   if(window.payRender) window.payRender();
 }
-// Migration: Push Cashflow bills if we detect outdated/missing data
-const oldBillsDetector = S.bills && S.bills.find(b => b.name === 'Rent Allocation Jul 1' || b.name === 'Rent (Jul 1 remaining)' || b.name === 'Daycamp (last)' || b.name === 'Janelle birthday' || b.name === 'Staycation extra');
-const newBillsDetector = S.bills && S.bills.find(b => b.name === 'Rent + buffer');
-if (!S.bills || S.bills.length === 0 || oldBillsDetector || !newBillsDetector || !S.migratedToRecurring) {
-  let billsSource = JSON.parse(JSON.stringify(DEF.bills));
-  let bankSource = DEF.bank;
-  let incomeSource = DEF.income;
-  let nextPaySource = DEF.nextPay;
-  
-  const cfDataStr = localStorage.getItem('cf-v1');
-  if (cfDataStr) {
-    try {
-      const cfData = JSON.parse(cfDataStr);
-      if (cfData && cfData.periods) {
-        const newBills = [];
-        let nextId = 1;
-        cfData.periods.forEach((period, pi) => {
-          period.bills.forEach(bill => {
-            const isOneTime = bill.name.includes('(last)') || bill.name.toLowerCase().includes('birthday') || bill.name.toLowerCase().includes('staycation') || bill.name.toLowerCase().includes('bday');
-            if (isOneTime) return;
+let S=load();
+if(!S.subTheme)S.subTheme=0;
 
-            let cycleVal = 'current';
-            if (pi === 0) cycleVal = 'current';
-            else if (pi === 1) cycleVal = 'next';
-            else cycleVal = pi;
-            
-            const isBiweekly = bill.due === 'BIWEEKLY' || bill.due === 'ONGOING';
-            if (isBiweekly) {
-              if (!newBills.find(nb => nb.name === bill.name && nb.cycle === 'both')) {
-                newBills.push({
-                  id: nextId++,
-                  name: bill.name,
-                  amt: bill.amt,
-                  date: bill.due || '',
-                  paid: bill.paid || false,
-                  cycle: 'both'
-                });
-              }
-            } else {
-              newBills.push({
-                id: nextId++,
-                name: bill.name,
-                amt: bill.amt,
-                date: bill.due || '',
-                paid: bill.paid || false,
-                cycle: cycleVal
-              });
-            }
-          });
-        });
-        if (newBills.length > 0) {
-          billsSource = newBills;
-          if (cfData.bank !== undefined) bankSource = cfData.bank;
-        }
-      }
-    } catch (e) {
-      console.error("Error parsing cf-v1 on load:", e);
-    }
-  }
-  
-  S.bills = billsSource;
-  S.bank = bankSource;
-  S.income = incomeSource;
-  S.nextPay = nextPaySource;
-  S.migratedToRecurring = true;
+// Migration V8: Set the exact 14 custom recurring bills requested
+if (!S.migratedToV8) {
+  S.bills = JSON.parse(JSON.stringify(DEF.bills));
+  S.bank = DEF.bank;
+  S.income = DEF.income;
+  S.nextPay = DEF.nextPay;
+  S.migratedToV8 = true;
   save();
 }
 
@@ -1684,11 +1636,20 @@ function pillHTML(b, edit, isNextView = false){
   const amt = (isNextView && b.cycle === 'both' && b.amtNext !== undefined) ? b.amtNext : b.amt;
   const paid = isNextView && b.cycle === 'both' ? false : b.paid;
   const delBtn = edit ? `<button class="ebtn" onclick="deleteBill(${b.id})" title="Delete" style="margin-left: 6px; padding: 2px 4px; color: var(--low); font-size: 13px;">✕</button>` : '';
+  
+  const nameMarkup = edit 
+    ? `<div class="bname" contenteditable="true" spellcheck="false" onblur="updateBillName(${b.id}, this.textContent)" onkeydown="bkKey(event, this)" style="border-bottom: 1px dashed var(--dim); cursor: text; outline: none; display: inline-block;">${b.name}</div>`
+    : `<div class="bname">${b.name}</div>`;
+    
+  const dateMarkup = edit
+    ? `<div class="bmeta" contenteditable="true" spellcheck="false" onblur="updateBillDate(${b.id}, this.textContent)" onkeydown="bkKey(event, this)" style="border-bottom: 1px dashed var(--dim); cursor: text; outline: none; display: inline-block;">${b.date||''}</div>`
+    : `<div class="bmeta">${b.date||'This cycle'}</div>`;
+
   return `<div class="bpill nm-raised-sm${paid?' paid':''}">
     <button class="chk nm-raised-xs${paid?' on':''}" onclick="togglePaid(${b.id})">${paid?'✓':''}</button>
     <div class="binfo">
-      <div class="bname">${b.name}</div>
-      <div class="bmeta">${b.date||'This cycle'}</div>
+      ${nameMarkup}
+      ${dateMarkup}
     </div>
     <span class="bamt" contenteditable="true" spellcheck="false"
       onfocus="aFocus(this,${b.id}, ${isNextView})" 
@@ -1722,7 +1683,12 @@ function renderEdBills(){
   const el=document.getElementById('ed-bills');
   const v=S.cycleView;
   const isNext = v === 'next';
-  const bills=S.bills.filter(b=>v==='current'?(b.cycle==='current'||b.cycle==='both'):(b.cycle==='next'||b.cycle==='both'));
+  let bills = [];
+  if (v === 'all') {
+    bills = S.bills;
+  } else {
+    bills = S.bills.filter(b=>v==='current'?(b.cycle==='current'||b.cycle==='both'):(b.cycle==='next'||b.cycle==='both'));
+  }
   el.innerHTML=bills.length?bills.map(b=>pillHTML(b,true, isNext)).join(''):'<div class="empty nm-pressed">No bills</div>';
 }
 
@@ -1830,7 +1796,29 @@ function addBill(){
   document.getElementById('tog-nb-both').classList.remove('on');
   closeSheet('sh-addbill');save();render();
 }
-function setCycle(view){S.cycleView=view;document.getElementById('tab-cur').classList.toggle('active',view==='current');document.getElementById('tab-nxt').classList.toggle('active',view==='next');renderEdBills();}
+function setCycle(view){
+  S.cycleView=view;
+  document.getElementById('tab-cur').classList.toggle('active',view==='current');
+  document.getElementById('tab-nxt').classList.toggle('active',view==='next');
+  document.getElementById('tab-all').classList.toggle('active',view==='all');
+  renderEdBills();
+}
+function updateBillName(id, val) {
+  const b = S.bills.find(x => x.id === id);
+  if (b) {
+    b.name = val.trim() || 'Unnamed Bill';
+    save();
+    render();
+  }
+}
+function updateBillDate(id, val) {
+  const b = S.bills.find(x => x.id === id);
+  if (b) {
+    b.date = val.trim();
+    save();
+    render();
+  }
+}
 function applyPay(){const v=document.getElementById('i-pay').value;if(!v)return;S.nextPay=v;closeSheet('sh-payday');save();render();}
 function applyInc(){const v=parseFloat(document.getElementById('i-inc').value);if(isNaN(v)||v<=0)return;S.income=Math.round(v*100)/100;closeSheet('sh-income');save();render();}
 
@@ -2773,77 +2761,15 @@ window._LEDGER_FB = {
     if (docSnap.exists()) {
       const data = docSnap.data();
       
-      // Migration check inside Firebase snapshot
-      const oldBillsDetector = data.bills && data.bills.find(b => b.name === 'Rent Allocation Jul 1' || b.name === 'Rent (Jul 1 remaining)' || b.name === 'Daycamp (last)' || b.name === 'Janelle birthday' || b.name === 'Staycation extra');
-      const newBillsDetector = data.bills && data.bills.find(b => b.name === 'Rent + buffer');
-      
-      if (!data.bills || data.bills.length === 0 || oldBillsDetector || !newBillsDetector || !data.migratedToRecurring) {
-        console.log("Firestore state is empty or outdated. Migrating with Cashflow bills...");
-        
-        let billsSource = JSON.parse(JSON.stringify(DEF.bills));
-        let bankSource = DEF.bank;
-        let incomeSource = DEF.income;
-        let nextPaySource = DEF.nextPay;
-        
-        const cfDataStr = localStorage.getItem('cf-v1');
-        if (cfDataStr) {
-          try {
-            const cfData = JSON.parse(cfDataStr);
-            if (cfData && cfData.periods) {
-              const newBills = [];
-              let nextId = 1;
-              cfData.periods.forEach((period, pi) => {
-                period.bills.forEach(bill => {
-                  const isOneTime = bill.name.includes('(last)') || bill.name.toLowerCase().includes('birthday') || bill.name.toLowerCase().includes('staycation') || bill.name.toLowerCase().includes('bday');
-                  if (isOneTime) return;
-
-                  let cycleVal = 'current';
-                  if (pi === 0) cycleVal = 'current';
-                  else if (pi === 1) cycleVal = 'next';
-                  else cycleVal = pi;
-                  
-                  const isBiweekly = bill.due === 'BIWEEKLY' || bill.due === 'ONGOING';
-                  if (isBiweekly) {
-                    if (!newBills.find(nb => nb.name === bill.name && nb.cycle === 'both')) {
-                      newBills.push({
-                        id: nextId++,
-                        name: bill.name,
-                        amt: bill.amt,
-                        date: bill.due || '',
-                        paid: bill.paid || false,
-                        cycle: 'both'
-                      });
-                    }
-                  } else {
-                    newBills.push({
-                      id: nextId++,
-                      name: bill.name,
-                      amt: bill.amt,
-                      date: bill.due || '',
-                      paid: bill.paid || false,
-                      cycle: cycleVal
-                    });
-                  }
-                });
-              });
-              if (newBills.length > 0) {
-                billsSource = newBills;
-                if (cfData.bank !== undefined) bankSource = cfData.bank;
-              }
-            }
-          } catch (e) {
-            console.error("Error parsing cf-v1 for Firebase migration:", e);
-          }
-        }
-        
-        data.bills = billsSource;
-        data.bank = bankSource;
-        data.income = incomeSource;
-        data.nextPay = nextPaySource;
-        data.migratedToRecurring = true;
-        
-        // Write the migrated data back to Firestore
-        setDoc(budgetDocRef, data).catch(err => console.error("Error migrating Firestore state:", err));
+      // Migration check V8 inside Firebase snapshot
+      if (!data.migratedToV8) {
+        console.log("Firestore state is empty or outdated. Migrating to V8 recurring list...");
+        data.bills = JSON.parse(JSON.stringify(DEF.bills));
+        data.bank = DEF.bank;
+        data.income = DEF.income;
+        data.nextPay = DEF.nextPay;
+        data.migratedToV8 = true;
+        setDoc(budgetDocRef, data).catch(err => console.error("Error migrating Firestore state to V8:", err));
       }
       
       const fbStateStr = JSON.stringify(data);
