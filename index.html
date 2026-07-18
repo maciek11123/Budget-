@@ -3559,6 +3559,7 @@ window._LEDGER_FB = {
         render();
         if (window.payRender) window.payRender();
         isUpdatingFromFirebase = false;
+        if (typeof checkCycleAdvance === 'function') checkCycleAdvance();
       }
     } else {
       // Initialize Firebase state document

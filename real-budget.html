@@ -1787,6 +1787,7 @@ window._LEDGER_FB = {
         localStorage.setItem('real-v6', JSON.stringify(S));
         if (window.render) window.render();
         isUpdatingFromFirebase = false;
+        if (typeof checkCycleAdvance === 'function') checkCycleAdvance();
       }
     } else {
       setDoc(budgetDocRef, S).catch(err => console.error("Error initializing budget state in Firestore:", err));
