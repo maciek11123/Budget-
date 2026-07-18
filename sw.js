@@ -1,4 +1,4 @@
-const CACHE = 'dot-memo-v6';
+const CACHE = 'dot-memo-v7';
 
 self.addEventListener('install', e => {
   e.waitUntil(
